@@ -2,6 +2,7 @@
 const scrollTopBtn = document.getElementById('scrollTopBtn');
 
 window.addEventListener('scroll', () => {
+    if (!scrollTopBtn) return;
     if (window.scrollY > 300) {
         scrollTopBtn.classList.add('visible');
     } else {
@@ -9,15 +10,18 @@ window.addEventListener('scroll', () => {
     }
 }, { passive: true });
 
-scrollTopBtn.addEventListener('click', () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-});
+if (scrollTopBtn) {
+    scrollTopBtn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
 
 // ===== STICKY HEADER =====
 const header = document.getElementById('header');
 let lastScrollTop = 0;
 
 window.addEventListener('scroll', () => {
+    if (!header) return;
     const st = window.scrollY;
     if (st >= 100) {
         header.classList.add('sticky');
@@ -39,10 +43,20 @@ const searchForm = document.getElementById('searchForm');
 const closeSearch = document.getElementById('closeSearch');
 
 if (searchBtn && searchForm) {
-    searchBtn.addEventListener('click', () => {
+    searchBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
         searchForm.classList.add('active');
         const input = searchForm.querySelector('input');
         if (input) setTimeout(() => input.focus(), 50);
+    });
+
+    // Close on clicking outside
+    document.addEventListener('click', (e) => {
+        if (searchForm.classList.contains('active')) {
+            if (!searchForm.contains(e.target) && !searchBtn.contains(e.target)) {
+                searchForm.classList.remove('active');
+            }
+        }
     });
 }
 

@@ -72,7 +72,6 @@ img {
 
 .header-banner {
     position: relative;
-    overflow: hidden;
 }
 
 .header-banner-bg {
@@ -80,6 +79,7 @@ img {
     inset: 0;
     background: linear-gradient(135deg, #1a4d8f 0%, #2874b5 40%, #3d8fd4 70%, #5fa8e0 100%);
     z-index: 0;
+    overflow: hidden;
 }
 
 .header-banner-bg::before {
@@ -186,7 +186,7 @@ img {
     z-index: 50;
 }
 
-.nav-item.has-dropdown:hover .dropdown {
+.nav-item.has-dropdown:hover > .dropdown {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
@@ -224,11 +224,11 @@ img {
 .search-form {
     position: absolute;
     right: 0;
-    top: 50%;
+    top: calc(50% - 6px); /* Adjusted for nav bottom padding */
     transform: translateY(-50%);
     opacity: 0;
     visibility: hidden;
-    transition: all var(--transition);
+    transition: opacity 0.1s ease, visibility 0.1s ease;
 }
 
 .search-form.active {
@@ -239,10 +239,10 @@ img {
 .search-form form {
     display: flex;
     align-items: center;
-    background: rgba(255,255,255,0.15);
+    background: var(--primary-blue); /* Solid color instead of blur */
     border-radius: 30px;
     padding: 4px;
-    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .search-form input {
@@ -1241,8 +1241,77 @@ img {
         display: none;
     }
 
-    .search-btn {
+    /* Mobile Menu Open State */
+    body.open-menu {
+        overflow: hidden;
+    }
+    
+    body.open-menu .nav-list {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: var(--white);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        padding: 10px 20px;
+        z-index: 99;
+    }
+    
+    body.open-menu .nav-item {
+        width: 100%;
+    }
+
+    body.open-menu .nav-item > a {
+        color: var(--text-dark);
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border-light);
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    body.open-menu .nav-item > a:hover {
+        color: var(--primary-blue);
+        background: transparent;
+    }
+    
+    body.open-menu .dropdown {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        box-shadow: none;
+        padding: 0 0 0 16px;
         display: none;
+        background: transparent;
+        min-width: 100%;
+    }
+    
+    body.open-menu .nav-item.has-dropdown:hover > .dropdown,
+    body.open-menu .nav-item.has-dropdown:active > .dropdown,
+    body.open-menu .dropdown-submenu:hover > .dropdown,
+    body.open-menu .dropdown-submenu:active > .dropdown {
+        display: block;
+    }
+    
+    body.open-menu .dropdown li a {
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border-light);
+    }
+    
+    body.open-menu .dropdown li:last-child a {
+        border-bottom: none;
+    }
+
+    body.open-menu .mobile-menu-btn i::before {
+        content: "\f00d"; /* fa-xmark */
+    }
+
+    .search-btn {
+        display: block;
+        margin-right: 15px;
     }
 
     .mobile-menu-btn {
@@ -1373,3 +1442,151 @@ img {
 .partner-card:nth-child(2) { animation-delay: 0.1s; }
 .partner-card:nth-child(3) { animation-delay: 0.2s; }
 .partner-card:nth-child(4) { animation-delay: 0.3s; }
+
+/* Nested Dropdown */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu > .dropdown {
+    top: 0;
+    left: 100%;
+}
+
+.dropdown-submenu:hover > .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+@media screen and (max-width: 992px) {
+    body.open-menu .dropdown-submenu > .dropdown {
+        padding-left: 15px;
+    }
+}
+
+/* ===== NEWS TICKER ===== */
+.news-ticker-section {
+    background: var(--white);
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 4px 6px -4px rgba(0,0,0,0.05);
+}
+
+.ticker-wrapper {
+    display: flex;
+    align-items: center;
+    height: 50px;
+}
+
+.ticker-label {
+    background: var(--primary-blue);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+}
+
+.ticker-label::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-top: 25px solid transparent;
+    border-bottom: 25px solid transparent;
+    border-left: 10px solid var(--primary-blue);
+}
+
+.ticker-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.ticker-track {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    animation: ticker 30s linear infinite;
+}
+
+.ticker-content:hover .ticker-track {
+    animation-play-state: paused;
+}
+
+.ticker-track a {
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: color var(--transition);
+}
+
+.ticker-track a:hover {
+    color: var(--primary-blue);
+}
+
+.ticker-separator {
+    margin: 0 20px;
+    color: var(--border-light);
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* ===== WELCOME BANNER ===== */
+.welcome-banner {
+    background-color: var(--primary-blue);
+    background-image: linear-gradient(90deg, #1a4d8f, #2874b5);
+    color: #fff;
+    overflow: hidden;
+    padding: 8px 0;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.welcome-track {
+    display: inline-flex;
+    white-space: nowrap;
+    animation: welcome-ticker 30s linear infinite;
+}
+
+.welcome-track span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-right: 0;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.welcome-track span.star {
+    margin: 0 40px;
+    color: #ffc107; /* Make the star yellow for better visibility */
+}
+
+@keyframes welcome-ticker {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
