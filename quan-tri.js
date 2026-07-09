@@ -176,7 +176,7 @@ async function loadAbout() {
             const about = await response.json();
             if(about) {
                 if(about.title) document.getElementById('aboutTitle').value = about.title;
-                if(about.content) document.getElementById('aboutContent').value = about.content;
+                if(about.content) window.editors['about'].root.innerHTML = about.content;
             }
         }
     } catch (e) {
@@ -214,7 +214,7 @@ async function loadSupport() {
             const support = await response.json();
             if(support) {
                 if(support.title) document.getElementById('supportTitle').value = support.title;
-                if(support.content) document.getElementById('supportContent').value = support.content;
+                if(support.content) window.editors['support'].root.innerHTML = support.content;
             }
         }
     } catch (e) {
@@ -252,7 +252,7 @@ async function loadHistory() {
             const history = await response.json();
             if(history) {
                 if(history.title) document.getElementById('historyTitle').value = history.title;
-                if(history.content) document.getElementById('historyContent').value = history.content;
+                if(history.content) window.editors['history'].root.innerHTML = history.content;
             }
         }
     } catch (e) {
@@ -290,7 +290,7 @@ async function loadProducts() {
             const products = await response.json();
             if(products) {
                 if(products.title) document.getElementById('productsTitle').value = products.title;
-                if(products.content) document.getElementById('productsContent').value = products.content;
+                if(products.content) window.editors['products'].root.innerHTML = products.content;
             }
         }
     } catch (e) {
@@ -328,7 +328,7 @@ async function loadOrgChart() {
             const orgchart = await response.json();
             if(orgchart) {
                 if(orgchart.title) document.getElementById('orgchartTitle').value = orgchart.title;
-                if(orgchart.content) document.getElementById('orgchartContent').value = orgchart.content;
+                if(orgchart.content) window.editors['orgchart'].root.innerHTML = orgchart.content;
             }
         }
     } catch (e) {
