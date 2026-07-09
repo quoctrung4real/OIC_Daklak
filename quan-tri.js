@@ -33,10 +33,63 @@ document.querySelectorAll('.tab-link').forEach(link => {
     });
 });
 
+// Load danh sách người dùng
+async function loadUsers() {
+    try {
+        const res = await fetch(`${API_BASE}/nguoi-dung`);
+        const users = await res.json();
+        const tbody = document.getElementById('usersTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (users.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: #888;">Chưa có người dùng nào.</td></tr>';
+            return;
+        }
+        
+        users.forEach(u => {
+            const tr = document.createElement('tr');
+            tr.style.borderBottom = '1px solid #f1f5f9';
+            tr.style.transition = 'background 0.2s';
+            tr.onmouseover = () => tr.style.background = '#f8fafc';
+            tr.onmouseout = () => tr.style.background = 'transparent';
+            
+            let role = '<span style="background: #e2e8f0; color: #475569; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Người dùng</span>';
+            if (u.Username.toLowerCase().includes('admin')) {
+                role = '<span style="background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Quản trị viên</span>';
+            }
+            
+            let status = '<span style="display: flex; align-items: center; gap: 5px; color: #10b981; font-weight: 500;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>Hoạt động</span>';
+            
+            tr.innerHTML = `
+                <td style="padding: 15px 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: bold;">
+                            ${u.Username.charAt(0).toUpperCase()}
+                        </div>
+                        <span style="font-weight: 600; color: #0f172a;">${u.Username}</span>
+                    </div>
+                </td>
+                <td style="padding: 15px 12px; font-family: monospace; color: #64748b;">${u.Password.replace(/./g, '*')}</td>
+                <td style="padding: 15px 12px;">${role}</td>
+                <td style="padding: 15px 12px;">${status}</td>
+                <td style="padding: 15px 12px; color: #64748b;">${u.RegisterDate}</td>
+                <td style="padding: 15px 12px; text-align: center;">
+                    <button title="Sửa" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 8px; font-size: 15px;" onclick="alert('Chức năng sửa thông tin chưa khả dụng')"><i class="fa-solid fa-pen-to-square"></i></button>
+                    <button title="Khóa/Xóa" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 15px;" onclick="alert('Chức năng khóa tài khoản chưa khả dụng')"><i class="fa-solid fa-ban"></i></button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    } catch (err) {
+        console.error('Lỗi khi tải danh sách người dùng:', err);
+    }
+}
+
 // Load cấu hình hiện tại
 async function loadConfig() {
     try {
-        const response = await fetch(`${API_BASE}/config`);
+        const response = await fetch(`${API_BASE}/cau-hinh`);
         const config = await response.json();
         if(config) {
             if(config.bannerUrl) document.getElementById('bannerUrl').value = config.bannerUrl;
@@ -60,7 +113,7 @@ document.getElementById('config-form').addEventListener('submit', async (e) => {
     };
 
     try {
-        const response = await fetch(`${API_BASE}/config`, {
+        const response = await fetch(`${API_BASE}/cau-hinh`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(config)
@@ -88,57 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 ['link', 'image'],
                 ['clean']
             ]
-        }
-    };
-    async function loadUsers() {
-        try {
-            const res = await fetch('http://localhost:5000/api/nguoi-dung');
-            const users = await res.json();
-            const tbody = document.getElementById('usersTableBody');
-            tbody.innerHTML = '';
-            
-            if (users.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="padding: 20px; text-align: center; color: #888;">Chưa có người dùng nào.</td></tr>';
-                return;
-            }
-            
-            users.forEach(u => {
-                const tr = document.createElement('tr');
-                tr.style.borderBottom = '1px solid #f1f5f9';
-                tr.style.transition = 'background 0.2s';
-                tr.onmouseover = () => tr.style.background = '#f8fafc';
-                tr.onmouseout = () => tr.style.background = 'transparent';
-                
-                // Demo logic for Roles and Status based on username
-                let role = '<span style="background: #e2e8f0; color: #475569; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Người dùng</span>';
-                if (u.Username.toLowerCase().includes('admin')) {
-                    role = '<span style="background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Quản trị viên</span>';
-                }
-                
-                let status = '<span style="display: flex; align-items: center; gap: 5px; color: #10b981; font-weight: 500;"><span style="width: 8px; height: 8px; border-radius: 50%; background: #10b981;"></span>Hoạt động</span>';
-                
-                tr.innerHTML = `
-                    <td style="padding: 15px 12px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                                ${u.Username.charAt(0).toUpperCase()}
-                            </div>
-                            <span style="font-weight: 600; color: #0f172a;">${u.Username}</span>
-                        </div>
-                    </td>
-                    <td style="padding: 15px 12px; font-family: monospace; color: #64748b;">${u.Password.replace(/./g, '*')}</td>
-                    <td style="padding: 15px 12px;">${role}</td>
-                    <td style="padding: 15px 12px;">${status}</td>
-                    <td style="padding: 15px 12px; color: #64748b;">${u.RegisterDate}</td>
-                    <td style="padding: 15px 12px; text-align: center;">
-                        <button title="Sửa" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 8px; font-size: 15px;" onclick="alert('Chức năng sửa thông tin chưa khả dụng')"><i class="fa-solid fa-pen-to-square"></i></button>
-                        <button title="Khóa/Xóa" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 15px;" onclick="alert('Chức năng khóa tài khoản chưa khả dụng')"><i class="fa-solid fa-ban"></i></button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } catch (err) {
-            console.error('Lỗi khi tải danh sách người dùng:', err);
         }
     };
     ['about', 'support', 'history', 'products', 'orgchart', 'struct', 'baolu'].forEach(key => {
