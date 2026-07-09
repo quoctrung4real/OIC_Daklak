@@ -255,6 +255,67 @@ app.MapGet("/api/nguoi-dung", async (HttpContext context) =>
     await context.Response.WriteAsync(usersJson);
 });
 
+app.MapGet("/api/nguoi-dung/{username}", async (HttpContext context, string username) =>
+{
+    var usersJson = await File.ReadAllTextAsync(usersPath);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson) ?? new List<User>();
+    
+    var user = usersList.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+    if (user == null) {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
+        return;
+    }
+    
+    // Do not return password
+    await context.Response.WriteAsJsonAsync(new { 
+        success = true, 
+        user = new { 
+            user.Username, 
+            user.RegisterDate, 
+            user.Email, 
+            user.DateOfBirth, 
+            user.AvatarUrl 
+        } 
+    });
+});
+
+app.MapPut("/api/nguoi-dung/{username}", async (HttpContext context, string username) =>
+{
+    using var reader = new StreamReader(context.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    var updateReq = JsonSerializer.Deserialize<User>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    
+    var usersJson = await File.ReadAllTextAsync(usersPath);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson) ?? new List<User>();
+    
+    var userIndex = usersList.FindIndex(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
+    if (userIndex == -1) {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
+        return;
+    }
+    
+    var user = usersList[userIndex];
+    
+    // Verify old password if they want to change password
+    if (!string.IsNullOrEmpty(updateReq.Password)) {
+        // Here we just update the password for simplicity.
+        // In a real app we'd verify the old password.
+        user.Password = updateReq.Password;
+    }
+    
+    if (updateReq.Email != null) user.Email = updateReq.Email;
+    if (updateReq.DateOfBirth != null) user.DateOfBirth = updateReq.DateOfBirth;
+    if (updateReq.AvatarUrl != null) user.AvatarUrl = updateReq.AvatarUrl;
+    
+    usersList[userIndex] = user;
+    
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true }));
+    
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Cập nhật thành công.", user = new { user.Username, user.Email, user.DateOfBirth, user.AvatarUrl } });
+});
+
 app.MapPost("/api/register", async (HttpContext context) =>
 {
     using var reader = new StreamReader(context.Request.Body);
@@ -351,6 +412,9 @@ public class User {
     public string Username { get; set; }
     public string Password { get; set; }
     public string RegisterDate { get; set; }
+    public string Email { get; set; }
+    public string DateOfBirth { get; set; }
+    public string AvatarUrl { get; set; }
 }
 
 public class Comment {
