@@ -259,7 +259,7 @@ app.MapPost("/api/register", async (HttpContext context) =>
 {
     using var reader = new StreamReader(context.Request.Body);
     var body = await reader.ReadToEndAsync();
-    var newUser = JsonSerializer.Deserialize<User>(body);
+    var newUser = JsonSerializer.Deserialize<User>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     
     var usersJson = await File.ReadAllTextAsync(usersPath);
     var usersList = JsonSerializer.Deserialize<List<User>>(usersJson) ?? new List<User>();
@@ -282,7 +282,7 @@ app.MapPost("/api/login", async (HttpContext context) =>
 {
     using var reader = new StreamReader(context.Request.Body);
     var body = await reader.ReadToEndAsync();
-    var loginReq = JsonSerializer.Deserialize<User>(body);
+    var loginReq = JsonSerializer.Deserialize<User>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     
     var usersJson = await File.ReadAllTextAsync(usersPath);
     var usersList = JsonSerializer.Deserialize<List<User>>(usersJson) ?? new List<User>();
@@ -313,7 +313,7 @@ app.MapPost("/api/binh-luan", async (HttpContext context) =>
 {
     using var reader = new StreamReader(context.Request.Body);
     var body = await reader.ReadToEndAsync();
-    var newComment = JsonSerializer.Deserialize<Comment>(body);
+    var newComment = JsonSerializer.Deserialize<Comment>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
     
     var commentsJson = await File.ReadAllTextAsync(commentsPath);
     var commentsList = JsonSerializer.Deserialize<List<Comment>>(commentsJson) ?? new List<Comment>();

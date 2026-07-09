@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const data = await res.json();
             if (data.success) {
-                localStorage.setItem('currentUser', data.user.Username);
-                currentUser = data.user.Username;
+                localStorage.setItem('currentUser', data.user.username);
+                currentUser = data.user.username;
                 updateAuthUI();
                 authModal.classList.remove('show');
                 loginForm.reset();
@@ -129,8 +129,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const data = await res.json();
             if (data.success) {
-                localStorage.setItem('currentUser', data.user.Username);
-                currentUser = data.user.Username;
+                localStorage.setItem('currentUser', data.user.username);
+                currentUser = data.user.username;
                 updateAuthUI();
                 authModal.classList.remove('show');
                 registerForm.reset();

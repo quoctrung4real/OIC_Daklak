@@ -55,7 +55,7 @@ async function loadUsers() {
             tr.onmouseout = () => tr.style.background = 'transparent';
             
             let role = '<span style="background: #e2e8f0; color: #475569; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Người dùng</span>';
-            if (u.Username.toLowerCase().includes('admin')) {
+            if ((u.username || '').toLowerCase().includes('admin')) {
                 role = '<span style="background: #fef3c7; color: #d97706; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Quản trị viên</span>';
             }
             
@@ -65,15 +65,15 @@ async function loadUsers() {
                 <td style="padding: 15px 12px;">
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0f2fe; color: #0284c7; display: flex; align-items: center; justify-content: center; font-weight: bold;">
-                            ${u.Username.charAt(0).toUpperCase()}
+                            ${(u.username || '?').charAt(0).toUpperCase()}
                         </div>
-                        <span style="font-weight: 600; color: #0f172a;">${u.Username}</span>
+                        <span style="font-weight: 600; color: #0f172a;">${u.username || 'Không xác định'}</span>
                     </div>
                 </td>
-                <td style="padding: 15px 12px; font-family: monospace; color: #64748b;">${u.Password.replace(/./g, '*')}</td>
+                <td style="padding: 15px 12px; font-family: monospace; color: #64748b;">****</td>
                 <td style="padding: 15px 12px;">${role}</td>
                 <td style="padding: 15px 12px;">${status}</td>
-                <td style="padding: 15px 12px; color: #64748b;">${u.RegisterDate}</td>
+                <td style="padding: 15px 12px; color: #64748b;">${u.registerDate || ''}</td>
                 <td style="padding: 15px 12px; text-align: center;">
                     <button title="Sửa" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 8px; font-size: 15px;" onclick="alert('Chức năng sửa thông tin chưa khả dụng')"><i class="fa-solid fa-pen-to-square"></i></button>
                     <button title="Khóa/Xóa" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 15px;" onclick="alert('Chức năng khóa tài khoản chưa khả dụng')"><i class="fa-solid fa-ban"></i></button>
