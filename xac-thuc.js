@@ -72,10 +72,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Check if user is logged in
     let currentUser = localStorage.getItem('currentUser');
+    let currentFullName = localStorage.getItem('currentFullName');
     
     function updateAuthUI() {
         if (currentUser) {
-            userBtnText.textContent = currentUser;
+            userBtnText.textContent = currentFullName || currentUser;
         } else {
             userBtnText.textContent = 'Đăng nhập';
         }
@@ -87,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentUser) {
             // Toggle dropdown
             userDropdownMenu.classList.toggle('show');
-            displayUsername.textContent = currentUser;
+            displayUsername.textContent = currentFullName || currentUser;
         } else {
             // Show modal
             authModal.classList.add('show');
@@ -138,6 +139,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await res.json();
             if (data.success) {
                 localStorage.setItem('currentUser', data.user.username);
+                if (data.user.fullName) {
+                    localStorage.setItem('currentFullName', data.user.fullName);
+                    currentFullName = data.user.fullName;
+                } else {
+                    localStorage.removeItem('currentFullName');
+                    currentFullName = null;
+                }
                 currentUser = data.user.username;
                 updateAuthUI();
                 authModal.classList.remove('show');
@@ -170,6 +178,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await res.json();
             if (data.success) {
                 localStorage.setItem('currentUser', data.user.username);
+                localStorage.removeItem('currentFullName');
+                currentFullName = null;
                 currentUser = data.user.username;
                 updateAuthUI();
                 authModal.classList.remove('show');
@@ -188,7 +198,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     logoutBtn.addEventListener('click', (e) => {
         e.preventDefault();
         localStorage.removeItem('currentUser');
+        localStorage.removeItem('currentFullName');
         currentUser = null;
+        currentFullName = null;
         updateAuthUI();
         userDropdownMenu.classList.remove('show');
         window.dispatchEvent(new Event('userLoginStateChanged'));

@@ -246,9 +246,14 @@
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h3 style="margin-bottom: 0;">Danh sách Tài Khoản Người Dùng</h3>
-                    <div class="search-box">
-                        <input type="text" id="searchAccountInput" placeholder="Tìm kiếm tài khoản..." style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px; font-family: 'Inter', sans-serif;">
-                        <button style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-search"></i></button>
+                    <div class="search-box" style="display: flex; gap: 10px;">
+                        <div style="display: flex;">
+                            <input type="text" id="searchAccountInput" placeholder="Tìm kiếm tài khoản..." style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 4px 0 0 4px; font-family: 'Inter', sans-serif;">
+                            <button style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 0 4px 4px 0; cursor: pointer;"><i class="fa-solid fa-search"></i></button>
+                        </div>
+                        <button onclick="openUserModal()" style="padding: 8px 15px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Inter', sans-serif; font-weight: 500;">
+                            <i class="fa-solid fa-plus"></i> Thêm mới
+                        </button>
                     </div>
                 </div>
                 
@@ -256,8 +261,8 @@
                     <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
                         <thead>
                             <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Người dùng</th>
-                                <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Mật khẩu</th>
+                                <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Họ và tên</th>
+                                <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Tên tài khoản</th>
                                 <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Vai trò</th>
                                 <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Trạng thái</th>
                                 <th style="padding: 15px 12px; text-align: left; color: #475569; font-weight: 600;">Ngày đăng ký</th>
@@ -274,7 +279,51 @@
 </div>
 </div>
 
-<script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- User Modal -->
+    <div id="userModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; width: 500px; border-radius: 8px; padding: 25px; position: relative;">
+            <button onclick="closeUserModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
+            <h3 id="userModalTitle" style="margin-top: 0; margin-bottom: 20px; color: #1e293b;">Thêm Tài Khoản Mới</h3>
+            
+            <form id="userForm">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Tên tài khoản (Username) <span style="color: red;">*</span></label>
+                    <input type="text" id="userFormUsername" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Họ và tên</label>
+                    <input type="text" id="userFormFullName" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Email</label>
+                    <input type="email" id="userFormEmail" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Mật khẩu <span id="pwdRequired" style="color: red;">*</span></label>
+                    <input type="password" id="userFormPassword" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;" placeholder="Nhập mật khẩu...">
+                    <small id="pwdHint" style="color: #64748b; margin-top: 4px; display: block;">Để trống nếu không muốn đổi mật khẩu</small>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Trạng thái</label>
+                    <select id="userFormActive" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                        <option value="true">Đang hoạt động</option>
+                        <option value="false">Không hoạt động (Khóa)</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                    <button type="button" onclick="closeUserModal()" style="padding: 8px 15px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 500;">Hủy</button>
+                    <button type="submit" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Lưu lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
 <script src="quan-tri.js?v=2"></script>
 </body>
 </html>

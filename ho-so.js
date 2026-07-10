@@ -38,7 +38,8 @@ async function loadUserProfile(username) {
             
             // Populate basic info
             document.getElementById('username').value = user.username || username;
-            document.getElementById('sidebarUsername').textContent = user.username || username;
+            document.getElementById('sidebarUsername').textContent = user.fullName || user.username || username;
+            document.getElementById('fullName').value = user.fullName || '';
             document.getElementById('email').value = user.email || '';
             document.getElementById('dob').value = user.dateOfBirth || '';
             
@@ -127,6 +128,7 @@ async function handleProfileUpdate(e) {
     if (!username) return;
     
     const email = document.getElementById('email').value;
+    const fullName = document.getElementById('fullName').value;
     const dob = document.getElementById('dob').value;
     const newPassword = document.getElementById('newPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
@@ -156,6 +158,7 @@ async function handleProfileUpdate(e) {
         
         // Prepare update payload
         const payload = {
+            fullName: fullName || null,
             email: email || null,
             dateOfBirth: dob || null,
             avatarUrl: avatarUrlToSave

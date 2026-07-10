@@ -9,8 +9,7 @@ const files = [
 const oldUserContainerRegex = /<div class="user-dropdown-container">[\s\S]*?<\/div>\s*<button class="search-btn" id="searchBtn">/;
 const newSearchAndUserHtml = `<button class="search-btn" id="searchBtn">`;
 
-// But wait, searchForm is right after searchBtn. I should just extract searchBtn and searchForm, then place user container after them.
-// Let's do it manually with string splitting.
+
 files.forEach(file => {
     if (!fs.existsSync(file)) return;
     let html = fs.readFileSync(file, 'utf8');
@@ -33,8 +32,6 @@ files.forEach(file => {
         formEndRegex.lastIndex = searchFormStart;
         const searchFormEndMatch = formEndRegex.exec(html); // this matches the first </div> after <div class="search-form"
         if (searchFormEndMatch) {
-            // But wait, <div class="search-form"> contains a form, an input, a button, etc. 
-            // Better to find `</form>\n                    </div>`
             const searchFormEnd = html.indexOf('</div>', html.indexOf('</form>', searchFormStart));
             if (searchFormEnd !== -1) {
                 const insertPos = searchFormEnd + 6;
@@ -49,7 +46,6 @@ files.forEach(file => {
                             <li><a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
                         </ul>
                     </div>`;
-                // Insert only if not already there
                 if (!html.includes('<span id="userBtnText"')) {
                     html = html.slice(0, insertPos) + newUserHtml + html.slice(insertPos);
                 }

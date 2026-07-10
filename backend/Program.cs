@@ -216,7 +216,7 @@ app.MapPost("/api/tin-tuc", async (HttpContext context) =>
     updatedList[0] = newItem;
     Array.Copy(newsList, 0, updatedList, 1, newsList.Length);
     
-    await File.WriteAllTextAsync(newsPath, JsonSerializer.Serialize(updatedList, new JsonSerializerOptions { WriteIndented = true }));
+    await File.WriteAllTextAsync(newsPath, JsonSerializer.Serialize(updatedList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
     await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng tin thành công." });
 });
 
@@ -251,8 +251,10 @@ app.MapPost("/api/upload", async (HttpContext context) =>
 app.MapGet("/api/nguoi-dung", async (HttpContext context) =>
 {
     var usersJson = await File.ReadAllTextAsync(usersPath);
-    context.Response.ContentType = "application/json";
-    await context.Response.WriteAsync(usersJson);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+    // Exclude passwords for safety before returning
+    var safeList = usersList.Select(u => new { u.Id, u.Username, u.FullName, u.Email, u.DateOfBirth, u.AvatarUrl, u.RegisterDate, u.IsActive }).ToList();
+    await context.Response.WriteAsJsonAsync(safeList);
 });
 
 app.MapGet("/api/nguoi-dung/{username}", async (HttpContext context, string username) =>
@@ -261,6 +263,12 @@ app.MapGet("/api/nguoi-dung/{username}", async (HttpContext context, string user
     var usersList = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
     
     var user = usersList.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
+    
+    if (user != null && !user.IsActive) {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Tài khoản của bạn đã bị khóa." });
+        return;
+    }
     if (user == null) {
         context.Response.StatusCode = 404;
         await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
@@ -275,7 +283,9 @@ app.MapGet("/api/nguoi-dung/{username}", async (HttpContext context, string user
             user.RegisterDate, 
             user.Email, 
             user.DateOfBirth, 
-            user.AvatarUrl 
+            user.AvatarUrl, 
+            user.FullName,
+            user.IsActive
         } 
     });
 });
@@ -308,12 +318,13 @@ app.MapPut("/api/nguoi-dung/{username}", async (HttpContext context, string user
     if (updateReq.Email != null) user.Email = updateReq.Email;
     if (updateReq.DateOfBirth != null) user.DateOfBirth = updateReq.DateOfBirth;
     if (updateReq.AvatarUrl != null) user.AvatarUrl = updateReq.AvatarUrl;
+    if (updateReq.FullName != null) user.FullName = updateReq.FullName;
     
     usersList[userIndex] = user;
     
-    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true }));
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
     
-    await context.Response.WriteAsJsonAsync(new { success = true, message = "Cập nhật thành công.", user = new { user.Username, user.Email, user.DateOfBirth, user.AvatarUrl } });
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Cập nhật thành công.", user = new { user.Username, user.Email, user.DateOfBirth, user.AvatarUrl, user.FullName } });
 });
 
 app.MapPost("/api/register", async (HttpContext context) =>
@@ -335,7 +346,7 @@ app.MapPost("/api/register", async (HttpContext context) =>
     newUser.RegisterDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
     usersList.Add(newUser);
     
-    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true }));
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
     await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng ký thành công.", user = new { newUser.Username } });
 });
 
@@ -355,7 +366,7 @@ app.MapPost("/api/login", async (HttpContext context) =>
         return;
     }
     
-    await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng nhập thành công.", user = new { user.Username } });
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng nhập thành công.", user = new { user.Username, user.FullName } });
 });
 
 // --- COMMENTS API ---
@@ -385,7 +396,7 @@ app.MapPost("/api/binh-luan", async (HttpContext context) =>
     
     commentsList.Add(newComment);
     
-    await File.WriteAllTextAsync(commentsPath, JsonSerializer.Serialize(commentsList, new JsonSerializerOptions { WriteIndented = true }));
+    await File.WriteAllTextAsync(commentsPath, JsonSerializer.Serialize(commentsList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
     await context.Response.WriteAsJsonAsync(new { success = true, message = "Đã gửi bình luận.", comment = newComment });
 });
 
@@ -397,12 +408,94 @@ app.MapPost("/api/binh-luan/{id}/like", async (HttpContext context, string id) =
     var comment = commentsList.FirstOrDefault(c => c.Id == id);
     if (comment != null) {
         comment.Likes += 1;
-        await File.WriteAllTextAsync(commentsPath, JsonSerializer.Serialize(commentsList, new JsonSerializerOptions { WriteIndented = true }));
+        await File.WriteAllTextAsync(commentsPath, JsonSerializer.Serialize(commentsList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
         await context.Response.WriteAsJsonAsync(new { success = true, likes = comment.Likes });
     } else {
         context.Response.StatusCode = 404;
         await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy bình luận." });
     }
+});
+
+
+// --- ADMIN API ---
+app.MapPost("/api/admin/nguoi-dung", async (HttpContext context) =>
+{
+    using var reader = new StreamReader(context.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    var newUser = JsonSerializer.Deserialize<User>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    
+    var usersJson = await File.ReadAllTextAsync(usersPath);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+    
+    if (usersList.Any(u => string.Equals(u.Username, newUser.Username, StringComparison.OrdinalIgnoreCase))) {
+        context.Response.StatusCode = 400;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Tên đăng nhập đã tồn tại." });
+        return;
+    }
+    
+    newUser.Id = Guid.NewGuid().ToString();
+    newUser.RegisterDate = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+    if (string.IsNullOrEmpty(newUser.Password)) newUser.Password = "123456"; // default password
+    usersList.Add(newUser);
+    
+    var jsonOptions = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, jsonOptions));
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Thêm tài khoản thành công." });
+});
+
+app.MapPut("/api/admin/nguoi-dung/{username}", async (HttpContext context, string username) =>
+{
+    using var reader = new StreamReader(context.Request.Body);
+    var body = await reader.ReadToEndAsync();
+    var updateReq = JsonSerializer.Deserialize<User>(body, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+    
+    var usersJson = await File.ReadAllTextAsync(usersPath);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+    
+    var userIndex = usersList.FindIndex(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
+    if (userIndex == -1) {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
+        return;
+    }
+    
+    var user = usersList[userIndex];
+    if (!string.IsNullOrEmpty(updateReq.Password)) user.Password = updateReq.Password;
+    if (updateReq.FullName != null) user.FullName = updateReq.FullName;
+    if (updateReq.Email != null) user.Email = updateReq.Email;
+    user.IsActive = updateReq.IsActive; // Always update IsActive based on admin request
+    
+    usersList[userIndex] = user;
+    
+    var jsonOptions = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, jsonOptions));
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Cập nhật tài khoản thành công." });
+});
+
+app.MapDelete("/api/admin/nguoi-dung/{username}", async (HttpContext context, string username) =>
+{
+    var usersJson = await File.ReadAllTextAsync(usersPath);
+    var usersList = JsonSerializer.Deserialize<List<User>>(usersJson, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<User>();
+    
+    var userIndex = usersList.FindIndex(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
+    if (userIndex == -1) {
+        context.Response.StatusCode = 404;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
+        return;
+    }
+    
+    // Prevent deleting admin
+    if (username.ToLower() == "admin") {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Không thể xóa tài khoản admin gốc." });
+        return;
+    }
+    
+    usersList.RemoveAt(userIndex);
+    
+    var jsonOptions = new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+    await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, jsonOptions));
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Đã xóa tài khoản." });
 });
 
 app.Run();
@@ -415,6 +508,8 @@ public class User {
     public string Email { get; set; }
     public string DateOfBirth { get; set; }
     public string AvatarUrl { get; set; }
+    public string FullName { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 public class Comment {
