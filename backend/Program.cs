@@ -264,11 +264,7 @@ app.MapGet("/api/nguoi-dung/{username}", async (HttpContext context, string user
     
     var user = usersList.FirstOrDefault(u => string.Equals(u.Username, username, StringComparison.OrdinalIgnoreCase));
     
-    if (user != null && !user.IsActive) {
-        context.Response.StatusCode = 403;
-        await context.Response.WriteAsJsonAsync(new { success = false, message = "Tài khoản của bạn đã bị khóa." });
-        return;
-    }
+
     if (user == null) {
         context.Response.StatusCode = 404;
         await context.Response.WriteAsJsonAsync(new { success = false, message = "Không tìm thấy người dùng." });
@@ -347,7 +343,7 @@ app.MapPost("/api/register", async (HttpContext context) =>
     usersList.Add(newUser);
     
     await File.WriteAllTextAsync(usersPath, JsonSerializer.Serialize(usersList, new JsonSerializerOptions { WriteIndented = true, PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
-    await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng ký thành công.", user = new { newUser.Username } });
+    await context.Response.WriteAsJsonAsync(new { success = true, message = "Đăng ký thành công.", user = new { newUser.Username, newUser.FullName } });
 });
 
 app.MapPost("/api/login", async (HttpContext context) =>
@@ -363,6 +359,12 @@ app.MapPost("/api/login", async (HttpContext context) =>
     if (user == null) {
         context.Response.StatusCode = 401;
         await context.Response.WriteAsJsonAsync(new { success = false, message = "Sai tên đăng nhập hoặc mật khẩu." });
+        return;
+    }
+    
+    if (!user.IsActive) {
+        context.Response.StatusCode = 403;
+        await context.Response.WriteAsJsonAsync(new { success = false, message = "Tài khoản của bạn đã bị khóa." });
         return;
     }
     

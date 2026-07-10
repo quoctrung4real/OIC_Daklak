@@ -76,11 +76,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     function updateAuthUI() {
         if (currentUser) {
-            userBtnText.textContent = currentFullName || currentUser;
+            const isValidFullName = currentFullName && currentFullName !== 'undefined' && currentFullName !== 'null';
+            userBtnText.textContent = isValidFullName ? currentFullName : currentUser;
         } else {
             userBtnText.textContent = 'Đăng nhập';
         }
     }
+    
+    window.addEventListener('authProfileChanged', () => {
+        currentUser = localStorage.getItem('currentUser');
+        currentFullName = localStorage.getItem('currentFullName');
+        updateAuthUI();
+    });
+    
     updateAuthUI();
     
     userBtn.addEventListener('click', (e) => {
@@ -88,7 +96,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (currentUser) {
             // Toggle dropdown
             userDropdownMenu.classList.toggle('show');
-            displayUsername.textContent = currentFullName || currentUser;
+            const isValidFullName = currentFullName && currentFullName !== 'undefined' && currentFullName !== 'null';
+            displayUsername.textContent = isValidFullName ? currentFullName : currentUser;
         } else {
             // Show modal
             authModal.classList.add('show');

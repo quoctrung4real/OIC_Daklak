@@ -190,6 +190,13 @@ async function handleProfileUpdate(e) {
             isAvatarChanged = false;
             if (data.user) {
                 currentAvatarUrl = data.user.avatarUrl;
+                if (data.user.fullName) {
+                    localStorage.setItem('currentFullName', data.user.fullName);
+                } else {
+                    localStorage.removeItem('currentFullName');
+                }
+                document.getElementById('sidebarUsername').textContent = data.user.fullName || data.user.username || username;
+                window.dispatchEvent(new Event('authProfileChanged'));
             }
         } else {
             alert(data.message || 'Có lỗi xảy ra khi cập nhật hồ sơ.');
