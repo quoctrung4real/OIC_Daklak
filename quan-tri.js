@@ -197,7 +197,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadProducts();
     loadOrgChart();
     loadStruct();
-    loadStruct();
 });
 
 // Load dữ liệu trang giới thiệu
