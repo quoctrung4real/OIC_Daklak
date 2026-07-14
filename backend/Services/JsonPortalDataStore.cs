@@ -238,9 +238,66 @@ public sealed class JsonPortalDataStore : IPortalDataStore
         return Task.FromResult(new List<DocumentTypeDto>());
     }
 
-    public Task<List<DocumentDto>> GetDocumentsAsync(string? typeCode, int take, CancellationToken cancellationToken)
+    private async Task<List<DocumentDto>> ReadDocumentsAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(new List<DocumentDto>());
+        var json = await ReadFileAsync("van-ban.json", "[]", cancellationToken);
+        if (string.IsNullOrWhiteSpace(json)) return [];
+        try { return JsonSerializer.Deserialize<List<DocumentDto>>(json, _jsonOptions) ?? []; }
+        catch { return []; }
+    }
+
+    private async Task WriteDocumentsAsync(List<DocumentDto> docs, CancellationToken cancellationToken)
+    {
+        var json = JsonSerializer.Serialize(docs, _jsonOptions);
+        await WriteFileAsync("van-ban.json", json, cancellationToken);
+    }
+
+    public async Task<List<DocumentDto>> GetDocumentsAsync(string? typeCode, int take, CancellationToken cancellationToken)
+    {
+        var docs = await ReadDocumentsAsync(cancellationToken);
+        if (!string.IsNullOrWhiteSpace(typeCode))
+        {
+            docs = docs.Where(d => string.Equals(d.TypeCode, typeCode, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        return docs.OrderByDescending(d => d.Id).Take(take).ToList();
+    }
+
+    public async Task<DocumentDto> AddDocumentAsync(DocumentDto document, CancellationToken cancellationToken)
+    {
+        var docs = await ReadDocumentsAsync(cancellationToken);
+        document.Id = docs.Count > 0 ? docs.Max(d => d.Id) + 1 : 1;
+        docs.Add(document);
+        await WriteDocumentsAsync(docs, cancellationToken);
+        return document;
+    }
+
+    public async Task<DocumentDto> UpdateDocumentAsync(int id, DocumentDto document, CancellationToken cancellationToken)
+    {
+        var docs = await ReadDocumentsAsync(cancellationToken);
+        var existing = docs.FirstOrDefault(d => d.Id == id);
+        if (existing == null) throw new Exception("Không tìm thấy văn bản.");
+        
+        existing.TypeCode = document.TypeCode;
+        existing.TypeName = document.TypeName;
+        existing.DocumentNumber = document.DocumentNumber;
+        existing.PublishedAt = document.PublishedAt;
+        existing.Title = document.Title;
+        existing.FileUrl = document.FileUrl;
+        existing.IssuingAuthority = document.IssuingAuthority;
+
+        await WriteDocumentsAsync(docs, cancellationToken);
+        return existing;
+    }
+
+    public async Task DeleteDocumentAsync(int id, CancellationToken cancellationToken)
+    {
+        var docs = await ReadDocumentsAsync(cancellationToken);
+        var existing = docs.FirstOrDefault(d => d.Id == id);
+        if (existing != null)
+        {
+            docs.Remove(existing);
+            await WriteDocumentsAsync(docs, cancellationToken);
+        }
     }
 
     public async Task<List<SearchResultDto>> SearchAsync(string keyword, int take, CancellationToken cancellationToken)

@@ -481,8 +481,22 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                 DisplayOrder = reader.GetInt32(3)
             });
         }
-
         return types;
+    }
+
+    public Task<DocumentDto> AddDocumentAsync(DocumentDto document, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<DocumentDto> UpdateDocumentAsync(int id, DocumentDto document, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteDocumentAsync(int id, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<List<DocumentDto>> GetDocumentsAsync(string? typeCode, int take, CancellationToken cancellationToken)

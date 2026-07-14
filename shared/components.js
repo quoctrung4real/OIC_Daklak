@@ -77,7 +77,7 @@ const commonComponents = {
                             </ul>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="van-ban">
-                            <a href="#">Văn bản <i class="fa-solid fa-angle-down"></i></a>
+                            <a href="${window.BASE_URL || ''}user/van-ban/van-ban.html">Văn bản <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
                                 <li class="dropdown-submenu">
                                     <a href="#">Văn bản Trung tâm IOC <i class="fa-solid fa-angle-right"
@@ -93,11 +93,11 @@ const commonComponents = {
                                     </ul>
                                 </li>
                                 <li><a href="#">Bộ Khoa học và Công nghệ</a></li>
-                                <li><a href="#">CSDL VBQPPL tỉnh Đắk Lắk</a></li>
-                                <li><a href="#">Khoa học và Công nghệ địa phương</a></li>
-                                <li><a href="#">Khoa học và Công nghệ Trung ương</a></li>
                                 <li><a href="#">UBND tỉnh Đắk Lắk</a></li>
-                                <li><a href="#">Văn bản</a></li>
+                                <li><a href="#">CSDL VBQPPL tỉnh Đắk Lắk</a></li>
+                                <li><a href="#">Khoa học và Công nghệ Trung ương</a></li>
+                                <li><a href="#">Khoa học và Công nghệ địa phương</a></li>
+                                <li><a href="#">Văn bản luật</a></li>
                             </ul>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="y-kien-du-thao">

@@ -1384,3 +1384,175 @@ function saveCrop() {
     closeCropperModal();
 }
 
+// ================= VĂN BẢN (DOCUMENTS) LOGIC =================
+let allDocuments = [];
+
+async function loadDocuments() {
+    try {
+        const response = await fetch('/api/van-ban');
+        if (response.ok) {
+            allDocuments = await response.json();
+            renderDocumentTable();
+        } else {
+            showAlert('Lỗi khi tải danh sách văn bản', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Không thể kết nối đến máy chủ', 'error');
+    }
+}
+
+function renderDocumentTable(docsToRender = allDocuments) {
+    const tbody = document.getElementById('document-table-body');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    if (docsToRender.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 20px;">Chưa có văn bản nào</td></tr>';
+        return;
+    }
+    
+    docsToRender.forEach((doc, idx) => {
+        const fileLink = doc.fileUrl 
+            ? `<a href="${doc.fileUrl}" target="_blank" style="color: #0a59ab;"><i class="fa-solid fa-download"></i> Tải về</a>` 
+            : '<span style="color: #999;">Không có</span>';
+            
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${idx + 1}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; font-weight: 500;">${doc.documentNumber || ''}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${doc.publishedAt || ''}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${doc.title || ''}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${fileLink}</td>
+            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">
+                <button onclick="openDocumentModal(${doc.id})" style="background: none; border: none; color: #0a59ab; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button onclick="deleteDocument(${doc.id})" style="background: none; border: none; color: #dc2626; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function openDocumentModal(id = null) {
+    document.getElementById('documentModal').style.display = 'flex';
+    document.getElementById('documentForm').reset();
+    document.getElementById('currentDocFile').innerText = '';
+    document.getElementById('documentId').value = '';
+    
+    if (id) {
+        document.getElementById('documentModalTitle').innerText = 'Sửa văn bản';
+        const doc = allDocuments.find(d => d.id === id);
+        if (doc) {
+            document.getElementById('documentId').value = doc.id;
+            document.getElementById('docNumber').value = doc.documentNumber || '';
+            document.getElementById('docPublishedAt').value = doc.publishedAt ? doc.publishedAt.split('T')[0] : '';
+            document.getElementById('docTitle').value = doc.title || '';
+            document.getElementById('docIssuingAuthority').value = doc.issuingAuthority || '';
+            if (doc.fileUrl) {
+                document.getElementById('currentDocFile').innerHTML = `File hiện tại: <a href="${doc.fileUrl}" target="_blank">${doc.fileUrl.split('/').pop()}</a>`;
+            }
+        }
+    } else {
+        document.getElementById('documentModalTitle').innerText = 'Thêm văn bản mới';
+    }
+}
+
+function closeDocumentModal() {
+    document.getElementById('documentModal').style.display = 'none';
+}
+
+async function saveDocument(e) {
+    e.preventDefault();
+    const id = document.getElementById('documentId').value;
+    const docData = {
+        documentNumber: document.getElementById('docNumber').value,
+        publishedAt: document.getElementById('docPublishedAt').value,
+        title: document.getElementById('docTitle').value,
+        issuingAuthority: document.getElementById('docIssuingAuthority').value,
+    };
+    
+    const fileInput = document.getElementById('docFile');
+    const file = fileInput.files[0];
+    
+    try {
+        if (file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            const uploadRes = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+            if (uploadRes.ok) {
+                const uploadData = await uploadRes.json();
+                docData.fileUrl = uploadData.url;
+            } else {
+                throw new Error('Upload file thất bại');
+            }
+        } else if (id) {
+            const existingDoc = allDocuments.find(d => d.id == id);
+            if (existingDoc && existingDoc.fileUrl) {
+                docData.fileUrl = existingDoc.fileUrl;
+            }
+        }
+        
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? '/api/van-ban/' + id : '/api/van-ban';
+        
+        const res = await fetch(url, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(docData)
+        });
+        
+        if (res.ok) {
+            showAlert('Lưu văn bản thành công', 'success');
+            closeDocumentModal();
+            loadDocuments();
+        } else {
+            throw new Error('Lỗi khi lưu văn bản');
+        }
+    } catch (error) {
+        console.error(error);
+        showAlert(error.message || 'Lỗi khi lưu văn bản', 'error');
+    }
+}
+
+async function deleteDocument(id) {
+    if (!confirm('Bạn có chắc chắn muốn xóa văn bản này?')) return;
+    try {
+        const res = await fetch('/api/van-ban/' + id, { method: 'DELETE' });
+        if (res.ok) {
+            showAlert('Xóa văn bản thành công', 'success');
+            loadDocuments();
+        } else {
+            showAlert('Lỗi khi xóa văn bản', 'error');
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Không thể kết nối đến máy chủ', 'error');
+    }
+}
+
+// Search documents
+const docSearchInput = document.getElementById('document-search-input');
+if (docSearchInput) {
+    docSearchInput.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        const filtered = allDocuments.filter(d => 
+            (d.documentNumber && d.documentNumber.toLowerCase().includes(query)) ||
+            (d.title && d.title.toLowerCase().includes(query))
+        );
+        renderDocumentTable(filtered);
+    });
+}
+
+// Call loadDocuments if on the document tab (or add to init functions)
+document.querySelectorAll('.tab-link').forEach(link => {
+    link.addEventListener('click', function(e) {
+        if (this.getAttribute('data-target') === 'documents-tab') {
+            loadDocuments();
+        }
+    });
+});
+
+

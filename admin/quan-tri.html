@@ -205,6 +205,7 @@
                     <li><a href="#" class="tab-link news-category-link" data-target="dynamic-news-tab" data-category="tuong-tac-cong-dan"><i class="fa-solid fa-users-rays icon-main"></i> <span class="sidebar-text">Tương tác công dân</span></a></li>
                 </ul>
             </li>
+            <li><a href="#" class="tab-link" data-target="documents-tab"><i class="fa-solid fa-file-pdf icon-main"></i> <span class="sidebar-text">Quản lý Văn bản</span></a></li>
             <li><a href="#" class="tab-link" data-target="accounts-tab"><i class="fa-solid fa-users icon-main"></i> <span class="sidebar-text">Quản lý Tài Khoản</span></a></li>
             <li><a href="../user/trang-chu/trang-chu.html" target="_blank" style="margin-top: 50px; background: rgba(0,0,0,0.2);"><i class="fa-solid fa-eye icon-main"></i> <span class="sidebar-text">Xem Trang User</span></a></li>
         </ul>
@@ -916,6 +917,40 @@
 
         
         <!-- Quản lý Tài Khoản -->
+        <!-- Quản lý Văn Bản -->
+        <div id="documents-tab" class="tab-content">
+            <div class="card">
+                <h3>Quản lý Văn bản</h3>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <button type="button" class="btn-action btn-add" onclick="openDocumentModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm văn bản mới
+                    </button>
+                    <div style="flex: 1; position: relative;">
+                        <input type="text" id="document-search-input" placeholder="Tìm kiếm văn bản..." style="width: 100%; padding: 10px 40px 10px 15px; border: 1px solid var(--border); border-radius: 5px;">
+                        <i class="fa-solid fa-search" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                    </div>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table class="news-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
+                        <thead>
+                            <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 12px; text-align: left;">STT</th>
+                                <th style="padding: 12px; text-align: left;">Số kí hiệu</th>
+                                <th style="padding: 12px; text-align: left;">Ngày ban hành</th>
+                                <th style="padding: 12px; text-align: left;">Trích yếu</th>
+                                <th style="padding: 12px; text-align: left;">File đính kèm</th>
+                                <th style="padding: 12px; text-align: center;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="document-table-body">
+                            <!-- Dynamic rows here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <div id="accounts-tab" class="tab-content">
             <div class="card">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">

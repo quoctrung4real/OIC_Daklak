@@ -140,6 +140,31 @@ app.MapGet("/api/van-ban", async (string? type, int? take, IPortalDataStore stor
     return Results.Json(await store.GetDocumentsAsync(type, take ?? 20, cancellationToken));
 });
 
+app.MapPost("/api/van-ban", async (DocumentDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    var newDoc = await store.AddDocumentAsync(payload, cancellationToken);
+    return Results.Json(new { success = true, message = "Thêm văn bản thành công.", data = newDoc });
+}).RequireAuthorization("AdminOnly");
+
+app.MapPut("/api/van-ban/{id:int}", async (int id, DocumentDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    try
+    {
+        var updatedDoc = await store.UpdateDocumentAsync(id, payload, cancellationToken);
+        return Results.Json(new { success = true, message = "Cập nhật văn bản thành công.", data = updatedDoc });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { success = false, message = ex.Message });
+    }
+}).RequireAuthorization("AdminOnly");
+
+app.MapDelete("/api/van-ban/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    await store.DeleteDocumentAsync(id, cancellationToken);
+    return Results.Json(new { success = true, message = "Xóa văn bản thành công." });
+}).RequireAuthorization("AdminOnly");
+
 app.MapGet("/api/tim-kiem", async (string? q, int? take, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
     if (string.IsNullOrWhiteSpace(q))
