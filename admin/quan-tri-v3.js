@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5100/api';
 
 function getAuthHeaders(extraHeaders = {}) {
     const token = localStorage.getItem('accessToken');
@@ -1304,7 +1304,7 @@ function updateNewsImagePreview() {
     if (!previewContainer) return;
     
     if (url) {
-        previewImg.src = (url.startsWith('http') || url.startsWith('data:')) ? url : `http://localhost:5000${url}`;
+        previewImg.src = (url.startsWith('http') || url.startsWith('data:')) ? url : `http://localhost:5100${url}`;
         previewContainer.style.display = 'block';
         if (emptyText) emptyText.style.display = 'none';
         if (deleteBtn) deleteBtn.style.display = 'flex';
@@ -1455,7 +1455,7 @@ function renderDocumentTable(docsToRender = allDocuments) {
         let serverFile = doc.fileUrl ? doc.fileUrl.split('/').pop() : '';
         let displayName = doc.originalFileName || serverFile;
         const fileLink = doc.fileUrl 
-            ? `<a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" style="color: #0a59ab;"><i class="fa-solid fa-download"></i> Tải về</a>` 
+            ? `<a href="http://localhost:5100/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" style="color: #0a59ab;"><i class="fa-solid fa-download"></i> Tải về</a>` 
             : `<span style="color: #999;">Không có</span>`;
             
         const tr = document.createElement('tr');
@@ -1492,7 +1492,7 @@ function openDocumentModal(id = null) {
             if (doc.fileUrl) {
                 let serverFile = doc.fileUrl.split('/').pop();
                 let displayName = doc.originalFileName || serverFile;
-                document.getElementById('currentDocFile').innerHTML = `File hiện tại: <a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank">${displayName}</a>`;
+                document.getElementById('currentDocFile').innerHTML = `File hiện tại: <a href="http://localhost:5100/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank">${displayName}</a>`;
             }
         }
     } else {

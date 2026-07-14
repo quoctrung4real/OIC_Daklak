@@ -120,7 +120,7 @@ accordionHeaders.forEach(header => {
 });
 
 // ===== TÍCH HỢP API (C# BACKEND) =====
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'http://localhost:5100/api';
 
 async function loadConfig() {
     try {
@@ -368,7 +368,7 @@ async function loadDynamicNews() {
                 const featured = data.posts[0];
                 if (featuredContainer && featured) {
                     let imageHtml = featured.imageUrl 
-                        ? `<img src="${featured.imageUrl.startsWith('http') ? featured.imageUrl : `http://localhost:5000${featured.imageUrl}`}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                        ? `<img src="${featured.imageUrl.startsWith('http') ? featured.imageUrl : `http://localhost:5100${featured.imageUrl}`}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
                         : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
                         
                     featuredContainer.innerHTML = `
@@ -571,7 +571,7 @@ function ensureSearchResultPanel() {
 
 function resolveBackendUrl(url) {
     if (!url || url === '#') return '#';
-    return url.startsWith('http') ? url : `http://localhost:5000${url}`;
+    return url.startsWith('http') ? url : `http://localhost:5100${url}`;
 }
 
 function resolveFrontendUrl(url) {
@@ -766,7 +766,7 @@ async function loadCategoryNews() {
                 
                 let imageHtml = '';
                 if (post.imageUrl) {
-                    const imgUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `http://localhost:5000${post.imageUrl}`;
+                    const imgUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `http://localhost:5100${post.imageUrl}`;
                     imageHtml = `<div class="baolu-img"><img src="${imgUrl}" alt="${post.title}"></div>`;
                 }
                 

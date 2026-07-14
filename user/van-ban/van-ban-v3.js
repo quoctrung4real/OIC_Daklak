@@ -7,7 +7,7 @@ async function fetchAndRenderDocuments() {
     if (!tableBody) return;
 
     try {
-        const response = await fetch('http://localhost:5000/api/van-ban');
+        const response = await fetch('http://localhost:5100/api/van-ban');
         
         let data = [];
         if (response && response.ok) {
@@ -35,7 +35,7 @@ async function fetchAndRenderDocuments() {
                 displayName = doc.originalFileName || serverFile;
             }
             const fileLinkHtml = doc.fileUrl 
-                ? `<a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" class="download-btn"><i class="fa-solid fa-download"></i> Tải tập tin</a>`
+                ? `<a href="http://localhost:5100/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" class="download-btn"><i class="fa-solid fa-download"></i> Tải tập tin</a>`
                 : `<span style="color: #999;">Không có file</span>`;
 
             tr.innerHTML = `
