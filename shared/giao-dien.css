@@ -2146,3 +2146,32 @@ body.is-sticky .nav-wrapper {
         height: auto;
     }
 }
+
+/* ===== FEATURED NEWS GRID (2x1) ===== */
+.news-featured-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+.news-featured-grid .baolu-card {
+    height: 100%;
+    flex-direction: column; /* Ghi đè flex-direction: row của media query */
+}
+.news-featured-grid .baolu-img {
+    width: 100%;
+    height: 250px;
+}
+.news-featured-grid .baolu-card-title {
+    font-size: 1.5rem;
+}
+
+/* Responsive cho Featured Grid */
+@media (max-width: 768px) {
+    .news-featured-grid {
+        grid-template-columns: 1fr;
+    }
+    .news-featured-grid .baolu-img {
+        height: 200px;
+    }
+}

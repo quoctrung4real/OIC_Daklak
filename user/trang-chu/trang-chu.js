@@ -356,30 +356,60 @@ async function loadConfig() {
 
 async function loadDynamicNews() {
     try {
-        const response = await fetch(`${API_BASE}/news`);
-        if (!response.ok) return;
-        const newsList = await response.json();
-        
-        const ul = document.getElementById('dynamic-news-list');
-        if (ul && newsList && newsList.length > 0) {
-            // Giữ 3 mục đầu (hoặc thay thế toàn bộ, thêm vào đầu danh sách)
-            let html = '';
-            // Chỉ hiển thị 3 tin mới nhất để giữ nguyên bố cục
-            const displayList = newsList.slice(0, 3);
-            displayList.forEach(item => {
-                html += `
-                    <li>
-                        <a href="#">
-                            <span class="news-list-date">${item.date || ''}</span>
-                            <span>${item.title || ''}</span>
-                        </a>
-                    </li>
-                `;
-            });
-            // Có thể thay thế nội dung (innerHTML) hoặc chèn lên đầu
-            // Ở đây thay thế danh sách hiện tại bằng danh sách động nếu có tin mới
-            ul.innerHTML = html;
-        }
+        const fetchAndRender = async (categoryId, listId, featuredId) => {
+            const response = await fetch(`${API_BASE}/${categoryId}`);
+            if (!response.ok) return;
+            const data = await response.json();
+            const ul = document.getElementById(listId);
+            const featuredContainer = document.getElementById(featuredId);
+            if (data && data.posts && data.posts.length > 0) {
+                data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                const featured = data.posts[0];
+                if (featuredContainer && featured) {
+                    let imageHtml = featured.imageUrl 
+                        ? `<img src="${featured.imageUrl.startsWith('http') ? featured.imageUrl : `http://localhost:5000${featured.imageUrl}`}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                        : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
+                        
+                    featuredContainer.innerHTML = `
+                        <div class="news-card featured">
+                            <div class="news-card-image">${imageHtml}</div>
+                            <div class="news-card-body">
+                                <span class="news-date">
+                                    <span><i class="fa-regular fa-calendar"></i> ${featured.createdAt}</span>
+                                    <span class="trending-badge"><i class="fa-solid fa-arrow-trend-up"></i> Mới nhất</span>
+                                </span>
+                                <h3><a href="${featured.linkUrl || '#'}">${featured.title}</a></h3>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (ul) {
+                    const displayList = data.posts.slice(1, 4);
+                    let html = '';
+                    displayList.forEach(item => {
+                        html += `
+                            <li>
+                                <a href="${item.linkUrl || '#'}">
+                                    <span class="news-list-date">${item.createdAt || ''}</span>
+                                    <span>${item.title || ''}</span>
+                                </a>
+                            </li>
+                        `;
+                    });
+                    ul.innerHTML = html;
+                }
+            }
+        };
+
+        await Promise.all([
+            fetchAndRender('chi-dao-dieu-hanh', 'dynamic-chidao-list', 'dynamic-chidao-featured'),
+            fetchAndRender('tuong-tac-cong-dan', 'dynamic-tuongtac-list', 'dynamic-tuongtac-featured'),
+            fetchAndRender('cds-doi-moi-sang-tao', 'dynamic-cds-list', 'dynamic-cds-featured'),
+            fetchAndRender('cap-nhat-bao-lu', 'dynamic-baolu-list', 'dynamic-baolu-featured')
+        ]);
+
     } catch (e) {
         console.warn('Backend C# is not running. Using default static news.');
     }
@@ -722,10 +752,15 @@ async function loadCategoryNews() {
             
             data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
-            const grid = document.createElement('div');
-            grid.className = 'baolu-grid'; // Vẫn giữ class cũ để dùng chung CSS
-            
-            data.posts.forEach(post => {
+            // Helper để lấy text tóm tắt từ HTML
+            const getExcerpt = (html) => {
+                const temp = document.createElement('div');
+                temp.innerHTML = html || '';
+                const text = temp.textContent || temp.innerText || '';
+                return text.length > 150 ? text.substring(0, 150) + '...' : text;
+            };
+
+            const renderCard = (post) => {
                 const card = document.createElement('div');
                 card.className = 'baolu-card';
                 
@@ -735,10 +770,10 @@ async function loadCategoryNews() {
                     imageHtml = `<div class="baolu-img"><img src="${imgUrl}" alt="${post.title}"></div>`;
                 }
                 
-                let linkHtml = '';
-                if (post.linkUrl) {
-                    linkHtml = `<a href="${post.linkUrl}" target="_blank" class="baolu-link"><i class="fa-solid fa-link"></i> ${post.linkText || 'Xem chi tiết'}</a>`;
-                }
+                // Ưu tiên linkUrl nếu có, nếu không thì dùng trang chi tiết nội bộ
+                const detailLink = post.linkUrl ? post.linkUrl : `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${categoryId}&id=${post.id}`;
+                const targetAttr = post.linkUrl ? 'target="_blank"' : '';
+                const linkHtml = `<a href="${detailLink}" ${targetAttr} class="baolu-link"><i class="fa-solid fa-link"></i> Xem chi tiết</a>`;
                 
                 card.innerHTML = `
                     ${imageHtml}
@@ -746,17 +781,38 @@ async function loadCategoryNews() {
                         <h3 class="baolu-card-title">${post.title}</h3>
                         <div class="baolu-meta">
                             <span><i class="fa-solid fa-clock"></i> ${post.createdAt}</span>
+                            ${post.author ? `<span><i class="fa-solid fa-user"></i> ${post.author}</span>` : ''}
                             ${post.source ? `<span><i class="fa-solid fa-newspaper"></i> ${post.source}</span>` : ''}
                         </div>
-                        <div class="baolu-card-content">
-                            ${post.content || ''}
+                        <div class="baolu-card-content" style="color: #475569; font-size: 15px; margin-bottom: 15px;">
+                            ${getExcerpt(post.content)}
                         </div>
                         ${linkHtml}
                     </div>
                 `;
-                grid.appendChild(card);
-            });
-            contentEl.appendChild(grid);
+                return card;
+            };
+
+            const featuredPosts = data.posts.filter(p => p.isFeatured).slice(0, 2);
+            const regularPosts = data.posts.filter(p => !featuredPosts.includes(p));
+
+            if (featuredPosts.length > 0) {
+                const featuredGrid = document.createElement('div');
+                featuredGrid.className = 'news-featured-grid';
+                featuredPosts.forEach(post => {
+                    featuredGrid.appendChild(renderCard(post));
+                });
+                contentEl.appendChild(featuredGrid);
+            }
+
+            if (regularPosts.length > 0) {
+                const regularGrid = document.createElement('div');
+                regularGrid.className = 'baolu-grid'; // Vẫn giữ class cũ để hiển thị list 1 cột
+                regularPosts.forEach(post => {
+                    regularGrid.appendChild(renderCard(post));
+                });
+                contentEl.appendChild(regularGrid);
+            }
         }
     } catch (e) {
         console.warn(`Backend C# is not running. Failed to load ${categoryId}.`, e);
