@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\admin",
+    "\\auth",
+    "\\backend",
+    "\\user\\chuyen-muc-khac",
+    "\\user\\giai-phap",
+    "\\user\\gioi-thieu"
+  ],
+  "SelectedNode": "\\backend\\Backend.csproj",
+  "PreviewInSolutionExplorer": false
+}
