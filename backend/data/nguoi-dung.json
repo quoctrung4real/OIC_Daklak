@@ -8,7 +8,8 @@
     "dateOfBirth": null,
     "avatarUrl": null,
     "fullName": "trung",
-    "isActive": true
+    "isActive": true,
+    "role": "Admin"
   },
   {
     "id": "108519bf-325e-4c39-a046-eb4e350d4240",
@@ -19,7 +20,8 @@
     "dateOfBirth": null,
     "avatarUrl": null,
     "fullName": null,
-    "isActive": true
+    "isActive": true,
+    "role": "Admin"
   },
   {
     "id": "a712458a-96de-4df2-8a5f-80a54fdbc53e",
@@ -30,7 +32,8 @@
     "dateOfBirth": null,
     "avatarUrl": null,
     "fullName": null,
-    "isActive": true
+    "isActive": true,
+    "role": "Admin"
   },
   {
     "id": "a59c769c-1070-41dc-9afe-1f6f43d19822",

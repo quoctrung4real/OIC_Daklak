@@ -14,6 +14,12 @@ async function apiFetch(url, options = {}) {
 
     if (response.status === 401 || response.status === 403) {
         showAlert('Phiên đăng nhập không có quyền quản trị hoặc đã hết hạn. Vui lòng đăng nhập lại bằng tài khoản admin.', false);
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('tokenType');
+        setTimeout(() => {
+            window.location.href = '../user/trang-chu/trang-chu.html';
+        }, 1500);
+        throw new Error('Unauthorized');
     }
 
     return response;
@@ -29,10 +35,41 @@ function showAlert(message, isSuccess = true) {
     }, 3000);
 }
 
+// Custom confirm modal
+function showConfirm(message, onConfirm) {
+    const modal = document.getElementById('confirmModal');
+    if (!modal) return;
+    
+    document.getElementById('confirmModalMessage').textContent = message;
+    
+    const btnCancel = document.getElementById('btnConfirmCancel');
+    const btnOk = document.getElementById('btnConfirmOk');
+    
+    // Clean up previous event listeners
+    const newBtnCancel = btnCancel.cloneNode(true);
+    const newBtnOk = btnOk.cloneNode(true);
+    btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+    btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+    
+    newBtnCancel.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    newBtnOk.addEventListener('click', () => {
+        modal.style.display = 'none';
+        if (onConfirm) onConfirm();
+    });
+    
+    modal.style.display = 'flex';
+}
+
 async function ensureAdminSession() {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         showAlert('Vui lòng đăng nhập bằng tài khoản admin trước khi quản trị hệ thống.', false);
+        setTimeout(() => {
+            window.location.href = '../user/trang-chu/trang-chu.html';
+        }, 1500);
         return false;
     }
 
@@ -43,12 +80,14 @@ async function ensureAdminSession() {
         const profile = await response.json();
         if (profile.role !== 'Admin') {
             showAlert('Tài khoản hiện tại không có quyền quản trị.', false);
+            setTimeout(() => {
+                window.location.href = '../user/trang-chu/trang-chu.html';
+            }, 1500);
             return false;
         }
 
         return true;
     } catch (err) {
-        showAlert('Không kiểm tra được phiên quản trị. Vui lòng thử lại.', false);
         return false;
     }
 }
@@ -588,8 +627,8 @@ function renderNewsTable() {
             <td style="padding: 12px;">${post.source || '-'}</td>
             <td style="padding: 12px; color: #64748b;">${post.createdAt}</td>
             <td style="padding: 12px; text-align: center;">
-                <button onclick="editNews('${post.id}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen"></i></button>
-                <button onclick="deleteNews('${post.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                <button type="button" onclick="editNews('${post.id}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen"></i></button>
+                <button type="button" onclick="deleteNews('${post.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -640,10 +679,10 @@ function editNews(id) {
 }
 
 async function deleteNews(id) {
-    if (!confirm('Bạn có chắc chắn muốn xóa tin này?')) return;
-    
-    newsDataGlobal.posts = newsDataGlobal.posts.filter(p => p.id !== id);
-    await saveNewsToServer('Đã xóa tin bài.');
+    showConfirm('Bạn có chắc chắn muốn xóa tin này?', async () => {
+        newsDataGlobal.posts = newsDataGlobal.posts.filter(p => p.id !== id);
+        await saveNewsToServer('Đã xóa tin bài.');
+    });
 }
 
 document.getElementById('newsPostForm').addEventListener('submit', async (e) => {
@@ -773,7 +812,7 @@ async function deleteUser(username) {
         return;
     }
     
-    if (confirm(`Bạn có chắc chắn muốn xóa tài khoản "${username}" không?`)) {
+    showConfirm(`Bạn có chắc chắn muốn xóa tài khoản "${username}" không?`, async () => {
         try {
             const res = await apiFetch(`${API_BASE}/admin/nguoi-dung/${username}`, {
                 method: 'DELETE'
@@ -789,7 +828,7 @@ async function deleteUser(username) {
             console.error(err);
             showAlert('Lỗi kết nối máy chủ', false);
         }
-    }
+    });
 }
 
 document.getElementById('userForm')?.addEventListener('submit', async (e) => {
@@ -1389,7 +1428,7 @@ let allDocuments = [];
 
 async function loadDocuments() {
     try {
-        const response = await fetch('/api/van-ban');
+        const response = await apiFetch(API_BASE + '/van-ban');
         if (response.ok) {
             allDocuments = await response.json();
             renderDocumentTable();
@@ -1413,9 +1452,11 @@ function renderDocumentTable(docsToRender = allDocuments) {
     }
     
     docsToRender.forEach((doc, idx) => {
+        let serverFile = doc.fileUrl ? doc.fileUrl.split('/').pop() : '';
+        let displayName = doc.originalFileName || serverFile;
         const fileLink = doc.fileUrl 
-            ? `<a href="${doc.fileUrl}" target="_blank" style="color: #0a59ab;"><i class="fa-solid fa-download"></i> Tải về</a>` 
-            : '<span style="color: #999;">Không có</span>';
+            ? `<a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" style="color: #0a59ab;"><i class="fa-solid fa-download"></i> Tải về</a>` 
+            : `<span style="color: #999;">Không có</span>`;
             
         const tr = document.createElement('tr');
         tr.innerHTML = `
@@ -1425,8 +1466,8 @@ function renderDocumentTable(docsToRender = allDocuments) {
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${doc.title || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${fileLink}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">
-                <button onclick="openDocumentModal(${doc.id})" style="background: none; border: none; color: #0a59ab; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteDocument(${doc.id})" style="background: none; border: none; color: #dc2626; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+                <button type="button" onclick="openDocumentModal(${doc.id})" style="background: none; border: none; color: #0a59ab; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button type="button" onclick="deleteDocument(${doc.id})" style="background: none; border: none; color: #dc2626; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -1449,7 +1490,9 @@ function openDocumentModal(id = null) {
             document.getElementById('docTitle').value = doc.title || '';
             document.getElementById('docIssuingAuthority').value = doc.issuingAuthority || '';
             if (doc.fileUrl) {
-                document.getElementById('currentDocFile').innerHTML = `File hiện tại: <a href="${doc.fileUrl}" target="_blank">${doc.fileUrl.split('/').pop()}</a>`;
+                let serverFile = doc.fileUrl.split('/').pop();
+                let displayName = doc.originalFileName || serverFile;
+                document.getElementById('currentDocFile').innerHTML = `File hiện tại: <a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank">${displayName}</a>`;
             }
         }
     } else {
@@ -1478,13 +1521,14 @@ async function saveDocument(e) {
         if (file) {
             const formData = new FormData();
             formData.append('file', file);
-            const uploadRes = await fetch('/api/upload', {
+            const uploadRes = await apiFetch(API_BASE + '/upload', {
                 method: 'POST',
                 body: formData
             });
             if (uploadRes.ok) {
                 const uploadData = await uploadRes.json();
                 docData.fileUrl = uploadData.url;
+                docData.originalFileName = uploadData.originalFileName;
             } else {
                 throw new Error('Upload file thất bại');
             }
@@ -1492,13 +1536,14 @@ async function saveDocument(e) {
             const existingDoc = allDocuments.find(d => d.id == id);
             if (existingDoc && existingDoc.fileUrl) {
                 docData.fileUrl = existingDoc.fileUrl;
+                docData.originalFileName = existingDoc.originalFileName;
             }
         }
         
         const method = id ? 'PUT' : 'POST';
-        const url = id ? '/api/van-ban/' + id : '/api/van-ban';
+        const url = id ? API_BASE + '/van-ban/' + id : API_BASE + '/van-ban';
         
-        const res = await fetch(url, {
+        const res = await apiFetch(url, {
             method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(docData)
@@ -1518,19 +1563,20 @@ async function saveDocument(e) {
 }
 
 async function deleteDocument(id) {
-    if (!confirm('Bạn có chắc chắn muốn xóa văn bản này?')) return;
-    try {
-        const res = await fetch('/api/van-ban/' + id, { method: 'DELETE' });
-        if (res.ok) {
-            showAlert('Xóa văn bản thành công', 'success');
-            loadDocuments();
-        } else {
-            showAlert('Lỗi khi xóa văn bản', 'error');
+    showConfirm('Bạn có chắc chắn muốn xóa văn bản này?', async () => {
+        try {
+            const res = await apiFetch(API_BASE + '/van-ban/' + id, { method: 'DELETE' });
+            if (res.ok) {
+                showAlert('Xóa văn bản thành công', 'success');
+                loadDocuments();
+            } else {
+                showAlert('Lỗi khi xóa văn bản', 'error');
+            }
+        } catch (e) {
+            console.error(e);
+            showAlert('Không thể kết nối đến máy chủ', 'error');
         }
-    } catch (e) {
-        console.error(e);
-        showAlert('Không thể kết nối đến máy chủ', 'error');
-    }
+    });
 }
 
 // Search documents

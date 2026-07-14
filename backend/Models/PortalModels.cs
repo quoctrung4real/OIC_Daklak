@@ -95,6 +95,7 @@ public sealed class DocumentDto
     public string? PublishedAt { get; set; }
     public string? Title { get; set; }
     public string? FileUrl { get; set; }
+    public string? OriginalFileName { get; set; }
     public string? IssuingAuthority { get; set; }
 }
 

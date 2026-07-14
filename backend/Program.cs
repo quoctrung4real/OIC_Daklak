@@ -297,15 +297,47 @@ app.MapPost("/api/upload", async (
     var uploadsDir = Path.Combine(webRootPath, "uploads");
     Directory.CreateDirectory(uploadsDir);
 
-    // Sinh tên file mới để tránh ghi đè và tránh tin vào tên file người dùng gửi lên.
-    var fileName = $"{Guid.NewGuid():N}{extension}";
+    // Giữ lại tên gốc của file, thêm GUID ngắn để tránh trùng lặp
+    var originalName = Path.GetFileNameWithoutExtension(file.FileName);
+    var sanitizedName = new string(originalName.Where(c => char.IsLetterOrDigit(c) || c == '-' || c == '_' || c == ' ').ToArray());
+    if (string.IsNullOrWhiteSpace(sanitizedName)) sanitizedName = "document";
+    sanitizedName = sanitizedName.Trim().Replace(" ", "-");
+    
+    var fileName = $"{sanitizedName}_{Guid.NewGuid().ToString().Substring(0, 6)}{extension}";
     var filePath = Path.Combine(uploadsDir, fileName);
 
     await using var stream = new FileStream(filePath, FileMode.CreateNew);
     await file.CopyToAsync(stream, cancellationToken);
 
-    return Results.Json(new { success = true, url = $"/uploads/{fileName}" });
+    return Results.Json(new { success = true, url = $"/uploads/{fileName}", originalFileName = file.FileName });
 }).RequireAuthorization();
+
+app.MapGet("/api/download", (string? name, string? file, IWebHostEnvironment environment, HttpContext context) =>
+{
+    if (string.IsNullOrWhiteSpace(file))
+    {
+        return Results.BadRequest(new { success = false, message = "Thiếu tham số file." });
+    }
+
+    // Sanitize: only allow filename, no path traversal
+    var safeFile = Path.GetFileName(file);
+    var webRootPath = environment.WebRootPath ?? Path.Combine(environment.ContentRootPath, "wwwroot");
+    var filePath = Path.Combine(webRootPath, "uploads", safeFile);
+
+    if (!System.IO.File.Exists(filePath))
+    {
+        return Results.NotFound(new { success = false, message = "Không tìm thấy file." });
+    }
+
+    var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+    if (!provider.TryGetContentType(filePath, out var contentType))
+    {
+        contentType = "application/octet-stream";
+    }
+
+    var downloadName = !string.IsNullOrWhiteSpace(name) ? name : safeFile;
+    return Results.File(filePath, contentType: contentType, fileDownloadName: downloadName);
+});
 
 app.MapGet("/api/nguoi-dung", async (IPortalDataStore store, CancellationToken cancellationToken) =>
 {

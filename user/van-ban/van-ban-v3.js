@@ -7,10 +7,7 @@ async function fetchAndRenderDocuments() {
     if (!tableBody) return;
 
     try {
-        const apiUrl = window.BASE_URL ? `${window.BASE_URL}api/van-ban` : '/api/van-ban';
-        // If testing with a custom port and full URL, we construct it:
-        // Or standard fetch if proxy is working:
-        const response = await fetch(window.BASE_URL ? window.BASE_URL.replace(/\/$/, '') + ':5000/api/van-ban' : 'http://localhost:5000/api/van-ban').catch(() => fetch('/api/van-ban'));
+        const response = await fetch('http://localhost:5000/api/van-ban');
         
         let data = [];
         if (response && response.ok) {
@@ -31,8 +28,14 @@ async function fetchAndRenderDocuments() {
         data.forEach((doc, index) => {
             const tr = document.createElement('tr');
             
+            let serverFile = '';
+            let displayName = '';
+            if (doc.fileUrl) {
+                serverFile = doc.fileUrl.split('/').pop();
+                displayName = doc.originalFileName || serverFile;
+            }
             const fileLinkHtml = doc.fileUrl 
-                ? `<a href="${doc.fileUrl.startsWith('http') ? doc.fileUrl : 'http://localhost:5000' + doc.fileUrl}" target="_blank" class="download-btn" download><i class="fa-solid fa-download"></i> Tải tập tin</a>`
+                ? `<a href="http://localhost:5000/api/download?file=${encodeURIComponent(serverFile)}&name=${encodeURIComponent(displayName)}" target="_blank" class="download-btn"><i class="fa-solid fa-download"></i> Tải tập tin</a>`
                 : `<span style="color: #999;">Không có file</span>`;
 
             tr.innerHTML = `

@@ -170,6 +170,7 @@ const commonComponents = {
                             <li class="user-info-item">Xin chào, <b id="displayUsername">Guest</b></li>
                             <li><hr></li>
                             <li><a href="${window.BASE_URL || ''}profile/ho-so.html"><i class="fa-solid fa-address-card"></i> Hồ sơ cá nhân</a></li>
+                            <li id="adminLinkItem" style="display: none;"><a href="${window.BASE_URL || ''}admin/quan-tri.html" target="_blank"><i class="fa-solid fa-user-shield"></i> Chuyển tới trang Admin</a></li>
                             <li><a href="#" id="logoutBtn"><i class="fa-solid fa-right-from-bracket"></i> Đăng xuất</a></li>
                         </ul>
                     </div>
