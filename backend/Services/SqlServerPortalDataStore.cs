@@ -484,19 +484,116 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         return types;
     }
 
-    public Task<DocumentDto> AddDocumentAsync(DocumentDto document, CancellationToken cancellationToken)
+    public async Task<DocumentDto> AddDocumentAsync(DocumentDto document, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await using var connection = await OpenConnectionAsync(cancellationToken);
+        
+        // Lookup DocumentTypeId by TypeCode
+        int typeId = 1;
+        if (!string.IsNullOrWhiteSpace(document.TypeCode))
+        {
+            await using var cmdType = new SqlCommand("SELECT Id, Name FROM Gov.DocumentTypes WHERE Code = @Code", connection);
+            cmdType.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = document.TypeCode;
+            await using var reader = await cmdType.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                typeId = reader.GetInt32(0);
+                document.TypeName = reader.GetString(1);
+            }
+            await reader.CloseAsync();
+        }
+
+        DateTime? publishedAt = null;
+        if (DateTime.TryParseExact(document.PublishedAt, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+        {
+            publishedAt = d;
+        }
+        else if (DateTime.TryParseExact(document.PublishedAt, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+        {
+            publishedAt = d;
+        }
+
+        await using var command = new SqlCommand("""
+            INSERT INTO Gov.Documents (DocumentTypeId, DocumentNumber, PublishedAt, Title, FileUrl, OriginalFileName, IssuingAuthority, IsActive, IsDeleted, CreatedAt)
+            OUTPUT INSERTED.Id
+            VALUES (@DocumentTypeId, @DocumentNumber, @PublishedAt, @Title, @FileUrl, @OriginalFileName, @IssuingAuthority, 1, 0, GETDATE());
+            """, connection);
+
+        command.Parameters.Add("@DocumentTypeId", SqlDbType.Int).Value = typeId;
+        command.Parameters.Add("@DocumentNumber", SqlDbType.NVarChar, 50).Value = (object?)document.DocumentNumber ?? DBNull.Value;
+        command.Parameters.Add("@PublishedAt", SqlDbType.Date).Value = (object?)publishedAt ?? DBNull.Value;
+        command.Parameters.Add("@Title", SqlDbType.NVarChar, 500).Value = document.Title ?? "";
+        command.Parameters.Add("@FileUrl", SqlDbType.NVarChar, 1000).Value = (object?)document.FileUrl ?? DBNull.Value;
+        command.Parameters.Add("@OriginalFileName", SqlDbType.NVarChar, 255).Value = (object?)document.OriginalFileName ?? DBNull.Value;
+        command.Parameters.Add("@IssuingAuthority", SqlDbType.NVarChar, 255).Value = (object?)document.IssuingAuthority ?? DBNull.Value;
+
+        var newId = (int)(await command.ExecuteScalarAsync(cancellationToken))!;
+        document.Id = newId;
+
+        return document;
     }
 
-    public Task<DocumentDto> UpdateDocumentAsync(int id, DocumentDto document, CancellationToken cancellationToken)
+    public async Task<DocumentDto> UpdateDocumentAsync(int id, DocumentDto document, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await using var connection = await OpenConnectionAsync(cancellationToken);
+        
+        int? typeId = null;
+        if (!string.IsNullOrWhiteSpace(document.TypeCode))
+        {
+            await using var cmdType = new SqlCommand("SELECT Id, Name FROM Gov.DocumentTypes WHERE Code = @Code", connection);
+            cmdType.Parameters.Add("@Code", SqlDbType.VarChar, 50).Value = document.TypeCode;
+            await using var reader = await cmdType.ExecuteReaderAsync(cancellationToken);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                typeId = reader.GetInt32(0);
+                document.TypeName = reader.GetString(1);
+            }
+            await reader.CloseAsync();
+        }
+
+        DateTime? publishedAt = null;
+        if (DateTime.TryParseExact(document.PublishedAt, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d))
+        {
+            publishedAt = d;
+        }
+        else if (DateTime.TryParseExact(document.PublishedAt, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+        {
+            publishedAt = d;
+        }
+
+        await using var command = new SqlCommand("""
+            UPDATE Gov.Documents
+            SET DocumentTypeId = ISNULL(@DocumentTypeId, DocumentTypeId),
+                DocumentNumber = @DocumentNumber,
+                PublishedAt = @PublishedAt,
+                Title = @Title,
+                FileUrl = @FileUrl,
+                OriginalFileName = @OriginalFileName,
+                IssuingAuthority = @IssuingAuthority,
+                UpdatedAt = GETDATE()
+            WHERE Id = @Id AND IsDeleted = 0
+            """, connection);
+
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        command.Parameters.Add("@DocumentTypeId", SqlDbType.Int).Value = (object?)typeId ?? DBNull.Value;
+        command.Parameters.Add("@DocumentNumber", SqlDbType.NVarChar, 50).Value = (object?)document.DocumentNumber ?? DBNull.Value;
+        command.Parameters.Add("@PublishedAt", SqlDbType.Date).Value = (object?)publishedAt ?? DBNull.Value;
+        command.Parameters.Add("@Title", SqlDbType.NVarChar, 500).Value = document.Title ?? "";
+        command.Parameters.Add("@FileUrl", SqlDbType.NVarChar, 1000).Value = (object?)document.FileUrl ?? DBNull.Value;
+        command.Parameters.Add("@OriginalFileName", SqlDbType.NVarChar, 255).Value = (object?)document.OriginalFileName ?? DBNull.Value;
+        command.Parameters.Add("@IssuingAuthority", SqlDbType.NVarChar, 255).Value = (object?)document.IssuingAuthority ?? DBNull.Value;
+
+        await command.ExecuteNonQueryAsync(cancellationToken);
+        document.Id = id;
+        return document;
     }
 
-    public Task DeleteDocumentAsync(int id, CancellationToken cancellationToken)
+    public async Task DeleteDocumentAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await using var connection = await OpenConnectionAsync(cancellationToken);
+        await using var command = new SqlCommand("UPDATE Gov.Documents SET IsDeleted = 1, UpdatedAt = GETDATE() WHERE Id = @Id", connection);
+        command.Parameters.Add("@Id", SqlDbType.Int).Value = id;
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     public async Task<List<DocumentDto>> GetDocumentsAsync(string? typeCode, int take, CancellationToken cancellationToken)

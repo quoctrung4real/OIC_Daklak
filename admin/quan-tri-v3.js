@@ -219,7 +219,7 @@ async function loadConfig() {
                 'heroButtonText', 'heroButtonFont', 'heroButtonBgColor',
                 'primaryColor', 'primaryDarkColor', 'accentOrangeColor', 'accentRedColor',
                 'bodyBgColor', 'newsSectionBgColor', 'infoUtilityBgColor', 'bgImageUrl', 'footerBgColor',
-                'techSolutionsFont', 'techSolutionsColor'
+                'techSolutionsFont', 'techSolutionsColor', 'boKhcnLink'
             ];
             
             fields.forEach(field => {
@@ -276,7 +276,7 @@ document.getElementById('config-form').addEventListener('submit', async (e) => {
         'heroButtonText', 'heroButtonFont', 'heroButtonBgColor',
         'primaryColor', 'primaryDarkColor', 'accentOrangeColor', 'accentRedColor',
         'bodyBgColor', 'newsSectionBgColor', 'infoUtilityBgColor', 'bgImageUrl', 'footerBgColor',
-        'techSolutionsFont', 'techSolutionsColor'
+        'techSolutionsFont', 'techSolutionsColor', 'boKhcnLink'
     ];
     
     fields.forEach(field => {

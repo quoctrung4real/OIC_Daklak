@@ -92,7 +92,7 @@ const commonComponents = {
                                         <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=tap-huan">Tập huấn</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="#">Bộ Khoa học và Công nghệ</a></li>
+                                <li id="menu-bo-khcn"><a href="#">Bộ Khoa học và Công nghệ</a></li>
                                 <li><a href="#">UBND tỉnh Đắk Lắk</a></li>
                                 <li><a href="#">CSDL VBQPPL tỉnh Đắk Lắk</a></li>
                                 <li><a href="#">Khoa học và Công nghệ Trung ương</a></li>
@@ -396,4 +396,23 @@ const commonComponents = {
             }
         }
     }
+    
+    // 5. Load dynamic config (e.g. Bo KHCN link)
+    setTimeout(async () => {
+        try {
+            const res = await fetch(`${window.BASE_URL || ''}api/cau-hinh`);
+            if (res.ok) {
+                const config = await res.json();
+                if (config && config.boKhcnLink) {
+                    const boKhcnEl = document.querySelector('#menu-bo-khcn a');
+                    if (boKhcnEl) {
+                        boKhcnEl.href = config.boKhcnLink;
+                        boKhcnEl.target = '_blank';
+                    }
+                }
+            }
+        } catch (e) {
+            console.error('Error loading dynamic config:', e);
+        }
+    }, 100);
 })();
