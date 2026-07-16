@@ -103,7 +103,7 @@ const commonComponents = {
                         <li class="nav-item has-dropdown" data-nav="y-kien-du-thao">
                             <a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Ý kiến dự thảo <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
-                                <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html" style="font-weight: bold; color: var(--primary);">Tất cả văn bản dự thảo</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html" style="font-weight: bold; color: var(--primary);">Lấy ý kiến người dân</a></li>
                                 <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Văn bản dự thảo Sở KHCN</a></li>
                                 <li class="dropdown-submenu">
                                     <a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Văn bản dự thảo Trung tâm IOC <i class="fa-solid fa-angle-right"
