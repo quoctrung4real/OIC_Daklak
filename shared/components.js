@@ -45,51 +45,51 @@ const commonComponents = {
                     </a>
                     <ul class="nav-list">
                         <li class="nav-item" data-nav="trang-chu">
-                            <a href="${window.BASE_URL || ''}trang-chu/trang-chu.html">Trang chủ</a>
+                            <a href="${window.BASE_URL || ''}user/trang-chu/trang-chu.html">Trang chủ</a>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="gioi-thieu">
                             <a href="#">Giới thiệu <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
-                                <li><a href="${window.BASE_URL || ''}gioi-thieu/chuc-nang-nhiem-vu.html">Chức năng, nhiệm vụ</a></li>
-                                <li><a href="${window.BASE_URL || ''}gioi-thieu/dau-moi-ho-tro.html">Đầu mối hỗ trợ trực tuyến qua điện thoại</a></li>
-                                <li><a href="${window.BASE_URL || ''}gioi-thieu/lich-su-hinh-thanh.html">Lịch sử hình thành</a></li>
-                                <li><a href="${window.BASE_URL || ''}gioi-thieu/san-pham-tieu-bieu.html">Sản phẩm tiêu biểu</a></li>
-                                <li><a href="${window.BASE_URL || ''}gioi-thieu/so-do-to-chuc.html">Sơ đồ tổ chức</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/gioi-thieu/chuc-nang-nhiem-vu.html">Chức năng, nhiệm vụ</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/gioi-thieu/dau-moi-ho-tro.html">Đầu mối hỗ trợ trực tuyến qua điện thoại</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/gioi-thieu/lich-su-hinh-thanh.html">Lịch sử hình thành</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/gioi-thieu/san-pham-tieu-bieu.html">Sản phẩm tiêu biểu</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/gioi-thieu/so-do-to-chuc.html">Sơ đồ tổ chức</a></li>
                             </ul>
                         </li>
                         <li class="nav-item" data-nav="co-cau-to-chuc">
-                            <a href="${window.BASE_URL || ''}gioi-thieu/co-cau-to-chuc.html">Cơ cấu tổ chức</a>
+                            <a href="${window.BASE_URL || ''}user/gioi-thieu/co-cau-to-chuc.html">Cơ cấu tổ chức</a>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="tin-tuc">
                             <a href="#">Tin tức <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/cap-nhat-bao-lu.html">Cập nhật bão lũ</a></li>
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/cds-doi-moi-sang-tao.html">CĐS - Đổi mới sáng tạo</a></li>
-                                <li><a href="${window.BASE_URL || ''}chuyen-muc-khac/chi-dao-dieu-hanh.html">Chỉ đạo điều hành</a></li>
-                                <li><a href="${window.BASE_URL || ''}chuyen-muc-khac/cong-tac-xay-dung-dang.html">Công tác xây dựng Đảng</a></li>
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/giai-phap-an-toan-mang.html">Giải pháp An toàn mạng</a></li>
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/giai-phap-an-toan-thong-tin.html">Giải pháp An toàn thông tin</a></li>
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/thong-bao.html">Thông báo</a></li>
-                                <li><a href="${window.BASE_URL || ''}chuyen-muc-khac/tieu-chuan-chat-luong.html">Tiêu chuẩn - Chất lượng</a></li>
-                                <li><a href="${window.BASE_URL || ''}tin-tuc/tin-hoat-dong.html">Tin hoạt động</a></li>
-                                <li><a href="${window.BASE_URL || ''}chuyen-muc-khac/trao-doi-kinh-nghiem.html">Trao đổi kinh nghiệm</a></li>
-                                <li><a href="${window.BASE_URL || ''}chuyen-muc-khac/tuong-tac-cong-dan.html">Tương tác công dân</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/cap-nhat-bao-lu.html">Cập nhật bão lũ</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/cds-doi-moi-sang-tao.html">CĐS - Đổi mới sáng tạo</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/chuyen-muc-khac/chi-dao-dieu-hanh.html">Chỉ đạo điều hành</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/chuyen-muc-khac/cong-tac-xay-dung-dang.html">Công tác xây dựng Đảng</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/giai-phap-an-toan-mang.html">Giải pháp An toàn mạng</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/giai-phap-an-toan-thong-tin.html">Giải pháp An toàn thông tin</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/thong-bao.html">Thông báo</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/chuyen-muc-khac/tieu-chuan-chat-luong.html">Tiêu chuẩn - Chất lượng</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/tin-tuc/tin-hoat-dong.html">Tin hoạt động</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/chuyen-muc-khac/trao-doi-kinh-nghiem.html">Trao đổi kinh nghiệm</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/chuyen-muc-khac/tuong-tac-cong-dan.html">Tương tác công dân</a></li>
                             </ul>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="van-ban">
                             <a href="#">Văn bản <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
                                 <li class="dropdown-submenu">
-                                    <a href="${window.BASE_URL || ''}van-ban/van-ban.html">Văn bản Trung tâm IOC <i class="fa-solid fa-angle-right"
+                                    <a href="${window.BASE_URL || ''}user/van-ban/van-ban.html">Văn bản Trung tâm IOC <i class="fa-solid fa-angle-right"
                                             style="float: right; margin-top: 4px;"></i></a>
                                     <ul class="dropdown">
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=cong-van">Công văn</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=bao-cao">Báo cáo</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=ke-hoach">Kế hoạch</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=quyet-dinh">Quyết định</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=huong-dan">Hướng dẫn</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=chuong-trinh">Chương trình</a></li>
-                                        <li><a href="${window.BASE_URL || ''}van-ban/van-ban.html?type=tap-huan">Tập huấn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=cong-van">Công văn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=bao-cao">Báo cáo</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=ke-hoach">Kế hoạch</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=quyet-dinh">Quyết định</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=huong-dan">Hướng dẫn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=chuong-trinh">Chương trình</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/van-ban/van-ban.html?type=tap-huan">Tập huấn</a></li>
                                     </ul>
                                 </li>
                                 <li id="menu-bo-khcn"><a href="#">Bộ Khoa học và Công nghệ</a></li>
@@ -101,23 +101,23 @@ const commonComponents = {
                             </ul>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="y-kien-du-thao">
-                            <a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Ý kiến dự thảo <i class="fa-solid fa-angle-down"></i></a>
+                            <a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Ý kiến dự thảo <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
-                                <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html" style="font-weight: bold; color: var(--primary);">Tất cả văn bản dự thảo</a></li>
-                                <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Văn bản dự thảo Sở KHCN</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html" style="font-weight: bold; color: var(--primary);">Tất cả văn bản dự thảo</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Văn bản dự thảo Sở KHCN</a></li>
                                 <li class="dropdown-submenu">
-                                    <a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Văn bản dự thảo Trung tâm IOC <i class="fa-solid fa-angle-right"
+                                    <a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Văn bản dự thảo Trung tâm IOC <i class="fa-solid fa-angle-right"
                                             style="float: right; margin-top: 4px;"></i></a>
                                     <ul class="dropdown">
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Báo cáo</a></li>
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Công văn</a></li>
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Hướng dẫn</a></li>
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Quyết định</a></li>
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Tập huấn</a></li>
-                                        <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Thông báo</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Báo cáo</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Công văn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Hướng dẫn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Quyết định</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Tập huấn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Thông báo</a></li>
                                     </ul>
                                 </li>
-                                <li><a href="${window.BASE_URL || ''}y-kien-du-thao/danh-sach.html">Văn bản dự thảo UBND tỉnh Đắk Lắk</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/danh-sach.html">Văn bản dự thảo UBND tỉnh Đắk Lắk</a></li>
                             </ul>
                         </li>
                         <li class="nav-item" data-nav="lich-cong-tac">
