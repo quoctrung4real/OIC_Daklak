@@ -7,18 +7,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         tbody.innerHTML = '';
         
         if (data.success && data.draftOpinions && data.draftOpinions.length > 0) {
-            const urlParams = new URLSearchParams(window.location.search);
-            const targetCategory = urlParams.get('category');
-            
-            let drafts;
-            if (targetCategory) {
-                drafts = data.draftOpinions.filter(d => d.category === targetCategory);
-            } else {
-                drafts = data.draftOpinions.filter(d => !['UBND tỉnh Đắk Lắk', 'Sở KHCN'].includes(d.category));
-            }
+            const drafts = data.draftOpinions.filter(d => d.category === 'UBND tỉnh Đắk Lắk');
             
             if (drafts.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center">Chưa có ý kiến dự thảo nào.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center">Chưa có ý kiến dự thảo nào.</td></tr>`;
                 return;
             }
 
@@ -38,19 +30,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td>${draft.title || ''}</td>
                     <td class="text-center">${fileHtml}</td>
                     <td class="text-center">${draft.endDate || ''}</td>
-                    <td class="text-center">
-                        <a href="chi-tiet.html?id=${draft.id}" class="action-btn feedback-btn" title="Gửi góp ý">
-                            <i class="fas fa-comment-dots"></i> Góp ý
-                        </a>
-                    </td>
                 `;
                 tbody.appendChild(tr);
             });
         } else {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center">Chưa có ý kiến dự thảo nào.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center">Chưa có ý kiến dự thảo nào.</td></tr>`;
         }
     } catch (error) {
         console.error('Error fetching draft opinions:', error);
-        document.getElementById('drafts-table-body').innerHTML = `<tr><td colspan="6" class="text-center text-danger">Có lỗi xảy ra khi tải dữ liệu.</td></tr>`;
+        document.getElementById('drafts-table-body').innerHTML = `<tr><td colspan="5" class="text-center text-danger">Có lỗi xảy ra khi tải dữ liệu.</td></tr>`;
     }
 });

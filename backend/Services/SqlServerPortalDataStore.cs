@@ -965,7 +965,7 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         await connection.OpenAsync(cancellationToken);
         await EnsureDraftTablesAsync(connection, cancellationToken);
         var list = new List<DraftOpinionDto>();
-        await using var command = new SqlCommand("SELECT Id, DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate FROM Gov.DraftOpinions WHERE IsDeleted = 0 ORDER BY Id DESC", connection);
+        await using var command = new SqlCommand("SELECT Id, DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate, Category FROM Gov.DraftOpinions WHERE IsDeleted = 0 ORDER BY Id DESC", connection);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         while (await reader.ReadAsync(cancellationToken))
         {
@@ -977,7 +977,8 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                 FileUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
                 OriginalFileName = reader.IsDBNull(4) ? null : reader.GetString(4),
                 CreatedAt = FormatDateTime(reader.GetDateTime(5)),
-                EndDate = reader.IsDBNull(6) ? null : FormatDateTime(reader.GetDateTime(6))
+                EndDate = reader.IsDBNull(6) ? null : FormatDateTime(reader.GetDateTime(6)),
+                Category = reader.IsDBNull(7) ? "Trung tâm IOC" : reader.GetString(7)
             });
         }
         return list;
@@ -988,7 +989,7 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         await using var connection = new SqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
         await EnsureDraftTablesAsync(connection, cancellationToken);
-        await using var command = new SqlCommand("SELECT Id, DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate FROM Gov.DraftOpinions WHERE Id = @Id AND IsDeleted = 0", connection);
+        await using var command = new SqlCommand("SELECT Id, DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate, Category FROM Gov.DraftOpinions WHERE Id = @Id AND IsDeleted = 0", connection);
         command.Parameters.AddWithValue("@Id", id);
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -1001,7 +1002,8 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                 FileUrl = reader.IsDBNull(3) ? null : reader.GetString(3),
                 OriginalFileName = reader.IsDBNull(4) ? null : reader.GetString(4),
                 CreatedAt = FormatDateTime(reader.GetDateTime(5)),
-                EndDate = reader.IsDBNull(6) ? null : FormatDateTime(reader.GetDateTime(6))
+                EndDate = reader.IsDBNull(6) ? null : FormatDateTime(reader.GetDateTime(6)),
+                Category = reader.IsDBNull(7) ? "Trung tâm IOC" : reader.GetString(7)
             };
         }
         return null;
@@ -1013,15 +1015,16 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         await connection.OpenAsync(cancellationToken);
         await EnsureDraftTablesAsync(connection, cancellationToken);
         await using var command = new SqlCommand(@"
-            INSERT INTO Gov.DraftOpinions (DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate, IsDeleted)
+            INSERT INTO Gov.DraftOpinions (DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate, Category, IsDeleted)
             OUTPUT INSERTED.Id, INSERTED.CreatedAt
-            VALUES (@DocumentNumber, @Title, @FileUrl, @OriginalFileName, ISNULL(@CreatedAt, SYSUTCDATETIME()), @EndDate, 0)", connection);
+            VALUES (@DocumentNumber, @Title, @FileUrl, @OriginalFileName, ISNULL(@CreatedAt, SYSUTCDATETIME()), @EndDate, @Category, 0)", connection);
         command.Parameters.AddWithValue("@DocumentNumber", DbValue(payload.DocumentNumber));
         command.Parameters.AddWithValue("@Title", DbValue(payload.Title));
         command.Parameters.AddWithValue("@FileUrl", DbValue(payload.FileUrl));
         command.Parameters.AddWithValue("@OriginalFileName", DbValue(payload.OriginalFileName));
         command.Parameters.AddWithValue("@CreatedAt", DateTimeValue(payload.CreatedAt));
         command.Parameters.AddWithValue("@EndDate", DateValue(payload.EndDate));
+        command.Parameters.AddWithValue("@Category", DbValue(payload.Category));
         
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (await reader.ReadAsync(cancellationToken))
@@ -1043,12 +1046,13 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         
         await using var command = new SqlCommand($@"
             UPDATE Gov.DraftOpinions 
-            SET DocumentNumber = @DocumentNumber, Title = @Title, EndDate = @EndDate {fileUpdateSql}
+            SET DocumentNumber = @DocumentNumber, Title = @Title, EndDate = @EndDate, Category = @Category {fileUpdateSql}
             WHERE Id = @Id", connection);
         command.Parameters.AddWithValue("@Id", id);
         command.Parameters.AddWithValue("@DocumentNumber", DbValue(payload.DocumentNumber));
         command.Parameters.AddWithValue("@Title", DbValue(payload.Title));
         command.Parameters.AddWithValue("@EndDate", DateValue(payload.EndDate));
+        command.Parameters.AddWithValue("@Category", DbValue(payload.Category));
         if (updateFile)
         {
             command.Parameters.AddWithValue("@FileUrl", DbValue(payload.FileUrl));
@@ -1148,6 +1152,7 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                     OriginalFileName NVARCHAR(255) NULL,
                     CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
                     EndDate DATETIME2 NULL,
+                    Category NVARCHAR(255) NULL,
                     IsDeleted BIT NOT NULL DEFAULT 0
                 );
             END

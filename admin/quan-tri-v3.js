@@ -25,14 +25,52 @@ async function apiFetch(url, options = {}) {
     return response;
 }
 
-// Hiển thị thông báo
+// Hiển thị thông báo dạng Toast nổi
 function showAlert(message, isSuccess = true) {
-    const alertBox = document.getElementById('alert-box');
-    alertBox.textContent = message;
-    alertBox.className = `alert ${isSuccess ? 'success' : 'error'}`;
+    // Support both boolean (true/false) and string ('success'/'error'/'warning'/'info')
+    let type;
+    if (typeof isSuccess === 'string') {
+        type = isSuccess;
+    } else {
+        type = isSuccess ? 'success' : 'error';
+    }
+    showToast(message, type);
+}
+
+function showToast(message, type = 'success', duration = 4000) {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const icons = {
+        success: '<i class="fa-solid fa-circle-check"></i>',
+        error: '<i class="fa-solid fa-circle-xmark"></i>',
+        warning: '<i class="fa-solid fa-triangle-exclamation"></i>',
+        info: '<i class="fa-solid fa-circle-info"></i>'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `
+        <span class="toast-icon">${icons[type] || icons.info}</span>
+        <span class="toast-message">${message}</span>
+        <button class="toast-close" onclick="this.parentElement.classList.add('removing'); setTimeout(() => this.parentElement.remove(), 350);">&times;</button>
+        <div class="toast-progress" style="animation-duration: ${duration}ms;"></div>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto-remove after duration
     setTimeout(() => {
-        alertBox.className = 'alert';
-    }, 3000);
+        if (toast.parentElement) {
+            toast.classList.add('removing');
+            setTimeout(() => toast.remove(), 350);
+        }
+    }, duration);
 }
 
 // Custom confirm modal
@@ -939,7 +977,7 @@ document.getElementById('userForm')?.addEventListener('submit', async (e) => {
     const isActive = document.getElementById('userFormActive').value === 'true';
     
     if (!isEditingUser && !password) {
-        alert('Vui lòng nhập mật khẩu cho tài khoản mới.');
+        showToast('Vui lòng nhập mật khẩu cho tài khoản mới.', 'warning');
         return;
     }
     
@@ -1738,22 +1776,25 @@ async function loadExternalLinksConfig() {
         const config = await response.json();
         
         const bkhcnInput = document.getElementById('boKhcnLink');
-        if (bkhcnInput && config.Url_KHCN_TW) bkhcnInput.value = config.Url_KHCN_TW;
+        if (bkhcnInput && config.boKhcnLink) bkhcnInput.value = config.boKhcnLink;
         
         const ubndInput = document.getElementById('ubndLink');
-        if (ubndInput && config.Url_UBND) ubndInput.value = config.Url_UBND;
+        if (ubndInput && config.ubndLink) ubndInput.value = config.ubndLink;
         
         const csdlInput = document.getElementById('csdlVbqpplLink');
-        if (csdlInput && config.Url_CSDL) csdlInput.value = config.Url_CSDL;
+        if (csdlInput && config.csdlVbqpplLink) csdlInput.value = config.csdlVbqpplLink;
         
         const khcnTwInput = document.getElementById('khcnTwLink');
-        if (khcnTwInput && config.Url_KHCN_TW) khcnTwInput.value = config.Url_KHCN_TW;
+        if (khcnTwInput && config.khcnTwLink) khcnTwInput.value = config.khcnTwLink;
         
         const khcnDpInput = document.getElementById('khcnDpLink');
-        if (khcnDpInput && config.Url_KHCN_DP) khcnDpInput.value = config.Url_KHCN_DP;
+        if (khcnDpInput && config.khcnDpLink) khcnDpInput.value = config.khcnDpLink;
         
         const vbLuatInput = document.getElementById('vb-luat-link-url');
-        if (vbLuatInput && config.Url_VBLuat) vbLuatInput.value = config.Url_VBLuat;
+        if (vbLuatInput && config.vbLuatLink) vbLuatInput.value = config.vbLuatLink;
+
+        const lichCongTacInput = document.getElementById('lichCongTacLink');
+        if (lichCongTacInput && config.lichCongTacLink) lichCongTacInput.value = config.lichCongTacLink;
         
     } catch (error) {
         console.error('Error loading external links:', error);
@@ -1776,25 +1817,26 @@ async function saveExternalLinkConfig(key, value) {
         });
         
         if (response.ok) {
-            alert('Lưu liên kết thành công!');
+            showToast('Lưu liên kết thành công!', 'success');
         } else {
-            alert('Lỗi khi lưu liên kết.');
+            showToast('Lỗi khi lưu liên kết.', 'error');
         }
     } catch (error) {
         console.error('Error saving link:', error);
-        alert('Có lỗi xảy ra.');
+        showToast('Có lỗi xảy ra.', 'error');
     }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
     // Bind forms
     const forms = [
-        { id: 'bkhcn-link-form', inputId: 'bkhcnLink', key: 'Url_KHCN_TW' },
-        { id: 'ubnd-link-form', inputId: 'ubndLink', key: 'Url_UBND' },
-        { id: 'csdl-vbqppl-link-form', inputId: 'csdlVbqpplLink', key: 'Url_CSDL' },
-        { id: 'khcn-tw-link-form', inputId: 'khcnTwLink', key: 'Url_KHCN_TW' },
-        { id: 'khcn-dp-link-form', inputId: 'khcnDpLink', key: 'Url_KHCN_DP' },
-        { id: 'vb-luat-link-form', inputId: 'vbLuatLink', key: 'Url_VBLuat' }
+        { id: 'bkhcn-link-form', inputId: 'bkhcnLink', key: 'boKhcnLink' },
+        { id: 'ubnd-link-form', inputId: 'ubndLink', key: 'ubndLink' },
+        { id: 'csdl-vbqppl-link-form', inputId: 'csdlVbqpplLink', key: 'csdlVbqpplLink' },
+        { id: 'khcn-tw-link-form', inputId: 'khcnTwLink', key: 'khcnTwLink' },
+        { id: 'khcn-dp-link-form', inputId: 'khcnDpLink', key: 'khcnDpLink' },
+        { id: 'vb-luat-link-form', inputId: 'vbLuatLink', key: 'vbLuatLink' },
+        { id: 'lich-cong-tac-link-form', inputId: 'lichCongTacLink', key: 'lichCongTacLink' }
     ];
     
     forms.forEach(f => {

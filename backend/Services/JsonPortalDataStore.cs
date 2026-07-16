@@ -395,6 +395,7 @@ public sealed class JsonPortalDataStore : IPortalDataStore
             existing.DocumentNumber = payload.DocumentNumber;
             existing.Title = payload.Title;
             existing.EndDate = payload.EndDate;
+            existing.Category = payload.Category;
             if (!string.IsNullOrEmpty(payload.FileUrl))
             {
                 existing.FileUrl = payload.FileUrl;

@@ -199,6 +199,7 @@ public sealed class DraftOpinionDto
     public string? OriginalFileName { get; set; }
     public string? CreatedAt { get; set; }
     public string? EndDate { get; set; }
+    public string? Category { get; set; } = "Trung tâm IOC";
 }
 
 public sealed class OpinionFeedbackDto

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Văn bản dự thảo Trung tâm IOC - DakLakIOC</title>
+    <meta name="description" content="Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk - DakLakIOC">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/giao-dien.css">
+    <style>
+        .doc-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            background: #fff;
+        }
+        .doc-table th, .doc-table td {
+            border: 1px solid #eaeaea;
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .doc-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+            text-align: center;
+        }
+        .doc-table td {
+            color: #444;
+            font-size: 15px;
+        }
+        .doc-table .text-center {
+            text-align: center;
+        }
+        .doc-table tr:hover {
+            background-color: #fcfcfc;
+        }
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #0a59ab;
+        }
+        .page-title {
+            font-size: 24px;
+            color: #0a59ab;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- HEADER INJECTED BY COMPONENTS.JS -->
+
+    <section style="padding: 40px 0; background-color: #f4f6f9; min-height: 60vh;">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Văn bản theo chủ đề: Văn bản dự thảo Trung tâm IOC</h1>
+            </div>
+
+            <div style="background: white; border-radius: 8px; padding: 20px; overflow-x: auto;">
+                <table class="doc-table">
+                    <thead>
+                        <tr>
+                            <th width="5%">STT</th>
+                            <th width="15%">Số kí hiệu</th>
+                            <th width="15%">Ngày ban hành</th>
+                            <th width="15%">Chuyên mục</th>
+                            <th width="50%">Trích yếu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="drafts-table-body">
+                        <!-- Dynamic rows will be rendered here -->
+                        <tr>
+                            <td colspan="5" class="text-center" style="padding: 30px;">Đang tải dữ liệu...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER INJECTED BY COMPONENTS.JS -->
+
+    <script>window.BASE_URL = "../../";</script>
+    <script src="../../shared/components.js"></script>
+    <script src="tt-ioc.js"></script>
+</body>
+
+</html>

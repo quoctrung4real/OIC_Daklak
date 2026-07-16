@@ -17,6 +17,16 @@
             --text: #333;
             --border: #ddd;
         }
+        .action-buttons {
+            display: flex;
+            flex-direction: row;
+            gap: 8px;
+            justify-content: center;
+        }
+        .action-buttons button {
+            padding: 6px 12px;
+            font-size: 14px;
+        }
         
         .header-banner-bg {
             position: absolute;
@@ -40,7 +50,7 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); }
         .admin-layout { display: flex; min-height: 100vh; }
                                                                 
-        .sidebar { width: 260px; background-color: var(--primary); color: var(--white); padding: 20px; transition: width 0.3s ease; overflow-x: hidden; position: relative; z-index: 100; flex-shrink: 0; }
+        .sidebar { width: 260px; background-color: var(--primary); color: var(--white); padding: 20px; transition: width 0.3s ease; overflow-x: hidden; overflow-y: auto; position: sticky; top: 0; height: 100vh; z-index: 100; flex-shrink: 0; }
         .sidebar.collapsed { width: 70px; padding: 20px 10px; }
         .sidebar-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; white-space: nowrap; }
         .sidebar h2 { margin-bottom: 0; font-size: 18px; display: flex; align-items: center; gap: 8px; }
@@ -75,9 +85,98 @@
         button:hover { background-color: #08488a; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
-        .alert { padding: 10px 15px; border-radius: 5px; margin-bottom: 20px; display: none; }
-        .alert.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; display: block; }
-        .alert.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; display: block; }
+        /* Toast Notification System */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast {
+            pointer-events: auto;
+            min-width: 320px;
+            max-width: 450px;
+            padding: 14px 20px 14px 16px;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateX(120%);
+            opacity: 0;
+            animation: toastSlideIn 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(8px);
+        }
+        .toast.removing {
+            animation: toastSlideOut 0.35s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards;
+        }
+        .toast.success {
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        .toast.error {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        .toast.warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        .toast.info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+        .toast-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .toast-message {
+            flex: 1;
+            line-height: 1.4;
+        }
+        .toast-close {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        .toast-close:hover {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+        .toast-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 0 0 10px 10px;
+            animation: toastProgress 4s linear forwards;
+        }
+        @keyframes toastSlideIn {
+            0% { transform: translateX(120%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastSlideOut {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(120%); opacity: 0; }
+        }
+        @keyframes toastProgress {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+        /* Keep old .alert hidden so existing HTML doesn't break */
+        .alert { display: none !important; }
         @keyframes welcome-ticker {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
@@ -240,10 +339,13 @@
                     <i class="fa-solid fa-chevron-down drop-icon"></i>
                 </div>
                 <ul class="sub-menu">
-                    <li><a href="#" class="tab-link" data-target="draft-opinions-tab"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Quản lý Dự thảo</span></a></li>
-                    <li><a href="#" class="tab-link" data-target="feedbacks-tab"><i class="fa-solid fa-list-check icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Danh sách Góp ý</span></a></li>
+                    <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="TT_IOC"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo TT IOC</span></a></li>
+                    <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="UBND tỉnh Đắk Lắk"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo UBND tỉnh</span></a></li>
+                    <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="Sở KHCN"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo Sở KHCN</span></a></li>
+                    <li><a href="#" class="tab-link" data-target="feedbacks-tab"><i class="fa-solid fa-list-check icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Lấy ý kiến người dân</span></a></li>
                 </ul>
             </li>
+            <li><a href="#" class="tab-link" data-target="lich-cong-tac-link-tab"><i class="fa-solid fa-calendar-days icon-main"></i> <span class="sidebar-text">Lịch công tác</span></a></li>
             <li><a href="#" class="tab-link" data-target="accounts-tab"><i class="fa-solid fa-users icon-main"></i> <span class="sidebar-text">Quản lý Tài Khoản</span></a></li>
             <li><a href="../user/trang-chu/trang-chu.html" target="_blank" style="margin-top: 50px; background: rgba(0,0,0,0.2);"><i class="fa-solid fa-eye icon-main"></i> <span class="sidebar-text">Xem Trang User</span></a></li>
         </ul>
@@ -251,6 +353,7 @@
 
     <div class="content">
         <div id="alert-box" class="alert"></div>
+        <div id="toast-container" class="toast-container"></div>
 
         <!-- Cấu hình giao diện -->
         <div id="config-tab" class="tab-content active">
@@ -1080,44 +1183,51 @@
             </div>
         </div>
 
+        <div id="lich-cong-tac-link-tab" class="tab-content">
+            <div class="card">
+                <h3>Quản lý Liên kết "Lịch công tác"</h3>
+                <form id="lich-cong-tac-link-form">
+                    <div class="form-group">
+                        <label for="lichCongTacLink">Đường dẫn liên kết (khi nhấn vào menu Lịch công tác sẽ mở ra trang này)</label>
+                        <input type="text" id="lichCongTacLink" placeholder="Ví dụ: https://lichcongtac.daklak.gov.vn">
+                    </div>
+                    <button type="submit" class="btn-action btn-add" style="margin-top: 15px;">
+                        <i class="fa-solid fa-save"></i> Lưu Liên kết
+                    </button>
+                </form>
+            </div>
+        </div>
+
         <!-- Quản lý Dự thảo -->
         <div id="draft-opinions-tab" class="tab-content">
             <div class="card">
-                <h3>Thêm / Sửa Dự thảo</h3>
-                <form id="draft-opinion-form">
-                    <input type="hidden" id="draft-opinion-id">
-                    <div class="form-group">
-                        <label>Số, ký hiệu <span style="color:red">*</span></label>
-                        <input type="text" id="draft-opinion-number" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Trích yếu <span style="color:red">*</span></label>
-                        <textarea id="draft-opinion-title" class="form-control" required rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Thời hạn (ngày kết thúc)</label>
-                        <input type="date" id="draft-opinion-enddate" class="form-control">
-                    </div>
-                    <div class="form-group">
-                        <label>File đính kèm</label>
-                        <input type="file" id="draft-opinion-file" class="form-control">
-                        <div id="draft-opinion-file-link" style="margin-top:5px; font-size: 0.9em;"></div>
-                    </div>
-                    <button type="submit" class="btn">Lưu Dự thảo</button>
-                    <button type="button" class="btn btn-secondary" onclick="resetDraftOpinionForm()">Hủy</button>
-                </form>
-            </div>
-            <div class="card">
-                <h3>Danh sách Dự thảo</h3>
+                <h3 id="draftTabTitle">Quản lý Dự thảo</h3>
+                <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <button type="button" class="btn-action btn-add" onclick="openDraftModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm dự thảo mới
+                    </button>
+                </div>
+                <div class="form-group" id="draft-opinion-filter-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Lọc theo Chuyên mục</label>
+                    <select id="draft-opinion-category-filter" class="form-control" style="width: fit-content; min-width: 180px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; background-color: white;" onchange="loadDraftOpinions()">
+                        <option value="">-- Tất cả chuyên mục --</option>
+                        <option value="Báo cáo">Báo cáo</option>
+                        <option value="Công văn">Công văn</option>
+                        <option value="Hướng dẫn">Hướng dẫn</option>
+                        <option value="Quyết định">Quyết định</option>
+                        <option value="Tập huấn">Tập huấn</option>
+                    </select>
+                </div>
                 <div style="overflow-x:auto;">
-                    <table class="table" id="draft-opinions-table">
+                    <table class="news-table" id="draft-opinions-table" style="width: 100%; border-collapse: collapse; min-width: 800px;">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">ID</th>
-                                <th style="width: 150px;">Số, ký hiệu</th>
-                                <th>Trích yếu</th>
-                                <th style="width: 120px;">Thời hạn</th>
-                                <th style="width: 100px;">Hành động</th>
+                            <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="width: 5%; padding: 12px; text-align: left;">ID</th>
+                                <th style="width: 15%; padding: 12px; text-align: left;">Số, ký hiệu</th>
+                                <th style="width: 15%; padding: 12px; text-align: left;">Chuyên mục</th>
+                                <th style="width: 45%; padding: 12px; text-align: left;">Trích yếu</th>
+                                <th style="width: 10%; padding: 12px; text-align: left;">Thời hạn</th>
+                                <th style="width: 10%; padding: 12px; text-align: center;">Hành động</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -1129,24 +1239,24 @@
         <!-- Quản lý Góp ý -->
         <div id="feedbacks-tab" class="tab-content">
             <div class="card">
-                <h3>Danh sách Góp ý</h3>
-                <div class="form-group" style="max-width: 300px; margin-bottom: 20px;">
-                    <label>Lọc theo Dự thảo</label>
-                    <select id="feedbacks-draft-filter" class="form-control">
+                <h3>Lấy ý kiến người dân</h3>
+                <div class="form-group" id="feedbacks-filter-group" style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Lọc theo Dự thảo</label>
+                    <select id="feedbacks-draft-filter" class="form-control" style="width: fit-content; min-width: 250px; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; background-color: white;">
                         <option value="">-- Tất cả dự thảo --</option>
                     </select>
                 </div>
                 <div style="overflow-x:auto;">
-                    <table class="table" id="feedbacks-table">
+                    <table class="news-table" id="feedbacks-table" style="width: 100%; border-collapse: collapse; min-width: 900px;">
                         <thead>
-                            <tr>
-                                <th style="width: 50px;">ID</th>
-                                <th>Dự thảo</th>
-                                <th>Người góp ý</th>
-                                <th>Thông tin</th>
-                                <th>Nội dung</th>
-                                <th style="width: 100px;">Ngày gửi</th>
-                                <th style="width: 80px;">Hành động</th>
+                            <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="width: 5%; padding: 12px; text-align: left;">ID</th>
+                                <th style="width: 25%; padding: 12px; text-align: left;">Dự thảo</th>
+                                <th style="width: 15%; padding: 12px; text-align: left;">Người góp ý</th>
+                                <th style="width: 15%; padding: 12px; text-align: left;">Thông tin</th>
+                                <th style="width: 20%; padding: 12px; text-align: left;">Nội dung</th>
+                                <th style="width: 10%; padding: 12px; text-align: left;">Ngày gửi</th>
+                                <th style="width: 10%; padding: 12px; text-align: center;">Hành động</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -1351,63 +1461,117 @@
 
     <!-- Document Modal -->
     <div id="documentModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-        <div style="background: white; width: 600px; max-width: 95%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column;">
-            <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+        <div style="background: white; width: 600px; max-width: 95%; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden;">
+            <!-- Header cố định -->
+            <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
                 <h3 id="documentModalTitle" style="margin: 0; color: #1e293b; font-size: 18px;">Thêm văn bản mới</h3>
                 <button type="button" onclick="closeDocumentModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
             </div>
-            <form id="documentForm" onsubmit="saveDocument(event)" style="padding: 20px; display: flex; flex-direction: column; gap: 15px;">
-                <input type="hidden" id="documentId">
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Số ký hiệu</label>
-                    <input type="text" id="docNumber" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Loại văn bản</label>
-                    <select id="docTypeCode" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; background-color: white;">
-                        <option value="">-- Chọn loại văn bản --</option>
-                        <option value="cong-van">Công văn</option>
-                        <option value="bao-cao">Báo cáo</option>
-                        <option value="ke-hoach">Kế hoạch</option>
-                        <option value="quyet-dinh">Quyết định</option>
-                        <option value="huong-dan">Hướng dẫn</option>
-                        <option value="chuong-trinh">Chương trình</option>
-                        <option value="tap-huan">Tập huấn</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Ngày ban hành</label>
-                    <input type="date" id="docPublishedAt" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Trích yếu</label>
-                    <textarea id="docTitle" required rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Cơ quan ban hành</label>
-                    <input type="text" id="docIssuingAuthority" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Ngày có hiệu lực</label>
-                    <input type="date" id="docEffectiveDate" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Lĩnh vực</label>
-                    <input type="text" id="docDomain" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Người ký</label>
-                    <input type="text" id="docSigner" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                </div>
-                <div>
-                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">File đính kèm</label>
-                    <input type="file" id="docFile" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
-                    <div id="currentDocFile" style="margin-top: 5px; font-size: 13px; color: #0a59ab;"></div>
+            <form id="documentForm" onsubmit="saveDocument(event)" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+                <!-- Phần body cuộn được -->
+                <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex: 1;">
+                    <input type="hidden" id="documentId">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Số ký hiệu</label>
+                        <input type="text" id="docNumber" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Loại văn bản</label>
+                        <select id="docTypeCode" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; background-color: white;">
+                            <option value="">-- Chọn loại văn bản --</option>
+                            <option value="cong-van">Công văn</option>
+                            <option value="bao-cao">Báo cáo</option>
+                            <option value="ke-hoach">Kế hoạch</option>
+                            <option value="quyet-dinh">Quyết định</option>
+                            <option value="huong-dan">Hướng dẫn</option>
+                            <option value="chuong-trinh">Chương trình</option>
+                            <option value="tap-huan">Tập huấn</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Ngày ban hành</label>
+                        <input type="date" id="docPublishedAt" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Trích yếu</label>
+                        <textarea id="docTitle" required rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Cơ quan ban hành</label>
+                        <input type="text" id="docIssuingAuthority" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Ngày có hiệu lực</label>
+                        <input type="date" id="docEffectiveDate" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Lĩnh vực</label>
+                        <input type="text" id="docDomain" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Người ký</label>
+                        <input type="text" id="docSigner" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">File đính kèm</label>
+                        <input type="file" id="docFile" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                        <div id="currentDocFile" style="margin-top: 5px; font-size: 13px; color: #0a59ab;"></div>
+                    </div>
                 </div>
                 
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px;">
+                <!-- Footer cố định - luôn hiển thị -->
+                <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; background: #f8fafc;">
                     <button type="button" onclick="closeDocumentModal()" style="padding: 8px 15px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 500;">Hủy</button>
                     <button type="submit" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Lưu văn bản</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Draft Opinion Modal -->
+    <div id="draftOpinionModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: white; width: 600px; max-width: 95%; max-height: 90vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden;">
+            <!-- Header cố định -->
+            <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+                <h3 id="draftModalTitle" style="margin: 0; color: #1e293b; font-size: 18px;">Thêm dự thảo mới</h3>
+                <button type="button" onclick="closeDraftModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+            <form id="draft-opinion-form" style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
+                <!-- Body cuộn được -->
+                <div style="padding: 20px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; flex: 1;">
+                    <input type="hidden" id="draft-opinion-id">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Số, ký hiệu <span style="color:red">*</span></label>
+                        <input type="text" id="draft-opinion-number" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div id="draft-opinion-category-group">
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Chuyên mục</label>
+                        <select id="draft-opinion-category" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; background-color: white;">
+                            <option value="Báo cáo">Báo cáo</option>
+                            <option value="Công văn">Công văn</option>
+                            <option value="Hướng dẫn">Hướng dẫn</option>
+                            <option value="Quyết định">Quyết định</option>
+                            <option value="Tập huấn">Tập huấn</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Trích yếu <span style="color:red">*</span></label>
+                        <textarea id="draft-opinion-title" required rows="3" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Thời hạn (ngày kết thúc)</label>
+                        <input type="date" id="draft-opinion-enddate" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">File đính kèm</label>
+                        <input type="file" id="draft-opinion-file" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
+                        <div id="draft-opinion-file-link" style="margin-top: 5px; font-size: 13px; color: #0a59ab;"></div>
+                    </div>
+                </div>
+                <!-- Footer cố định -->
+                <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 10px; flex-shrink: 0; background: #f8fafc;">
+                    <button type="button" onclick="closeDraftModal()" style="padding: 8px 15px; background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 500;">Hủy</button>
+                    <button type="submit" style="padding: 8px 15px; background: var(--primary); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 500;">Lưu Dự thảo</button>
                 </div>
             </form>
         </div>
