@@ -97,6 +97,8 @@ IF OBJECT_ID('SmartCity.CitizenFeedbacks',  'U') IS NOT NULL DROP TABLE SmartCit
 IF OBJECT_ID('Emergency.DisasterPosts',    'U') IS NOT NULL DROP TABLE Emergency.DisasterPosts;
 
 -- Gov schema
+IF OBJECT_ID('Gov.OpinionFeedbacks',       'U') IS NOT NULL DROP TABLE Gov.OpinionFeedbacks;
+IF OBJECT_ID('Gov.DraftOpinions',          'U') IS NOT NULL DROP TABLE Gov.DraftOpinions;
 IF OBJECT_ID('Gov.Documents',              'U') IS NOT NULL DROP TABLE Gov.Documents;
 IF OBJECT_ID('Gov.DocumentTypes',          'U') IS NOT NULL DROP TABLE Gov.DocumentTypes;
 IF OBJECT_ID('Gov.Announcements',          'U') IS NOT NULL DROP TABLE Gov.Announcements;
@@ -441,11 +443,15 @@ GO
 CREATE TABLE Gov.Documents (
     Id              INT             IDENTITY(1,1)   NOT NULL,
     DocumentTypeId  INT                             NOT NULL,
-    DocumentNumber  VARCHAR(50)                     NOT NULL,   -- Số ký hiệu, vd: '29/CT-UBND'
-    PublishedAt     DATETIME2(7)                    NOT NULL,   -- Ngày ban hành
+    DocumentNumber  VARCHAR(50)                     NULL,       -- Số ký hiệu, vd: '29/CT-UBND'
+    PublishedAt     DATETIME2(7)                    NULL,       -- Ngày ban hành
     Title           NVARCHAR(500)                   NOT NULL,   -- Nội dung trích yếu
-    FileUrl         VARCHAR(500)                    NOT NULL,   -- Đường dẫn file đính kèm
+    FileUrl         NVARCHAR(1000)                  NULL,       -- Đường dẫn file đính kèm
+    OriginalFileName NVARCHAR(255)                  NULL,
     IssuingAuthority NVARCHAR(200)                  NULL,       -- Cơ quan ban hành
+    EffectiveDate   NVARCHAR(50)                    NULL,
+    Domain          NVARCHAR(150)                   NULL,
+    Signer          NVARCHAR(150)                   NULL,
     IsActive        BIT                             NOT NULL    CONSTRAINT DF_Documents_IsActive   DEFAULT (1),
     IsDeleted       BIT                             NOT NULL    CONSTRAINT DF_Documents_IsDeleted  DEFAULT (0),
     CreatedAt       DATETIME2(7)                    NOT NULL    CONSTRAINT DF_Documents_CreatedAt  DEFAULT (SYSUTCDATETIME()),

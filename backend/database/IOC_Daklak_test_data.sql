@@ -63,3 +63,25 @@ GO
 
 PRINT N'Imported IOC Daklak test document data.';
 GO
+
+MERGE Gov.DraftOpinions AS target
+USING (VALUES
+    (N'DT-01/IOC', N'Du thao Quy che tiep nhan va xu ly y kien gop y tren Cong thong tin IOC', N'/documents/dt_01_ioc.pdf', N'du-thao-quy-che-gop-y.pdf', CAST('2026-08-15' AS DATETIME2)),
+    (N'DT-02/IOC', N'Du thao Ke hoach trien khai dich vu do thi thong minh nam 2026', N'/documents/dt_02_ioc.pdf', N'du-thao-ke-hoach-do-thi-thong-minh-2026.pdf', CAST('2026-08-30' AS DATETIME2)),
+    (N'DT-03/SKHCN', N'Du thao Huong dan khai thac nen tang du lieu dung chung tinh Dak Lak', N'/documents/dt_03_skhcn.pdf', N'du-thao-huong-dan-du-lieu-dung-chung.pdf', CAST('2026-09-10' AS DATETIME2))
+) AS source (DocumentNumber, Title, FileUrl, OriginalFileName, EndDate)
+ON target.DocumentNumber = source.DocumentNumber
+WHEN MATCHED THEN
+    UPDATE SET
+        Title = source.Title,
+        FileUrl = source.FileUrl,
+        OriginalFileName = source.OriginalFileName,
+        EndDate = source.EndDate,
+        IsDeleted = 0
+WHEN NOT MATCHED THEN
+    INSERT (DocumentNumber, Title, FileUrl, OriginalFileName, CreatedAt, EndDate, IsDeleted)
+    VALUES (source.DocumentNumber, source.Title, source.FileUrl, source.OriginalFileName, SYSUTCDATETIME(), source.EndDate, 0);
+GO
+
+PRINT N'Imported IOC Daklak test draft opinion data.';
+GO
