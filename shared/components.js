@@ -7,7 +7,7 @@ const commonComponents = {
             <div class="header-banner-bg"></div>
             <div class="container">
                 <div class="header-content">
-                    <a href="#" class="logo">
+                    <a href="${window.BASE_URL || ''}user/trang-chu/trang-chu.html" class="logo" style="text-decoration: none; gap: 16px;">
                         <div class="logo-icon">
                             <svg viewBox="0 0 60 60" width="60" height="60">
                                 <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(255,255,255,0.6)"
@@ -20,11 +20,11 @@ const commonComponents = {
                                     font-family="Inter">SMART CITY</text>
                             </svg>
                         </div>
+                        <div class="logo-text">
+                            <h1 class="logo-title" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
+                            <p class="logo-subtitle" style="font-size: 16px; font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
+                        </div>
                     </a>
-                    <div class="logo-text">
-                        <h1 class="logo-title" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
-                        <p class="logo-subtitle" style="font-size: 16px; font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -122,11 +122,12 @@ const commonComponents = {
                         <li class="nav-item" data-nav="lich-cong-tac" id="menu-lich-cong-tac">
                             <a href="#">Lịch công tác</a>
                         </li>
-                        <li class="nav-item" data-nav="hoi-dap">
-                            <a href="#">Hỏi đáp</a>
-                        </li>
-                        <li class="nav-item" data-nav="lien-he">
-                            <a href="#">Liên hệ</a>
+                        <li class="nav-item has-dropdown" data-nav="hoi-dap">
+                            <a href="#">Hỏi đáp <i class="fa-solid fa-chevron-down" style="font-size: 10px; margin-left: 4px;"></i></a>
+                            <ul class="dropdown">
+                                <li><a href="${window.BASE_URL || ''}user/hoi-dap/cau-hoi-thuong-gap.html">Các câu hỏi thường gặp</a></li>
+                                <li><a href="${window.BASE_URL || ''}user/hoi-dap/gui-cau-hoi.html">Liên hệ - Gửi câu hỏi</a></li>
+                            </ul>
                         </li>
                     </ul>
                     
@@ -397,6 +398,69 @@ const commonComponents = {
         }
     }
     
+    // 4.5. Khởi tạo chức năng tìm kiếm chung
+    const searchBtn = document.getElementById('searchBtn');
+    const searchForm = document.getElementById('searchForm');
+    const closeSearch = document.getElementById('closeSearch');
+    const navList = document.querySelector('.nav-list');
+    
+    if (searchBtn && searchForm) {
+        searchBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            searchForm.classList.add('active');
+            if (navList) navList.classList.add('search-active');
+            const input = searchForm.querySelector('input');
+            if (input) setTimeout(() => input.focus(), 50);
+        });
+    
+        // Đóng khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (searchForm.classList.contains('active')) {
+                if (!searchForm.contains(e.target) && !searchBtn.contains(e.target)) {
+                    searchForm.classList.remove('active');
+                    if (navList) navList.classList.remove('search-active');
+                }
+            }
+        });
+    }
+    
+    if (closeSearch && searchForm) {
+        closeSearch.addEventListener('click', () => {
+            searchForm.classList.remove('active');
+            if (navList) navList.classList.remove('search-active');
+        });
+    }
+
+    // 4.6. Chức năng cuộn trang (Sticky Header & Scroll Top)
+    const scrollTopBtn = document.getElementById('scrollTopBtn');
+    const header = document.getElementById('header');
+    
+    window.addEventListener('scroll', () => {
+        // Scroll Top Button
+        if (scrollTopBtn) {
+            if (window.scrollY > 300) {
+                scrollTopBtn.classList.add('visible');
+            } else {
+                scrollTopBtn.classList.remove('visible');
+            }
+        }
+        
+        // Sticky Header
+        if (header) {
+            if (window.scrollY >= 85) {
+                document.body.classList.add('is-sticky');
+            } else {
+                document.body.classList.remove('is-sticky');
+            }
+        }
+    }, { passive: true });
+
+    if (scrollTopBtn) {
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
     // 5. Load dynamic config (e.g. Bo KHCN link)
     setTimeout(async () => {
         try {

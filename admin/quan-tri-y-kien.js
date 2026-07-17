@@ -172,11 +172,9 @@ async function loadDraftOpinions() {
                     <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.category || 'Trung tâm IOC'}</td>
                     <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.title || ''}</td>
                     <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.endDate || ''}</td>
-                    <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">
-                        <div class="action-buttons" style="justify-content: center;">
-                            <button class="btn-action btn-edit" onclick="editDraftOpinion(${item.id})"><i class="fa-solid fa-pen"></i></button>
-                            <button class="btn-action btn-delete" onclick="deleteDraftOpinion(${item.id})"><i class="fa-solid fa-trash"></i></button>
-                        </div>
+                    <td class="sys-action-cell" style="border-bottom: 1px solid #e2e8f0;">
+                        <button class="sys-btn-edit" onclick="editDraftOpinion(${item.id})"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="sys-btn-delete" onclick="deleteDraftOpinion(${item.id})"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -285,10 +283,8 @@ function renderFeedbacks(draftId = '') {
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.email || ''}<br>${item.phoneNumber || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.content || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : ''}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">
-                <div class="action-buttons" style="justify-content: center;">
-                    <button class="btn-action btn-delete" onclick="deleteFeedback(${item.id})"><i class="fa-solid fa-trash"></i></button>
-                </div>
+            <td class="sys-action-cell" style="border-bottom: 1px solid #e2e8f0;">
+                <button class="sys-btn-delete" onclick="deleteFeedback(${item.id})"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);

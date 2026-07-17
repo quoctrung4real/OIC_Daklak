@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Các câu hỏi thường gặp - DakLakIOC</title>
+    <meta name="description" content="Tại đây bạn có thể tham khảo các câu trả lời cho những câu hỏi được nhiều người quan tâm nhất">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/giao-dien.css">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        .page-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0a59ab;
+        }
+        .page-title {
+            font-size: 22px;
+            color: #0a59ab;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .faq-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 992px) {
+            .faq-layout {
+                grid-template-columns: 3fr 1fr; /* Main content left, right column empty or for other widgets */
+            }
+        }
+
+        /* Danh sách FAQ ở trên (show_row) */
+        .show_row {
+            margin-bottom: 30px;
+        }
+        
+        .block_faq {
+            padding: 8px 0;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .block_faq:last-child {
+            border-bottom: none;
+        }
+
+        .block_faq .title a {
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .block_faq .title a::before {
+            content: "\f0da"; /* fa-caret-right */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #0a59ab;
+            font-size: 14px;
+        }
+
+        .block_faq .title a:hover {
+            color: #0a59ab;
+            text-decoration: underline;
+        }
+
+        /* Chi tiết FAQ ở dưới (show_detail) */
+        .show_detail {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .detail_faq {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            scroll-margin-top: 100px; /* Offset for sticky header if any */
+        }
+
+        .detail_faq .title {
+            background-color: #f5f5f5;
+            padding: 12px 15px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #0a59ab;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .detail_faq .gotop a {
+            color: #666;
+            font-size: 14px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 400;
+        }
+
+        .detail_faq .gotop a:hover {
+            color: #0a59ab;
+        }
+
+        .detail_faq .question,
+        .detail_faq .answer {
+            padding: 15px 20px;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .detail_faq .question {
+            background-color: #fafafa;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .detail_faq .question strong {
+            color: #d9534f; /* Đỏ nhạt cho câu hỏi */
+            font-size: 15px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .detail_faq .answer strong {
+            color: #5cb85c; /* Xanh lá cho trả lời */
+            font-size: 15px;
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+        
+        .no-data {
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- HEADER INJECTED BY COMPONENTS.JS -->
+
+    <section style="padding: 40px 0; background-color: #f4f6f9; min-height: 60vh;">
+        <div class="container">
+            <div class="faq-layout">
+                <div class="main-content">
+                    <div class="page-header">
+                        <h1 class="page-title">Các câu hỏi thường gặp</h1>
+                    </div>
+
+                    <div id="faq-container">
+                        <!-- Danh sách Link câu hỏi sẽ được render ở đây -->
+                        <div class="show_row" id="faq-list-links">
+                            <a name="faqlist"></a>
+                            <!-- Dynamic Content -->
+                        </div>
+
+                        <!-- Danh sách chi tiết câu hỏi & trả lời sẽ được render ở đây -->
+                        <div class="show_detail" id="faq-list-details">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sidebar-content">
+                    <!-- Right column empty or can place related links here, similar to Dak Lak site -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER INJECTED BY COMPONENTS.JS -->
+
+    <script>window.BASE_URL = "../../";</script>
+    <script src="../../shared/components.js"></script>
+    <script src="../../auth/xac-thuc.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFAQs();
+        });
+
+        function loadFAQs() {
+            // 1. Lấy danh sách FAQ từ Admin (Thường gặp)
+            const adminFaqs = JSON.parse(localStorage.getItem('portal_faqs') || '[]');
+            
+            // 2. Lấy danh sách câu hỏi của Người dân đã được duyệt công khai (isPublic = true) và đã trả lời
+            const userQuestionsRaw = JSON.parse(localStorage.getItem('portal_user_questions') || '[]');
+            const publicUserQuestions = userQuestionsRaw.filter(q => q.isPublic && q.status === 'answered');
+
+            // 3. Hợp nhất cả hai danh sách lại
+            // - adminFaqs: { id, title, question, answer, order }
+            // - publicUserQuestions: { id, title, content (question), answer, isPublic, ... }
+            
+            let combinedFaqs = [];
+
+            // Chuẩn hóa cấu trúc
+            adminFaqs.forEach(faq => {
+                combinedFaqs.push({
+                    id: 'admin_' + faq.id,
+                    title: faq.question,
+                    question: faq.question,
+                    answer: faq.answer,
+                    order: faq.order || 0
+                });
+            });
+
+            publicUserQuestions.forEach(q => {
+                combinedFaqs.push({
+                    id: 'user_' + q.id,
+                    title: q.title || q.content.substring(0, 50) + '...',
+                    question: q.content,
+                    answer: q.answer,
+                    order: 999 // Câu hỏi người dân xếp sau cùng hoặc tuỳ logic
+                });
+            });
+
+            // Sắp xếp theo order
+            combinedFaqs.sort((a, b) => a.order - b.order);
+
+            renderFAQs(combinedFaqs);
+        }
+
+        function renderFAQs(faqs) {
+            const linksContainer = document.getElementById('faq-list-links');
+            const detailsContainer = document.getElementById('faq-list-details');
+            
+            // Giữ lại anchor FAQ list top
+            linksContainer.innerHTML = '<a name="faqlist" id="faqlist"></a>';
+            detailsContainer.innerHTML = '';
+
+            if (faqs.length === 0) {
+                linksContainer.innerHTML = `<div class="no-data">Nội dung các câu hỏi thường gặp đang được cập nhật...</div>`;
+                return;
+            }
+
+            faqs.forEach(faq => {
+                // Render Top Links
+                const blockLink = document.createElement('div');
+                blockLink.className = 'block_faq';
+                blockLink.innerHTML = `
+                    <div class="title">
+                        <a href="#faq_${faq.id}">${faq.title}</a>
+                    </div>
+                `;
+                linksContainer.appendChild(blockLink);
+
+                // Render Details
+                const detailBlock = document.createElement('div');
+                detailBlock.className = 'detail_faq';
+                detailBlock.id = `faq_${faq.id}`;
+                detailBlock.innerHTML = `
+                    <div class="title">
+                        <span>${faq.title}</span>
+                        <div class="gotop">
+                            <a href="#faqlist" title="Lên phía trên">
+                                <i class="fa-solid fa-angles-up"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="question">
+                        <strong>Câu hỏi:</strong><br />
+                        <div style="text-align: justify; margin-top: 5px;">${faq.question.replace(/\n/g, '<br/>')}</div>
+                    </div>
+                    <div class="answer">
+                        <strong>Trả lời:</strong><br />
+                        <div style="text-align: justify; margin-top: 5px;">${faq.answer.replace(/\n/g, '<br/>')}</div>
+                    </div>
+                `;
+                detailsContainer.appendChild(detailBlock);
+            });
+        }
+    </script>
+</body>
+</html>

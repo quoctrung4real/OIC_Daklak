@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi câu hỏi - Liên hệ - DakLakIOC</title>
+    <meta name="description" content="Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk - DakLakIOC">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/giao-dien.css">
+    <style>
+        .page-header {
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #0a59ab;
+        }
+        .page-title {
+            font-size: 24px;
+            color: #0a59ab;
+            text-transform: uppercase;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 992px) {
+            .contact-layout {
+                grid-template-columns: 4fr 5fr;
+            }
+        }
+
+        /* Panels */
+        .panel {
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        .panel-default .panel-heading {
+            background-color: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 20px;
+        }
+        .panel-primary {
+            border-color: #0a59ab;
+        }
+        .panel-primary .panel-heading {
+            background-color: #0a59ab;
+            color: white;
+            border-bottom: 1px solid #0a59ab;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .panel-heading h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: inherit;
+        }
+        .panel-body {
+            padding: 20px;
+        }
+
+        /* Contact Info */
+        .contact-info p {
+            margin: 0 0 15px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #333;
+            line-height: 1.5;
+        }
+        .contact-info p i {
+            color: #0a59ab;
+            margin-top: 3px;
+            width: 16px;
+            text-align: center;
+        }
+        .contact-info a {
+            color: #333;
+            text-decoration: none;
+        }
+        .contact-info a:hover {
+            color: #0a59ab;
+            text-decoration: underline;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .input-group {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        .input-group-addon {
+            padding: 10px 14px;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: 1;
+            color: #555;
+            text-align: center;
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-right: none;
+            border-radius: 4px 0 0 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+        }
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #555;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            font-family: inherit;
+        }
+        .input-group .form-control {
+            border-radius: 0 4px 4px 0;
+        }
+        .form-control:focus {
+            border-color: #66afe9;
+            outline: 0;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-bottom: 0;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 1.42857143;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            color: #fff;
+            background-color: #0a59ab;
+            border-color: #08407b;
+        }
+        .btn-primary:hover {
+            background-color: #08407b;
+        }
+        .btn-default {
+            color: #333;
+            background-color: #fff;
+            border-color: #ccc;
+        }
+        .btn-default:hover {
+            background-color: #e6e6e6;
+            border-color: #adadad;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #333;
+        }
+        
+        .well-intro {
+            min-height: 20px;
+            padding: 19px;
+            margin-bottom: 20px;
+            background-color: #f5f5f5;
+            border: 1px solid #e3e3e3;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+            color: #333;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    
+    <!-- HEADER INJECTED BY COMPONENTS.JS -->
+
+    <section style="padding: 40px 0; background-color: #f4f6f9; min-height: 60vh;">
+        <div class="container">
+            <div class="page-header">
+                <h1 class="page-title">Liên hệ - Gửi câu hỏi</h1>
+            </div>
+
+            <div class="well-intro">
+                Để không ngừng nâng cao chất lượng dịch vụ và đáp ứng tốt hơn nữa các yêu cầu của Quý khách, chúng tôi mong muốn nhận được các thông tin phản hồi. Nếu Quý khách có bất kỳ thắc mắc hoặc đóng góp nào, xin vui lòng liên hệ với chúng tôi theo thông tin dưới đây. Chúng tôi sẽ phản hồi lại Quý khách trong thời gian sớm nhất.
+            </div>
+
+            <div class="contact-layout">
+                <!-- Cột trái: Thông tin liên hệ -->
+                <div class="contact-left">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Trung tâm Giám sát, điều hành đô thị thông minh tỉnh Đắk Lắk</h3>
+                        </div>
+                        <div class="panel-body contact-info">
+                            <div style="margin-bottom: 20px; font-size: 15px; color: #333; line-height: 1.6;">
+                                Bộ phận tiếp nhận và giải quyết các yêu cầu, đề nghị, ý kiến liên quan đến hoạt động chính của Giám sát, điều hành đô thị thông minh tỉnh Đắk Lắk.<br>
+                                Địa chỉ: 28B Y Bih Aleo, Phường Buôn Ma Thuột, Tỉnh Đắk Lắk.
+                            </div>
+                            <div style="margin-bottom: 20px;">
+                                <iframe allowfullscreen="" height="250" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3892.393365383667!2d108.05062807454236!3d12.687728921039474!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3171f7d72f8a7dfd%3A0x750dd5c745abb3fa!2zMjggWSBCaWggQWzDqsO0LCBUw6JuIEzhu6NpLCBCdcO0biBNYSBUaHXhu5l0LCDEkOG6r2sgTOG6r2ssIFZp4buHdCBOYW0!5e0!3m2!1svi!2s!4v1758851709326!5m2!1svi!2s" style="border:0; width: 100%; border-radius: 4px;"></iframe>
+                            </div>
+                            <p><i class="fa-solid fa-phone"></i> Điện thoại: <span>02621022</span></p>
+                            <p><i class="fa-solid fa-fax"></i> Fax: <span>02621022</span></p>
+                            <p><i class="fa-solid fa-envelope"></i> Email: <a href="mailto:banbientapioc.tttt@daklak.gov.vn">banbientapioc.tttt@daklak.gov.vn</a></p>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3>Hỗ trợ kỹ thuật</h3>
+                        </div>
+                        <div class="panel-body contact-info">
+                            <div style="margin-bottom: 15px; font-size: 15px; color: #333;">
+                                Bộ phận tiếp nhận và giải quyết các câu hỏi liên quan đến kỹ thuật
+                            </div>
+                            <p><i class="fa-solid fa-phone"></i> Điện thoại: <span>Đang cập nhật</span></p>
+                            <p><i class="fa-solid fa-envelope"></i> Email: <a href="mailto:anhpt@daklak.gov.vn">anhpt@daklak.gov.vn</a></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cột phải: Form gửi phản hồi -->
+                <div class="contact-right">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">Gửi phản hồi</div>
+                        <div class="panel-body">
+                            <form id="contact-form">
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-regular fa-folder-open"></i></span>
+                                        <select class="form-control" name="fcat" id="fcat" required>
+                                            <option value="">Chủ đề bạn quan tâm</option>
+                                            <option value="1">Gửi góp ý</option>
+                                            <option value="2">Gửi câu hỏi</option>
+                                            <option value="3">Liên hệ với người kỹ thuật</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-regular fa-file-lines"></i></span>
+                                        <input type="text" id="ftitle" name="ftitle" class="form-control" placeholder="Tiêu đề" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-regular fa-user"></i></span>
+                                        <input type="text" id="fname" name="fname" class="form-control" placeholder="Họ và tên" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-regular fa-envelope"></i></span>
+                                        <input type="email" id="femail" name="femail" class="form-control" placeholder="Email" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-solid fa-phone"></i></span>
+                                        <input type="tel" id="fphone" name="fphone" class="form-control" placeholder="Điện thoại">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-addon"><i class="fa-solid fa-house"></i></span>
+                                        <input type="text" id="faddress" name="faddress" class="form-control" placeholder="Địa chỉ">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <textarea id="fcon" name="fcon" class="form-control" rows="6" placeholder="Nội dung" required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="sendcopy" value="1" checked>
+                                        Gửi bản sao thư này cho tôi
+                                    </label>
+                                </div>
+
+                                <div class="form-group" style="text-align: center; margin-top: 25px;">
+                                    <button type="reset" class="btn btn-default" style="margin-right: 10px;">Nhập lại</button>
+                                    <button type="submit" class="btn btn-primary">Gửi đi</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER INJECTED BY COMPONENTS.JS -->
+
+    <script>window.BASE_URL = "../../";</script>
+    <script src="../../shared/components.js"></script>
+    <script src="../../auth/xac-thuc.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tự động điền thông tin người dùng nếu đã đăng nhập
+            const currentUser = localStorage.getItem('currentUser');
+            if (currentUser) {
+                try {
+                    const user = JSON.parse(currentUser);
+                    if (user.fullName) document.getElementById('fname').value = user.fullName;
+                    if (user.email) document.getElementById('femail').value = user.email;
+                } catch (e) {
+                    console.error("Lỗi khi đọc thông tin người dùng:", e);
+                }
+            }
+        });
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Xử lý gửi câu hỏi (lưu vào localStorage giả lập gửi lên server)
+            const newQuestion = {
+                id: Date.now().toString(),
+                senderName: document.getElementById('fname').value,
+                senderEmail: document.getElementById('femail').value,
+                senderPhone: document.getElementById('fphone').value,
+                content: document.getElementById('fcon').value,
+                topic: document.getElementById('fcat').options[document.getElementById('fcat').selectedIndex].text,
+                title: document.getElementById('ftitle').value,
+                address: document.getElementById('faddress').value,
+                createdAt: new Date().toISOString(),
+                status: 'pending',
+                answer: '',
+                isPublic: false
+            };
+
+            const existingQuestions = JSON.parse(localStorage.getItem('portal_user_questions') || '[]');
+            existingQuestions.push(newQuestion);
+            localStorage.setItem('portal_user_questions', JSON.stringify(existingQuestions));
+
+            alert('Cảm ơn bạn đã gửi phản hồi/câu hỏi. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất!');
+            this.reset();
+        });
+    </script>
+</body>
+</html>

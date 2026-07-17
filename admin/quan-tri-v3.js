@@ -16,6 +16,7 @@ async function apiFetch(url, options = {}) {
         showAlert('Phiên đăng nhập không có quyền quản trị hoặc đã hết hạn. Vui lòng đăng nhập lại bằng tài khoản admin.', false);
         localStorage.removeItem('accessToken');
         localStorage.removeItem('tokenType');
+        localStorage.removeItem('currentUser');
         setTimeout(() => {
             window.location.href = '../user/trang-chu/trang-chu.html';
         }, 1500);
@@ -27,13 +28,7 @@ async function apiFetch(url, options = {}) {
 
 // Hiển thị thông báo dạng Toast nổi
 function showAlert(message, isSuccess = true) {
-    // Support both boolean (true/false) and string ('success'/'error'/'warning'/'info')
-    let type;
-    if (typeof isSuccess === 'string') {
-        type = isSuccess;
-    } else {
-        type = isSuccess ? 'success' : 'error';
-    }
+    let type = typeof isSuccess === 'string' ? isSuccess : (isSuccess ? 'success' : 'error');
     showToast(message, type);
 }
 
@@ -105,6 +100,7 @@ async function ensureAdminSession() {
     const token = localStorage.getItem('accessToken');
     if (!token) {
         showAlert('Vui lòng đăng nhập bằng tài khoản admin trước khi quản trị hệ thống.', false);
+        localStorage.removeItem('currentUser');
         setTimeout(() => {
             window.location.href = '../user/trang-chu/trang-chu.html';
         }, 1500);
@@ -118,6 +114,9 @@ async function ensureAdminSession() {
         const profile = await response.json();
         if (profile.role !== 'Admin') {
             showAlert('Tài khoản hiện tại không có quyền quản trị.', false);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('tokenType');
+            localStorage.removeItem('currentUser');
             setTimeout(() => {
                 window.location.href = '../user/trang-chu/trang-chu.html';
             }, 1500);
@@ -220,9 +219,9 @@ function renderUsers(users) {
             <td style="padding: 15px 12px;">${role}</td>
             <td style="padding: 15px 12px;">${status}</td>
             <td style="padding: 15px 12px; color: #64748b;">${u.registerDate || ''}</td>
-            <td style="padding: 15px 12px; text-align: center;">
-                <button title="Sửa" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 8px; font-size: 15px;" onclick="editUser('${u.username}')"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button title="Khóa/Xóa" style="background: none; border: none; color: #ef4444; cursor: pointer; font-size: 15px;" onclick="deleteUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>
+            <td class="sys-action-cell">
+                <button title="Sửa" class="sys-btn-edit" onclick="editUser('${u.username}')"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button title="Khóa/Xóa" class="sys-btn-delete" onclick="deleteUser('${u.username}')"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -762,9 +761,9 @@ function renderNewsTable() {
             <td style="padding: 12px; font-weight: 500;">${post.title}</td>
             <td style="padding: 12px;">${post.source || '-'}</td>
             <td style="padding: 12px; color: #64748b;">${post.createdAt}</td>
-            <td style="padding: 12px; text-align: center;">
-                <button type="button" onclick="editNews('${post.id}')" style="background: none; border: none; color: #3b82f6; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen"></i></button>
-                <button type="button" onclick="deleteNews('${post.id}')" style="background: none; border: none; color: #ef4444; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+            <td class="sys-action-cell">
+                <button type="button" class="sys-btn-edit" onclick="editNews('${post.id}')" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button type="button" class="sys-btn-delete" onclick="deleteNews('${post.id}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -1622,9 +1621,9 @@ function renderDocumentTable(docsToRender = allDocuments) {
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${doc.publishedAt || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${doc.title || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${fileLink}</td>
-            <td style="padding: 12px; border-bottom: 1px solid #e2e8f0; text-align: center;">
-                <button type="button" onclick="openDocumentModal(${doc.id})" style="background: none; border: none; color: #0a59ab; cursor: pointer; margin-right: 10px;" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button type="button" onclick="deleteDocument(${doc.id})" style="background: none; border: none; color: #dc2626; cursor: pointer;" title="Xóa"><i class="fa-solid fa-trash"></i></button>
+            <td class="sys-action-cell" style="border-bottom: 1px solid #e2e8f0;">
+                <button type="button" class="sys-btn-edit" onclick="openDocumentModal(${doc.id})" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                <button type="button" class="sys-btn-delete" onclick="deleteDocument(${doc.id})" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
