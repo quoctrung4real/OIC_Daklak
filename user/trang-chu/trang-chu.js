@@ -511,6 +511,9 @@ async function loadConfig() {
                 });
             }
         }
+        
+        // Render Info & Utility Section
+        renderInfoUtility(config);
     } catch (e) {
         console.warn('Backend C# is not running. Using default local styles.');
     }

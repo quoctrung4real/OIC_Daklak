@@ -2035,16 +2035,50 @@ const partnerLinksApp = {
     
     // Some popular FontAwesome icons for the library
     iconLibrary: [
-        'fa-solid fa-rocket', 'fa-solid fa-lightbulb', 'fa-solid fa-calendar-days',
-        'fa-solid fa-microchip', 'fa-solid fa-network-wired', 'fa-solid fa-globe',
-        'fa-solid fa-users', 'fa-solid fa-handshake', 'fa-solid fa-chart-line',
-        'fa-solid fa-shield-halved', 'fa-solid fa-server', 'fa-solid fa-mobile-screen',
-        'fa-solid fa-laptop-code', 'fa-solid fa-database', 'fa-solid fa-cloud',
-        'fa-solid fa-code', 'fa-solid fa-gears', 'fa-solid fa-bolt',
-        'fa-solid fa-bullhorn', 'fa-solid fa-book', 'fa-solid fa-graduation-cap',
-        'fa-solid fa-building-columns', 'fa-solid fa-landmark', 'fa-solid fa-scale-balanced',
-        'fa-solid fa-leaf', 'fa-solid fa-droplet', 'fa-solid fa-wind',
-        'fa-solid fa-seedling', 'fa-solid fa-heart-pulse', 'fa-solid fa-truck-fast'
+        'fa-solid fa-rocket',
+        'fa-solid fa-lightbulb',
+        'fa-solid fa-calendar-days',
+        'fa-solid fa-microchip',
+        'fa-solid fa-network-wired',
+        'fa-solid fa-globe',
+        'fa-solid fa-users',
+        'fa-solid fa-handshake',
+        'fa-solid fa-chart-line',
+        'fa-solid fa-shield-halved',
+        'fa-solid fa-server',
+        'fa-solid fa-mobile-screen',
+        'fa-solid fa-laptop-code',
+        'fa-solid fa-database',
+        'fa-solid fa-cloud',
+        'fa-solid fa-code',
+        'fa-solid fa-gears',
+        'fa-solid fa-bolt',
+        'fa-solid fa-bullhorn',
+        'fa-solid fa-book',
+        'fa-solid fa-graduation-cap',
+        'fa-solid fa-building-columns',
+        'fa-solid fa-landmark',
+        'fa-solid fa-scale-balanced',
+        'fa-solid fa-leaf',
+        'fa-solid fa-droplet',
+        'fa-solid fa-wind',
+        'fa-solid fa-seedling',
+        'fa-solid fa-heart-pulse',
+        'fa-solid fa-truck-fast',
+        'fa-solid fa-star',
+        'fa-solid fa-folder-open',
+        'fa-solid fa-envelope-open-text',
+        'fa-solid fa-mug-hot',
+        'fa-solid fa-house-chimney',
+        'fa-solid fa-file-signature',
+        'fa-solid fa-sitemap',
+        'fa-solid fa-list-check',
+        'fa-solid fa-file-lines',
+        'fa-solid fa-clipboard-list',
+        'fa-solid fa-file-invoice-dollar',
+        'fa-solid fa-cloud-sun-rain',
+        'fa-solid fa-coins',
+        'fa-solid fa-money-bill-transfer'
     ],
 
     async init() {
@@ -2265,16 +2299,58 @@ const partnerLinksApp = {
 const sidebarBannersApp = {
     banners: [],
     iconLibrary: [
-        'fa-solid fa-house', 'fa-solid fa-user', 'fa-solid fa-envelope', 'fa-solid fa-phone',
-        'fa-solid fa-globe', 'fa-solid fa-location-dot', 'fa-solid fa-building', 'fa-solid fa-newspaper',
-        'fa-solid fa-scale-balanced', 'fa-solid fa-briefcase', 'fa-solid fa-graduation-cap', 'fa-solid fa-hospital',
-        'fa-solid fa-landmark', 'fa-solid fa-gavel', 'fa-solid fa-bullhorn', 'fa-solid fa-users',
-        'fa-solid fa-comments', 'fa-solid fa-magnifying-glass', 'fa-solid fa-circle-info', 'fa-solid fa-chart-line',
-        'fa-solid fa-file-lines', 'fa-solid fa-folder-open', 'fa-solid fa-pen-to-square', 'fa-solid fa-star',
-        'fa-solid fa-heart', 'fa-solid fa-check', 'fa-solid fa-shield-halved', 'fa-solid fa-gear',
-        'fa-brands fa-facebook', 'fa-brands fa-youtube', 'fa-brands fa-twitter', 'fa-brands fa-tiktok',
-        'fa-brands fa-instagram', 'fa-brands fa-linkedin', 'fa-brands fa-github', 'fa-brands fa-android',
-        'fa-brands fa-apple', 'fa-brands fa-windows', 'fa-solid fa-cloud', 'fa-solid fa-wifi'
+        'fa-solid fa-house',
+        'fa-solid fa-user',
+        'fa-solid fa-envelope',
+        'fa-solid fa-phone',
+        'fa-solid fa-globe',
+        'fa-solid fa-location-dot',
+        'fa-solid fa-building',
+        'fa-solid fa-newspaper',
+        'fa-solid fa-scale-balanced',
+        'fa-solid fa-briefcase',
+        'fa-solid fa-graduation-cap',
+        'fa-solid fa-hospital',
+        'fa-solid fa-landmark',
+        'fa-solid fa-gavel',
+        'fa-solid fa-bullhorn',
+        'fa-solid fa-users',
+        'fa-solid fa-comments',
+        'fa-solid fa-magnifying-glass',
+        'fa-solid fa-circle-info',
+        'fa-solid fa-chart-line',
+        'fa-solid fa-file-lines',
+        'fa-solid fa-folder-open',
+        'fa-solid fa-pen-to-square',
+        'fa-solid fa-star',
+        'fa-solid fa-heart',
+        'fa-solid fa-check',
+        'fa-solid fa-shield-halved',
+        'fa-solid fa-gear',
+        'fa-brands fa-facebook',
+        'fa-brands fa-youtube',
+        'fa-brands fa-twitter',
+        'fa-brands fa-tiktok',
+        'fa-brands fa-instagram',
+        'fa-brands fa-linkedin',
+        'fa-brands fa-github',
+        'fa-brands fa-android',
+        'fa-brands fa-apple',
+        'fa-brands fa-windows',
+        'fa-solid fa-cloud',
+        'fa-solid fa-wifi',
+        'fa-solid fa-envelope-open-text',
+        'fa-solid fa-mug-hot',
+        'fa-solid fa-house-chimney',
+        'fa-solid fa-file-signature',
+        'fa-solid fa-sitemap',
+        'fa-solid fa-list-check',
+        'fa-solid fa-clipboard-list',
+        'fa-solid fa-file-invoice-dollar',
+        'fa-solid fa-cloud-sun-rain',
+        'fa-solid fa-seedling',
+        'fa-solid fa-coins',
+        'fa-solid fa-money-bill-transfer'
     ],
     
     async init() {
@@ -2644,8 +2720,12 @@ const infoUtilityApp = {
                         bgColor: '',
                         bgImage: '',
                         links: [
-                            { id: 101, title: 'Cổng dịch vụ công quốc gia', url: '#', icon: 'fa-solid fa-star', iconColor: '#e74c3c' },
-                            { id: 102, title: 'Phản ánh, kiến nghị văn bản QPPL', url: '#', icon: 'fa-solid fa-folder-open', iconColor: '#f39c12' }
+                            { id: 101, title: 'Cổng dịch vụ công quốc gia', url: '../y-kien-du-thao/danh-sach.html', icon: 'fa-solid fa-star', iconColor: '#e74c3c' },
+                            { id: 102, title: 'Phản ánh, kiến nghị văn bản QPPL', url: '#', icon: 'fa-solid fa-folder-open', iconColor: '#f39c12' },
+                            { id: 103, title: 'Công báo điện tử', url: '#', icon: 'fa-solid fa-envelope-open-text', iconColor: '#3498db' },
+                            { id: 104, title: 'Lễ hội cà phê Buôn Ma Thuột', url: '#', icon: 'fa-solid fa-mug-hot', iconColor: '#8e44ad' },
+                            { id: 105, title: 'Nông thôn mới', url: '#', icon: 'fa-solid fa-house-chimney', iconColor: '#2ecc71' },
+                            { id: 106, title: 'Cải cách thủ tục hành chính', url: '#', icon: 'fa-solid fa-file-signature', iconColor: '#f1c40f' }
                         ]
                     },
                     {
@@ -2654,7 +2734,12 @@ const infoUtilityApp = {
                         bgColor: '',
                         bgImage: '',
                         links: [
-                            { id: 201, title: 'Cơ cấu tổ chức', url: '#', icon: 'fa-solid fa-sitemap', iconColor: '#27ae60' }
+                            { id: 201, title: 'Cơ cấu tổ chức', url: '#', icon: 'fa-solid fa-sitemap', iconColor: '#27ae60' },
+                            { id: 202, title: 'Danh sách tài liệu tham khảo', url: '#', icon: 'fa-solid fa-list-check', iconColor: '#e74c3c' },
+                            { id: 203, title: 'Tiếp nhận ứng cứu sự cố an toàn thông tin mạng', url: '#', icon: 'fa-solid fa-shield-halved', iconColor: '#2980b9' },
+                            { id: 204, title: 'Danh sách biểu mẫu hành chính', url: '#', icon: 'fa-solid fa-file-lines', iconColor: '#f39c12' },
+                            { id: 205, title: 'Dự thảo văn bản', url: '#', icon: 'fa-solid fa-clipboard-list', iconColor: '#d35400' },
+                            { id: 206, title: 'Công khai ngân sách nhà nước', url: '#', icon: 'fa-solid fa-file-invoice-dollar', iconColor: '#16a085' }
                         ]
                     },
                     {
@@ -2663,7 +2748,12 @@ const infoUtilityApp = {
                         bgColor: '',
                         bgImage: '',
                         links: [
-                            { id: 301, title: 'Dự báo thời tiết', url: '#', icon: 'fa-solid fa-cloud-sun-rain', iconColor: '#3498db' }
+                            { id: 301, title: 'Dự báo thời tiết', url: '#', icon: 'fa-solid fa-cloud-sun-rain', iconColor: '#3498db' },
+                            { id: 302, title: 'Giá cà phê', url: '#', icon: 'fa-solid fa-mug-hot', iconColor: '#8e44ad' },
+                            { id: 303, title: 'Giá tiêu', url: '#', icon: 'fa-solid fa-seedling', iconColor: '#27ae60' },
+                            { id: 304, title: 'Tỷ giá vàng', url: '#', icon: 'fa-solid fa-coins', iconColor: '#f1c40f' },
+                            { id: 305, title: 'Tỷ giá ngoại tệ', url: '#', icon: 'fa-solid fa-money-bill-transfer', iconColor: '#e67e22' },
+                            { id: 306, title: 'Chứng khoán', url: '#', icon: 'fa-solid fa-chart-line', iconColor: '#e74c3c' }
                         ]
                     }
                 ];
