@@ -909,87 +909,287 @@
                         </div>
                     </div>
 
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                        
-                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
-                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-paintbrush"></i> Bộ Màu Sắc Toàn Cục</h4>
-                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
-                        </div>
-                        <div class="config-section-content" style="display: none;">
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label for="primaryColor">Màu Chủ Đạo (Primary Blue)</label>
-                                <input type="color" id="primaryColor" value="#1322BC">
-                            </div>
-                            <div class="form-group">
-                                <label for="primaryDarkColor">Màu Chủ Đạo Đậm (Primary Dark)</label>
-                                <input type="color" id="primaryDarkColor" value="#1a3a5c">
-                            </div>
-                            <div class="form-group">
-                                <label for="accentOrangeColor">Màu Nhấn (Accent Orange)</label>
-                                <input type="color" id="accentOrangeColor" value="#f1592b">
-                            </div>
-                            <div class="form-group">
-                                <label for="accentRedColor">Màu Nhấn 2 (Accent Red)</label>
-                                <input type="color" id="accentRedColor" value="#DA251D">
-                            </div>
-                            <div class="form-group">
-                                <label for="bodyBgColor">Màu Nền Trang (Body Background)</label>
-                                <input type="color" id="bodyBgColor" value="#f5fafe">
-                            </div>
-                        </div>
                     
-                        </div></div>
 
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                        
-                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
-                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-table-list"></i> Cấu hình Phần Thân (Body & Sections)</h4>
-                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
-                        </div>
-                        <div class="config-section-content" style="display: none;">
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                            <div class="form-group">
-                                <label for="newsSectionBgColor">Màu Nền Khu Vực "Tin Tức Sự Kiện"</label>
-                                <input type="color" id="newsSectionBgColor" value="#eef4fa">
-                            </div>
-                            <div class="form-group">
-                                <label for="infoUtilityBgColor">Màu Nền Khu Vực "Thông Tin Tiện Ích"</label>
-                                <input type="color" id="infoUtilityBgColor" value="#ffffff">
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label>Ảnh Nền Tổng Thể Toàn Trang (Tùy chọn ghi đè màu nền)</label>
-                            <div style="display: flex; gap: 10px; flex-direction: column;">
-                                <img id="bgImagePreview" src="https://via.placeholder.com/1920x1080" style="width: 100%; max-height: 100px; object-fit: cover; border: 1px solid #ddd;">
-                                <input type="file" accept="image/*" onchange="openCropper(this, 'bgImage')">
-                                <input type="hidden" id="bgImageUrl">
-                                <button type="button" onclick="document.getElementById('bgImageUrl').value=''; document.getElementById('bgImagePreview').src='https://via.placeholder.com/1920x1080';" style="background: #ef4444; width: fit-content; padding: 5px 10px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Xóa ảnh nền</button>
-                            </div>
-                        </div>
                     
-                        </div></div>
                     
-                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
-                        
-                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
-                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-shoe-prints"></i> Cấu hình Chân Trang (Footer)</h4>
-                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
-                        </div>
-                        <div class="config-section-content" style="display: none;">
-
-                        <div class="form-group">
-                            <label for="footerBgColor">Màu Nền Chân Trang</label>
-                            <input type="color" id="footerBgColor" value="#1a3a5c">
-                        </div>
                     
-                        </div></div>
                     
                     <!-- Removed boKhcnLink section -->
                     
-                    <button type="submit" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;"><i class="fa-solid fa-save"></i> Lưu Toàn Bộ Cấu Hình Giao Diện</button>
+                    
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-handshake"></i> Quản lý Liên Kết Đối Tác</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                
+                <div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <!-- Danh sách các link -->
+                    <div style="flex: 1;">
+                        <button type="button" onclick="partnerLinksApp.addNew()" style="margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> Thêm liên kết mới</button>
+                        <div id="partner-links-list" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Items will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Form chỉnh sửa -->
+                    <div style="flex: 1; background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; display: none;" id="partner-links-form-container">
+                        <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);" id="partner-links-form-title">Thêm/Sửa Liên kết</h4>
+                        <input type="hidden" id="pl-id">
+                        
+                        <div class="form-group">
+                            <label>Tiêu đề</label>
+                            <input type="text" id="pl-title" placeholder="Ví dụ: Chuyển đổi số" oninput="partnerLinksApp.updatePreview()">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Đường dẫn (URL)</label>
+                            <input type="text" id="pl-url" placeholder="https://...">
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Màu Gradient 1</label>
+                                <input type="color" id="pl-color1" value="#2e8b57" oninput="partnerLinksApp.updatePreview()">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label>Màu Gradient 2</label>
+                                <input type="color" id="pl-color2" value="#3cb371" oninput="partnerLinksApp.updatePreview()">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Icon (FontAwesome Class)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="pl-icon" value="fa-solid fa-rocket" readonly style="background: #e2e8f0; cursor: not-allowed; width: 100%;">
+                                <button type="button" onclick="partnerLinksApp.openIconModal()" style="white-space: nowrap;"><i class="fa-solid fa-icons"></i> Chọn Icon</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; font-weight: 500; margin-bottom: 8px;">Xem trước:</label>
+                            <div id="pl-preview" style="width: 250px; height: 120px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; background: linear-gradient(135deg, #2e8b57, #3cb371); padding: 15px; position: relative; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <div id="pl-preview-bg" style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.2; z-index: 1;"></div>
+                                <div style="font-size: 32px; margin-bottom: 10px; position: relative; z-index: 2;" id="pl-preview-icon"><i class="fa-solid fa-rocket"></i></div>
+                                <span style="font-size: 16px; font-weight: 600; line-height: 1.3; position: relative; z-index: 2;" id="pl-preview-title">Chuyển đổi số</span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Ảnh nền (Tùy chọn)</label>
+                            <div style="display: flex; gap: 10px; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <input type="file" id="pl-bg-file" accept="image/*" onchange="partnerLinksApp.handleBgUpload(this)">
+                                    <input type="hidden" id="pl-bg-url">
+                                </div>
+                                <button type="button" onclick="partnerLinksApp.removeBg()" id="pl-remove-bg-btn" style="display: none; background: #ef4444; padding: 10px; white-space: nowrap;"><i class="fa-solid fa-trash"></i> Xóa ảnh</button>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons" style="justify-content: flex-start;">
+                            <button type="button" onclick="partnerLinksApp.saveItem()"><i class="fa-solid fa-floppy-disk"></i> Ghi nhận</button>
+                            <button type="button" onclick="partnerLinksApp.cancelEdit()" style="background-color: #64748b;"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                    <button type="button" onclick="partnerLinksApp.saveAllToServer()" style="background-color: #10b981; width: 100%;"><i class="fa-solid fa-cloud-arrow-up"></i> LƯU CẤU HÌNH LIÊN KẾT LÊN SERVER</button>
+                </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-newspaper"></i> Cấu hình Tin nổi bật (Trang chủ)</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            <p style="margin-bottom: 15px; color: #475569; font-size: 0.95rem;">Lựa chọn tối đa 4 tin tức nổi bật nhất (được đồng bộ từ tất cả chuyên mục và sắp xếp theo số lượt xem) để hiển thị lên Trang chủ.</p>
+                            
+                            <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; max-height: 400px; overflow-y: auto;">
+                                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                    <thead style="background: #f1f5f9; position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0; width: 60px;">Chọn</th>
+                                            <th style="padding: 10px 15px; text-align: left; border-bottom: 1px solid #e2e8f0;">Tiêu đề tin tức</th>
+                                            <th style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0; width: 100px;">Lượt xem</th>
+                                            <th style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0; width: 120px;">Ngày đăng</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="featuredNewsList">
+                                        <!-- Rendered by JS -->
+                                        <tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Đang tải danh sách tin tức...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="margin-top: 15px; font-size: 0.95rem; color: #64748b; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Đã chọn: <strong id="featuredNewsCount" style="color: var(--primary);">0/4</strong> tin. (Tin đầu tiên sẽ là tin nổi bật nhất).</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-list"></i> Quản lý Sidebar Tin Tức</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            <div style="display: flex; gap: 20px; align-items: flex-start;">
+                                <div style="flex: 1;">
+                                    <button type="button" onclick="sidebarBannersApp.addNew()" style="margin-bottom: 15px;"><i class="fa-solid fa-plus"></i> Thêm banner mới</button>
+                                    <div id="sidebar-banners-list" style="display: flex; flex-direction: column; gap: 10px;">
+                                    </div>
+                                </div>
+                                <div style="flex: 1; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; display: none;" id="sidebar-banners-form-container">
+                                    <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);" id="sidebar-banners-form-title">Thêm/Sửa Banner</h4>
+                                    <input type="hidden" id="sb-id">
+                                    
+                                    <div class="form-group">
+                                        <label>Tiêu đề</label>
+                                        <input type="text" id="sb-title" placeholder="Ví dụ: Dịch vụ công trực tuyến" oninput="sidebarBannersApp.updatePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Đường dẫn (URL)</label>
+                                        <input type="text" id="sb-url" placeholder="https://...">
+                                    </div>
+                                    <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
+                                        <label>Icon (FontAwesome)</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <input type="text" id="sb-icon" placeholder="fa-solid fa-star" oninput="sidebarBannersApp.updatePreview()" style="flex: 1;">
+                                            <button type="button" onclick="sidebarBannersApp.openIconModal()" style="white-space: nowrap;"><i class="fa-solid fa-icons"></i> Chọn Icon</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Kiểu hiển thị</label>
+                                        <select id="sb-style" onchange="sidebarBannersApp.updatePreview()">
+                                            <option value="original">Kiểu mặc định (Chữ giữa)</option>
+                                            <option value="image_right">Kiểu ảnh phải (Icon + Chữ trái)</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Màu Nền (Màu chủ đạo block)</label>
+                                        <input type="color" id="sb-color" value="#0a59ab" oninput="sidebarBannersApp.updatePreview()">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ảnh nền (Tùy chọn)</label>
+                                        <div style="display: flex; gap: 10px; align-items: flex-start; flex-direction: column;">
+                                            <input type="file" accept="image/*" onchange="openCropper(this, 'sidebarBannerBg')">
+                                            <input type="hidden" id="sb-bgImage">
+                                            <button type="button" onclick="document.getElementById('sb-bgImage').value=''; sidebarBannersApp.updatePreview();" style="background: #ef4444; width: fit-content; padding: 5px 10px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Xóa ảnh nền</button>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Độ mờ ảnh nền: <span id="sb-bgOpacity-val">0.2</span></label>
+                                        <input type="range" id="sb-bgOpacity" min="0" max="1" step="0.1" value="0.2" oninput="document.getElementById('sb-bgOpacity-val').textContent=this.value; sidebarBannersApp.updatePreview();" style="width: 100%;">
+                                    </div>
+                                    <div style="margin-bottom: 20px;">
+                                        <label style="display: block; font-weight: 500; margin-bottom: 8px;">Xem trước:</label>
+                                        <div id="sb-preview" style="width: 250px; height: 100px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; background-color: #0a59ab; padding: 15px; position: relative; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                            <div id="sb-preview-bg" style="position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0.2; z-index: 1;"></div>
+                                            <span style="font-size: 14px; font-weight: 600; font-family: Inter; position: relative; z-index: 2;" id="sb-preview-title">Dịch vụ công trực tuyến</span>
+                                        </div>
+                                    </div>
+                                    <div class="action-buttons" style="justify-content: flex-start;">
+                                        <button type="button" onclick="sidebarBannersApp.saveItem()"><i class="fa-solid fa-floppy-disk"></i> Ghi nhận</button>
+                                        <button type="button" onclick="sidebarBannersApp.cancelEdit()" style="background-color: #64748b;"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                                <button type="button" onclick="sidebarBannersApp.saveAllToServer()" style="background-color: #10b981; width: 100%;"><i class="fa-solid fa-cloud-arrow-up"></i> LƯU CẤU HÌNH BANNERS LÊN SERVER</button>
+                            </div>
+                        </div>
+                    </div>
+
+<!-- QUẢN LÝ THÔNG TIN & TIỆN ÍCH -->
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-layer-group"></i> Quản lý Thông tin & Tiện ích</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            
+                            <!-- Nút Thêm Nhóm Mới (Cột Mới) -->
+                            <div style="margin-bottom: 15px;">
+                                <button type="button" onclick="infoUtilityApp.addGroup()" style="background-color: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-plus"></i> Thêm Cột (Nhóm) Mới</button>
+                                <button type="button" onclick="infoUtilityApp.saveAllToServer()" style="background-color: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-left: 10px;"><i class="fa-solid fa-save"></i> Lưu Toàn Bộ Cấu Hình</button>
+                            </div>
+
+                            <!-- Form Thêm/Sửa Cột (Nhóm) -->
+                            <div id="iu-group-form-container" style="display: none; background: #fff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px;">
+                                <h4 style="margin-top: 0; margin-bottom: 15px; color: var(--primary);" id="iu-group-form-title">Thêm Cột Mới</h4>
+                                <input type="hidden" id="iu-group-id">
+                                
+                                <div class="form-group">
+                                    <label>Tên Cột (Nhóm)</label>
+                                    <input type="text" id="iu-group-title" placeholder="Ví dụ: THÔNG TIN TUYÊN TRUYỀN">
+                                </div>
+                                <div class="form-group" style="display: flex; gap: 15px;">
+                                    <div style="flex: 1;">
+                                        <label>Màu Nền Khối</label>
+                                        <input type="color" id="iu-group-bgColor" value="#ffffff" style="width: 100%;">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Hình nền (Tùy chọn)</label>
+                                    <div style="display: flex; gap: 10px; align-items: flex-start; flex-direction: column;">
+                                        <input type="file" accept="image/*" onchange="openCropper(this, 'iuGroupBg')">
+                                        <input type="hidden" id="iu-group-bgImage">
+                                        <button type="button" onclick="document.getElementById('iu-group-bgImage').value=''; alert('Đã xóa ảnh nền');" style="background: #ef4444; width: fit-content; padding: 5px 10px; font-size: 12px;"><i class="fa-solid fa-trash"></i> Xóa ảnh nền</button>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" onclick="infoUtilityApp.saveGroup()" style="background-color: var(--primary);"><i class="fa-solid fa-check"></i> Lưu Cột</button>
+                                    <button type="button" onclick="infoUtilityApp.cancelEditGroup()" style="background-color: #94a3b8;"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                                </div>
+                            </div>
+
+                            <!-- Form Thêm/Sửa Mục Tiện Ích -->
+                            <div id="iu-link-form-container" style="display: none; background: #fff; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+                                <h4 style="margin-top: 0; margin-bottom: 15px; color: #f59e0b;" id="iu-link-form-title">Thêm Mục Tiện Ích</h4>
+                                <input type="hidden" id="iu-link-groupId">
+                                <input type="hidden" id="iu-link-id">
+                                
+                                <div class="form-group">
+                                    <label>Tên Mục</label>
+                                    <input type="text" id="iu-link-title" placeholder="Ví dụ: Cổng dịch vụ công quốc gia">
+                                </div>
+                                <div class="form-group">
+                                    <label>Đường dẫn (URL)</label>
+                                    <input type="text" id="iu-link-url" placeholder="https://...">
+                                </div>
+                                <div class="form-group" style="display: flex; gap: 15px;">
+                                    <div style="flex: 1;">
+                                        <label>Icon (FontAwesome)</label>
+                                        <div style="display: flex; gap: 10px;">
+                                            <input type="text" id="iu-link-icon" placeholder="fa-solid fa-star" style="flex: 1;" readonly>
+                                            <button type="button" onclick="infoUtilityApp.openIconModal()" style="white-space: nowrap;"><i class="fa-solid fa-icons"></i> Chọn Icon</button>
+                                        </div>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label>Màu sắc Icon</label>
+                                        <input type="color" id="iu-link-iconColor" value="#e74c3c" style="width: 100%;">
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; gap: 10px;">
+                                    <button type="button" onclick="infoUtilityApp.saveLink()" style="background-color: #f59e0b;"><i class="fa-solid fa-check"></i> Lưu Mục</button>
+                                    <button type="button" onclick="infoUtilityApp.cancelEditLink()" style="background-color: #94a3b8;"><i class="fa-solid fa-xmark"></i> Hủy</button>
+                                </div>
+                            </div>
+
+                            <!-- Danh sách các Cột và Mục -->
+                            <div id="iu-groups-list" style="display: flex; flex-direction: column; gap: 15px;">
+                                <!-- Groups will be rendered here -->
+                            </div>
+
+                        </div>
+                    </div>
+
+<button type="submit" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;"><i class="fa-solid fa-save"></i> Lưu Toàn Bộ Cấu Hình Giao Diện</button>
                 </form>
             </div>
         </div>
@@ -1804,6 +2004,23 @@
             </div>
         </div>
     </div>
+
+        <!-- Modal Chọn Icon -->
+        
+                    <div id="icon-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100000; align-items: center; justify-content: center;">
+            <div style="background: white; width: 600px; max-width: 90%; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; flex-direction: column; max-height: 80vh;">
+                <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+                    <h3 style="margin: 0; font-size: 18px; border: none; padding: 0;"><i class="fa-solid fa-icons"></i> Chọn Icon</h3>
+                    <button type="button" onclick="document.getElementById('icon-modal').style.display='none'" style="background: none; color: #64748b; border: none; cursor: pointer; padding: 5px; font-size: 20px;"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div style="padding: 20px; overflow-y: auto; flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 15px; text-align: center;" id="icon-grid">
+                    <!-- Icons will be rendered here by JS -->
+                </div>
+            </div>
+        </div>
+
+
+            
 
 </body>
 </html>

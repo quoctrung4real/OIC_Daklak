@@ -299,6 +299,13 @@ async function loadConfig() {
             if (typeof renderAgencyLinksGroups === 'function') renderAgencyLinksGroups();
             if (typeof renderTickerItems === 'function') renderTickerItems();
             if (typeof updateTickerPreview === 'function') updateTickerPreview();
+            
+            if (config.featuredNewsIds) {
+                featuredNewsSelections = config.featuredNewsIds;
+            } else {
+                featuredNewsSelections = [];
+            }
+            if (typeof loadAllNewsForFeatured === 'function') loadAllNewsForFeatured();
         }
     } catch (e) {
         console.error("Lỗi lấy cấu hình:", e);
@@ -333,6 +340,7 @@ document.getElementById('config-form').addEventListener('submit', async (e) => {
     config.tickerItems = tickerItems;
     config.techSolutionsItems = techSolutionsItems;
     config.agencyLinksGroups = agencyLinksGroups;
+    config.featuredNewsIds = typeof featuredNewsSelections !== 'undefined' ? featuredNewsSelections : [];
 
     try {
         const response = await apiFetch(`${API_BASE}/cau-hinh`, {
@@ -1559,6 +1567,16 @@ function saveCrop() {
     if (currentCropTarget === 'news') {
         document.getElementById('newsFormImageUrl').value = base64Image;
         updateNewsImagePreview();
+    } else if (currentCropTarget === 'partnerLinkBg') {
+        document.getElementById('pl-bgImage').value = base64Image;
+        if (typeof partnerLinksApp !== 'undefined') {
+            partnerLinksApp.updatePreview();
+        }
+    } else if (currentCropTarget === 'sidebarBannerBg') {
+        document.getElementById('sb-bgImage').value = base64Image;
+        if (typeof sidebarBannersApp !== 'undefined') {
+            sidebarBannersApp.updatePreview();
+        }
     }
     
     closeCropperModal();
@@ -2008,4 +2026,915 @@ function updateAgencyLinksPreview() {
     });
 }
 
+// ==========================================
+// PARTNER LINKS MANAGEMENT
+// ==========================================
+
+const partnerLinksApp = {
+    links: [],
+    
+    // Some popular FontAwesome icons for the library
+    iconLibrary: [
+        'fa-solid fa-rocket', 'fa-solid fa-lightbulb', 'fa-solid fa-calendar-days',
+        'fa-solid fa-microchip', 'fa-solid fa-network-wired', 'fa-solid fa-globe',
+        'fa-solid fa-users', 'fa-solid fa-handshake', 'fa-solid fa-chart-line',
+        'fa-solid fa-shield-halved', 'fa-solid fa-server', 'fa-solid fa-mobile-screen',
+        'fa-solid fa-laptop-code', 'fa-solid fa-database', 'fa-solid fa-cloud',
+        'fa-solid fa-code', 'fa-solid fa-gears', 'fa-solid fa-bolt',
+        'fa-solid fa-bullhorn', 'fa-solid fa-book', 'fa-solid fa-graduation-cap',
+        'fa-solid fa-building-columns', 'fa-solid fa-landmark', 'fa-solid fa-scale-balanced',
+        'fa-solid fa-leaf', 'fa-solid fa-droplet', 'fa-solid fa-wind',
+        'fa-solid fa-seedling', 'fa-solid fa-heart-pulse', 'fa-solid fa-truck-fast'
+    ],
+
+    async init() {
+        // Render icon library
+        const iconGrid = document.getElementById('icon-grid');
+        if (iconGrid) {
+            iconGrid.innerHTML = `
+                <div onclick="partnerLinksApp.selectIcon('')" style="font-size: 14px; font-weight: bold; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: #ef4444;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    None
+                </div>
+            ` + this.iconLibrary.map(iconClass => `
+                <div onclick="partnerLinksApp.selectIcon('${iconClass}')" style="font-size: 24px; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    <i class="${iconClass}"></i>
+                </div>
+            `).join('');
+        }
+
+        // Fetch data
+        try {
+            const res = await fetch(`${API_BASE}/cau-hinh`);
+            if (res.ok) {
+                const config = await res.json();
+                this.links = config.partnerLinks || [
+                    // Defaults if empty
+                    { id: 1, title: 'Chuyển đổi số', url: '#', color1: '#2e8b57', color2: '#3cb371', icon: 'fa-solid fa-rocket' },
+                    { id: 2, title: 'Đổi mới sáng tạo', url: '#', color1: '#c0392b', color2: '#e74c3c', icon: 'fa-solid fa-lightbulb' },
+                    { id: 3, title: 'Sự kiện', url: '#', color1: '#8e44ad', color2: '#9b59b6', icon: 'fa-solid fa-calendar-days' },
+                    { id: 4, title: 'Khoa học Công nghệ', url: '#', color1: '#1a5276', color2: '#2980b9', icon: 'fa-solid fa-microchip' }
+                ];
+                this.renderList();
+            }
+        } catch (e) {
+            console.error("Lỗi tải partnerLinks:", e);
+        }
+    },
+
+    renderList() {
+        const listContainer = document.getElementById('partner-links-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        this.links.forEach(item => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: white;';
+            div.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, ${item.color1}, ${item.color2}); display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; position: relative; overflow: hidden;">
+                        ${item.bgImage ? `<div style="position: absolute; inset: 0; background-image: url(${item.bgImage}); background-size: cover; background-position: center; opacity: ${item.bgOpacity !== undefined ? item.bgOpacity : 0.2}; z-index: 1;"></div>` : ''}
+                        <i class="${item.icon}" style="position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0,0,0,0.6);"></i>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; color: #1e293b;">${item.title}</div>
+                        <div style="font-size: 12px; color: #64748b;">${item.url}</div>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button type="button" onclick="partnerLinksApp.editItem(${item.id})" style="background-color: #f59e0b; padding: 6px 10px;"><i class="fa-solid fa-pen"></i></button>
+                    <button type="button" onclick="partnerLinksApp.deleteItem(${item.id})" style="background-color: #ef4444; padding: 6px 10px;"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
+    },
+
+    addNew() {
+        document.getElementById('partner-links-form-title').textContent = 'Thêm Liên Kết Mới';
+        document.getElementById('pl-id').value = '';
+        document.getElementById('pl-title').value = '';
+        document.getElementById('pl-url').value = '#';
+        document.getElementById('pl-color1').value = '#2e8b57';
+        document.getElementById('pl-color2').value = '#3cb371';
+        document.getElementById('pl-icon').value = 'fa-solid fa-rocket';
+        document.getElementById('pl-bgImage').value = '';
+        document.getElementById('pl-bgOpacity').value = '0.2';
+        document.getElementById('pl-bgOpacity-val').textContent = '0.2';
+        
+        document.getElementById('partner-links-form-container').style.display = 'block';
+        this.updatePreview();
+    },
+
+    editItem(id) {
+        const item = this.links.find(x => x.id === id);
+        if (!item) return;
+
+        document.getElementById('partner-links-form-title').textContent = 'Chỉnh Sửa Liên Kết';
+        document.getElementById('pl-id').value = item.id;
+        document.getElementById('pl-title').value = item.title;
+        document.getElementById('pl-url').value = item.url;
+        document.getElementById('pl-color1').value = item.color1;
+        document.getElementById('pl-color2').value = item.color2;
+        document.getElementById('pl-icon').value = item.icon;
+        document.getElementById('pl-bgImage').value = item.bgImage || '';
+        document.getElementById('pl-bgOpacity').value = item.bgOpacity !== undefined ? item.bgOpacity : 0.2;
+        document.getElementById('pl-bgOpacity-val').textContent = item.bgOpacity !== undefined ? item.bgOpacity : 0.2;
+        
+        document.getElementById('partner-links-form-container').style.display = 'block';
+        this.updatePreview();
+    },
+
+    deleteItem(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa liên kết này?')) {
+            this.links = this.links.filter(x => x.id !== id);
+            this.renderList();
+        }
+    },
+
+    saveItem() {
+        const idVal = document.getElementById('pl-id').value;
+        const title = document.getElementById('pl-title').value || 'Chưa có tên';
+        const url = document.getElementById('pl-url').value || '#';
+        const color1 = document.getElementById('pl-color1').value;
+        const color2 = document.getElementById('pl-color2').value;
+        const icon = document.getElementById('pl-icon').value;
+        const bgImage = document.getElementById('pl-bgImage').value;
+        const bgOpacity = parseFloat(document.getElementById('pl-bgOpacity').value);
+
+        if (idVal) {
+            // Edit
+            const id = parseInt(idVal);
+            const index = this.links.findIndex(x => x.id === id);
+            if (index > -1) {
+                this.links[index] = { id, title, url, color1, color2, icon, bgImage, bgOpacity };
+            }
+        } else {
+            // Add
+            const newId = Date.now();
+            this.links.push({ id: newId, title, url, color1, color2, icon, bgImage, bgOpacity });
+        }
+
+        this.renderList();
+        document.getElementById('partner-links-form-container').style.display = 'none';
+    },
+
+    cancelEdit() {
+        document.getElementById('partner-links-form-container').style.display = 'none';
+    },
+
+    updatePreview() {
+        const title = document.getElementById('pl-title').value || 'Tiêu đề';
+        const color1 = document.getElementById('pl-color1').value || '#2e8b57';
+        const color2 = document.getElementById('pl-color2').value || '#3cb371';
+        const icon = document.getElementById('pl-icon').value || 'fa-solid fa-rocket';
+        const bgImage = document.getElementById('pl-bgImage').value;
+        const bgOpacity = document.getElementById('pl-bgOpacity').value;
+
+        const previewContainer = document.getElementById('pl-preview');
+        const previewIcon = document.getElementById('pl-preview-icon');
+        const previewTitle = document.getElementById('pl-preview-title');
+        const previewBg = document.getElementById('pl-preview-bg');
+
+        if(previewContainer) previewContainer.style.background = `linear-gradient(135deg, ${color1}, ${color2})`;
+        if(previewIcon) previewIcon.innerHTML = `<i class="${icon}"></i>`;
+        if(previewTitle) previewTitle.textContent = title;
+        if(previewBg) {
+            if (bgImage) {
+                previewBg.style.backgroundImage = `url(${bgImage})`;
+                previewBg.style.opacity = bgOpacity;
+                previewBg.style.display = 'block';
+            } else {
+                previewBg.style.backgroundImage = 'none';
+                previewBg.style.display = 'none';
+            }
+        }
+    },
+
+    openIconModal() {
+        document.getElementById('icon-modal').style.display = 'flex';
+    },
+
+    selectIcon(iconClass) {
+        document.getElementById('pl-icon').value = iconClass;
+        this.updatePreview();
+        document.getElementById('icon-modal').style.display = 'none';
+    },
+
+    async saveAllToServer() {
+        try {
+            // Fetch current config first to not overwrite other fields
+            let currentConfig = {};
+            const fetchRes = await fetch(`${API_BASE}/cau-hinh`);
+            if (fetchRes.ok) {
+                currentConfig = await fetchRes.json();
+            }
+
+            // Update partnerLinks
+            currentConfig.partnerLinks = this.links;
+
+            // Save back
+            const token = localStorage.getItem('accessToken');
+            const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+            
+            const res = await fetch(`${API_BASE}/cau-hinh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${tokenType} ${token}`
+                },
+                body: JSON.stringify(currentConfig)
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                if (result.success) {
+                    showAlert('Lưu cấu hình liên kết đối tác thành công!');
+                } else {
+                    showAlert(result.message || 'Lỗi khi lưu.', false);
+                }
+            } else {
+                showAlert('Lỗi server khi lưu.', false);
+            }
+        } catch (e) {
+            console.error(e);
+            showAlert('Lỗi kết nối khi lưu cấu hình.', false);
+        }
+    }
+};
+
+const sidebarBannersApp = {
+    banners: [],
+    iconLibrary: [
+        'fa-solid fa-house', 'fa-solid fa-user', 'fa-solid fa-envelope', 'fa-solid fa-phone',
+        'fa-solid fa-globe', 'fa-solid fa-location-dot', 'fa-solid fa-building', 'fa-solid fa-newspaper',
+        'fa-solid fa-scale-balanced', 'fa-solid fa-briefcase', 'fa-solid fa-graduation-cap', 'fa-solid fa-hospital',
+        'fa-solid fa-landmark', 'fa-solid fa-gavel', 'fa-solid fa-bullhorn', 'fa-solid fa-users',
+        'fa-solid fa-comments', 'fa-solid fa-magnifying-glass', 'fa-solid fa-circle-info', 'fa-solid fa-chart-line',
+        'fa-solid fa-file-lines', 'fa-solid fa-folder-open', 'fa-solid fa-pen-to-square', 'fa-solid fa-star',
+        'fa-solid fa-heart', 'fa-solid fa-check', 'fa-solid fa-shield-halved', 'fa-solid fa-gear',
+        'fa-brands fa-facebook', 'fa-brands fa-youtube', 'fa-brands fa-twitter', 'fa-brands fa-tiktok',
+        'fa-brands fa-instagram', 'fa-brands fa-linkedin', 'fa-brands fa-github', 'fa-brands fa-android',
+        'fa-brands fa-apple', 'fa-brands fa-windows', 'fa-solid fa-cloud', 'fa-solid fa-wifi'
+    ],
+    
+    async init() {
+        try {
+            const res = await fetch(`${API_BASE}/cau-hinh`);
+            if (res.ok) {
+                const config = await res.json();
+                this.banners = config.sidebarBanners || [
+                    { id: 1, title: 'Dịch vụ công trực tuyến', url: '#', color: '#0a59ab', style: 'original' },
+                    { id: 2, title: 'Gửi phản hồi', url: '#', color: '#e74c3c', style: 'original' },
+                    { id: 3, title: 'Hỏi cơ quan nhà nước', url: '#', color: '#27ae60', style: 'original' },
+                    { id: 4, title: 'Tương tác báo chí', url: '#', color: '#f39c12', style: 'original' },
+                    { id: 5, title: 'Tìm hiểu về chuyển đổi số', url: '#', color: '#2c3e50', style: 'original' }
+                ];
+                this.renderList();
+            }
+        } catch (e) {
+            console.error("Lỗi tải sidebarBanners:", e);
+        }
+    },
+
+    openIconModal() {
+        const iconGrid = document.getElementById('icon-grid');
+        if (iconGrid) {
+            iconGrid.innerHTML = `
+                <div onclick="sidebarBannersApp.selectIcon('')" style="font-size: 14px; font-weight: bold; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: #ef4444;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    None
+                </div>
+            ` + this.iconLibrary.map(iconClass => `
+                <div onclick="sidebarBannersApp.selectIcon('${iconClass}')" style="font-size: 24px; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    <i class="${iconClass}"></i>
+                </div>
+            `).join('');
+        }
+        document.getElementById('icon-modal').style.display = 'flex';
+    },
+
+    selectIcon(iconClass) {
+        document.getElementById('sb-icon').value = iconClass;
+        this.updatePreview();
+        document.getElementById('icon-modal').style.display = 'none';
+        
+        // Restore icon modal back to partner links if needed
+        if (typeof partnerLinksApp !== 'undefined' && partnerLinksApp.iconLibrary) {
+            const iconGrid = document.getElementById('icon-grid');
+            if (iconGrid) {
+                iconGrid.innerHTML = `
+                    <div onclick="partnerLinksApp.selectIcon('')" style="font-size: 14px; font-weight: bold; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: #ef4444;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                        None
+                    </div>
+                ` + partnerLinksApp.iconLibrary.map(cls => `
+                    <div onclick="partnerLinksApp.selectIcon('${cls}')" style="font-size: 24px; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                        <i class="${cls}"></i>
+                    </div>
+                `).join('');
+            }
+        }
+    },
+
+    renderList() {
+        const listContainer = document.getElementById('sidebar-banners-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        this.banners.forEach(item => {
+            const div = document.createElement('div');
+            div.style.cssText = 'display: flex; align-items: center; justify-content: space-between; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px; background: white; margin-bottom: 10px;';
+            
+            // Generate visual preview for the item
+            let previewHtml = '';
+            if (item.style === 'image_right') {
+                previewHtml = `
+                    <div style="width: 150px; height: 50px; border-radius: 8px; background-color: ${item.color}; display: flex; align-items: center; color: white; padding: 0 10px; position: relative; overflow: hidden;">
+                        <i class="${item.icon || 'fa-solid fa-star'}" style="margin-right: 8px; z-index: 2; font-size: 14px;"></i>
+                        <span style="position: relative; z-index: 2; font-size: 10px; font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</span>
+                        ${item.bgImage ? `<div style="position: absolute; right: 0; top: 0; bottom: 0; width: 60%; background-image: url(${item.bgImage}); background-size: cover; background-position: center left; mask-image: linear-gradient(to right, transparent 0%, black 50%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 50%); z-index: 1;"></div>` : ''}
+                    </div>
+                `;
+            } else {
+                previewHtml = `
+                    <div style="width: 150px; height: 50px; border-radius: 8px; background-color: ${item.color}; display: flex; align-items: center; justify-content: center; color: white; font-size: 10px; font-weight: 600; text-align: center; padding: 5px; position: relative; overflow: hidden;">
+                        ${item.bgImage ? `<div style="position: absolute; inset: 0; background-image: url(${item.bgImage}); background-size: cover; background-position: center; opacity: ${item.bgOpacity !== undefined ? item.bgOpacity : 0.2}; z-index: 1;"></div>` : ''}
+                        ${item.icon ? `<i class="${item.icon}" style="margin-right: 5px; z-index: 2;"></i>` : ''}
+                        <span style="position: relative; z-index: 2;">${item.title}</span>
+                    </div>
+                `;
+            }
+
+            div.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    ${previewHtml}
+                    <div style="max-width: 200px;">
+                        <div style="font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.title}</div>
+                        <div style="font-size: 12px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${item.url}</div>
+                        <div style="font-size: 11px; color: #94a3b8; margin-top: 3px;">
+                            Style: ${item.style === 'image_right' ? 'Ảnh bên phải' : 'Mặc định'}
+                            ${item.icon ? ` | Icon: <i class="${item.icon}"></i>` : ''}
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons" style="display: flex; gap: 5px;">
+                    <button type="button" onclick="sidebarBannersApp.editItem(${item.id})" style="background-color: #f59e0b; padding: 6px 10px; color: white; border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-pen"></i></button>
+                    <button type="button" onclick="sidebarBannersApp.deleteItem(${item.id})" style="background-color: #ef4444; padding: 6px 10px; color: white; border: none; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
+    },
+
+    addNew() {
+        document.getElementById('sidebar-banners-form-title').textContent = 'Thêm Banner Mới';
+        document.getElementById('sb-id').value = '';
+        document.getElementById('sb-title').value = '';
+        document.getElementById('sb-url').value = '#';
+        document.getElementById('sb-icon').value = '';
+        document.getElementById('sb-style').value = 'original';
+        document.getElementById('sb-color').value = '#0a59ab';
+        document.getElementById('sb-bgImage').value = '';
+        document.getElementById('sb-bgOpacity').value = '0.2';
+        document.getElementById('sb-bgOpacity-val').textContent = '0.2';
+        
+        document.getElementById('sidebar-banners-form-container').style.display = 'block';
+        this.updatePreview();
+    },
+
+    editItem(id) {
+        const item = this.banners.find(x => x.id === id);
+        if (!item) return;
+
+        document.getElementById('sidebar-banners-form-title').textContent = 'Chỉnh Sửa Banner';
+        document.getElementById('sb-id').value = item.id;
+        document.getElementById('sb-title').value = item.title;
+        document.getElementById('sb-url').value = item.url;
+        document.getElementById('sb-icon').value = item.icon || '';
+        document.getElementById('sb-style').value = item.style || 'original';
+        document.getElementById('sb-color').value = item.color;
+        document.getElementById('sb-bgImage').value = item.bgImage || '';
+        document.getElementById('sb-bgOpacity').value = item.bgOpacity !== undefined ? item.bgOpacity : 0.2;
+        document.getElementById('sb-bgOpacity-val').textContent = item.bgOpacity !== undefined ? item.bgOpacity : 0.2;
+        
+        document.getElementById('sidebar-banners-form-container').style.display = 'block';
+        this.updatePreview();
+    },
+
+    deleteItem(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa banner này?')) {
+            this.banners = this.banners.filter(x => x.id !== id);
+            this.renderList();
+        }
+    },
+
+    saveItem() {
+        const idVal = document.getElementById('sb-id').value;
+        const title = document.getElementById('sb-title').value || 'Chưa có tên';
+        const url = document.getElementById('sb-url').value || '#';
+        const icon = document.getElementById('sb-icon').value;
+        const style = document.getElementById('sb-style').value;
+        const color = document.getElementById('sb-color').value;
+        const bgImage = document.getElementById('sb-bgImage').value;
+        const bgOpacity = parseFloat(document.getElementById('sb-bgOpacity').value);
+
+        const itemObj = {
+            title, url, icon, style, color, bgImage, bgOpacity
+        };
+
+        if (idVal) {
+            itemObj.id = parseInt(idVal);
+            const idx = this.banners.findIndex(x => x.id === itemObj.id);
+            if (idx >= 0) this.banners[idx] = itemObj;
+        } else {
+            itemObj.id = Date.now();
+            this.banners.push(itemObj);
+        }
+
+        this.renderList();
+        this.cancelEdit();
+    },
+
+    cancelEdit() {
+        document.getElementById('sidebar-banners-form-container').style.display = 'none';
+    },
+
+    updatePreview() {
+        const title = document.getElementById('sb-title').value || 'Tiêu đề hiển thị';
+        const color = document.getElementById('sb-color').value || '#0a59ab';
+        const bgImage = document.getElementById('sb-bgImage').value;
+        const bgOpacity = document.getElementById('sb-bgOpacity').value;
+        const style = document.getElementById('sb-style').value;
+        const icon = document.getElementById('sb-icon').value;
+
+        const previewContainer = document.getElementById('sb-preview');
+        
+        if (previewContainer) {
+            if (style === 'image_right') {
+                previewContainer.innerHTML = `
+                    <div style="width: 100%; height: 100%; background-color: ${color}; display: flex; align-items: center; color: white; padding: 0 15px; position: absolute; inset: 0; box-sizing: border-box;">
+                        <div style="display: flex; align-items: center; gap: 10px; z-index: 2; width: 30%;">
+                            ${icon ? `<i class="${icon}" style="font-size: 24px; flex-shrink: 0;"></i>` : ''}
+                            <span style="font-weight: 600; font-family: Inter; text-align: left; line-height: 1.3; font-size: 14px; word-wrap: break-word;">${title}</span>
+                        </div>
+                        ${bgImage ? `<div style="position: absolute; right: 0; top: 0; bottom: 0; width: 70%; background-image: url(${bgImage}); background-size: cover; background-position: center right; mask-image: linear-gradient(to right, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%); z-index: 1;"></div>` : ''}
+                    </div>
+                `;
+            } else {
+                previewContainer.innerHTML = `
+                    <div style="width: 100%; height: 100%; background-color: ${color}; display: flex; align-items: center; justify-content: center; color: white; padding: 15px; position: absolute; inset: 0;">
+                        ${bgImage ? `<div style="position: absolute; inset: 0; background-image: url(${bgImage}); background-size: cover; background-position: center; opacity: ${bgOpacity}; z-index: 1;"></div>` : ''}
+                        <div style="z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                            ${icon ? `<i class="${icon}" style="font-size: 24px;"></i>` : ''}
+                            <span style="font-weight: 600; font-family: Inter; text-align: center;">${title}</span>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+    },
+
+    async saveAllToServer() {
+        try {
+            let currentConfig = {};
+            const fetchRes = await fetch(`${API_BASE}/cau-hinh`);
+            if (fetchRes.ok) {
+                currentConfig = await fetchRes.json();
+            }
+
+            currentConfig.sidebarBanners = this.banners;
+
+            const token = localStorage.getItem('accessToken');
+            const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+            
+            const res = await fetch(`${API_BASE}/cau-hinh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${tokenType} ${token}`
+                },
+                body: JSON.stringify(currentConfig)
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                if (result.success) {
+                    showAlert('Lưu cấu hình Sidebar Banner thành công!');
+                } else {
+                    showAlert(result.message || 'Lỗi khi lưu.', false);
+                }
+            } else {
+                showAlert('Lỗi server khi lưu.', false);
+            }
+        } catch (e) {
+            console.error(e);
+            showAlert('Lỗi kết nối khi lưu cấu hình.', false);
+        }
+    }
+};
+
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        partnerLinksApp.init();
+        sidebarBannersApp.init();
+        infoUtilityApp.init();
+    }, 500);
+});
+
+// ==========================================
+// FEATURED NEWS CONFIGURATION
+// ==========================================
+let featuredNewsSelections = [];
+let allNewsCache = [];
+
+async function loadAllNewsForFeatured() {
+    const categories = ['cap-nhat-bao-lu', 'cds-doi-moi-sang-tao', 'chi-dao-dieu-hanh', 'cong-tac-xay-dung-dang', 'giai-phap-an-toan-mang', 'giai-phap-an-toan-thong-tin', 'thong-bao', 'tieu-chuan-chat-luong', 'tin-hoat-dong', 'trao-doi-kinh-nghiem', 'tuong-tac-cong-dan'];
+    try {
+        let allPosts = [];
+        for (const cat of categories) {
+            const res = await apiFetch(`${API_BASE}/${cat}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.posts) {
+                    allPosts = allPosts.concat(data.posts);
+                }
+            }
+        }
+        
+        // Sort by views descending
+        allPosts.sort((a, b) => (b.views || 0) - (a.views || 0));
+        allNewsCache = allPosts;
+        renderFeaturedNewsList();
+    } catch (e) {
+        console.error("Lỗi lấy danh sách tin tức tổng hợp:", e);
+        const tbody = document.getElementById('featuredNewsList');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: red;">Lỗi tải dữ liệu.</td></tr>';
+    }
+}
+
+function renderFeaturedNewsList() {
+    const tbody = document.getElementById('featuredNewsList');
+    const countEl = document.getElementById('featuredNewsCount');
+    if (!tbody) return;
+    
+    tbody.innerHTML = '';
+    
+    if (allNewsCache.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="padding: 20px; text-align: center; color: #64748b;">Không có tin tức nào.</td></tr>';
+        return;
+    }
+    
+    allNewsCache.forEach(post => {
+        const isChecked = featuredNewsSelections.includes(post.id);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0;">
+                <input type="checkbox" style="width: 16px; height: 16px; cursor: pointer;" 
+                       onchange="toggleFeaturedNews('${post.id}', this)"
+                       ${isChecked ? 'checked' : ''}>
+            </td>
+            <td style="padding: 10px 15px; border-bottom: 1px solid #e2e8f0;">
+                <div style="font-weight: 500; color: #1e293b;">${post.title}</div>
+            </td>
+            <td style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0; color: #64748b;">
+                <i class="fa-solid fa-eye"></i> ${post.views || 0}
+            </td>
+            <td style="padding: 10px 15px; text-align: center; border-bottom: 1px solid #e2e8f0; color: #64748b;">
+                ${post.createdAt || ''}
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+    
+    if (countEl) countEl.textContent = `${featuredNewsSelections.length}/4`;
+}
+
+function toggleFeaturedNews(id, checkbox) {
+    if (checkbox.checked) {
+        if (featuredNewsSelections.length >= 4) {
+            checkbox.checked = false;
+            alert("Chỉ được chọn tối đa 4 tin nổi bật!");
+            return;
+        }
+        featuredNewsSelections.push(id);
+    } else {
+        featuredNewsSelections = featuredNewsSelections.filter(selId => selId !== id);
+    }
+    
+    const countEl = document.getElementById('featuredNewsCount');
+    if (countEl) countEl.textContent = `${featuredNewsSelections.length}/4`;
+}
+
+
+// ==========================================
+// INFO & UTILITY CONFIGURATION
+// ==========================================
+const infoUtilityApp = {
+    groups: [],
+    
+    async init() {
+        try {
+            const res = await fetch(`${API_BASE}/cau-hinh`);
+            if (res.ok) {
+                const config = await res.json();
+                this.groups = config.infoUtilityConfig || [
+                    {
+                        id: 1,
+                        title: 'THÔNG TIN TUYÊN TRUYỀN',
+                        bgColor: '',
+                        bgImage: '',
+                        links: [
+                            { id: 101, title: 'Cổng dịch vụ công quốc gia', url: '#', icon: 'fa-solid fa-star', iconColor: '#e74c3c' },
+                            { id: 102, title: 'Phản ánh, kiến nghị văn bản QPPL', url: '#', icon: 'fa-solid fa-folder-open', iconColor: '#f39c12' }
+                        ]
+                    },
+                    {
+                        id: 2,
+                        title: 'THÔNG TIN TRA CỨU',
+                        bgColor: '',
+                        bgImage: '',
+                        links: [
+                            { id: 201, title: 'Cơ cấu tổ chức', url: '#', icon: 'fa-solid fa-sitemap', iconColor: '#27ae60' }
+                        ]
+                    },
+                    {
+                        id: 3,
+                        title: 'TIN CẦN BIẾT',
+                        bgColor: '',
+                        bgImage: '',
+                        links: [
+                            { id: 301, title: 'Dự báo thời tiết', url: '#', icon: 'fa-solid fa-cloud-sun-rain', iconColor: '#3498db' }
+                        ]
+                    }
+                ];
+                this.renderList();
+            }
+        } catch (e) {
+            console.error("Lỗi tải infoUtilityConfig:", e);
+        }
+    },
+
+    openIconModal() {
+        const iconGrid = document.getElementById('icon-grid');
+        if (iconGrid && typeof partnerLinksApp !== 'undefined') {
+            iconGrid.innerHTML = `
+                <div onclick="infoUtilityApp.selectIcon('')" style="font-size: 14px; font-weight: bold; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: #ef4444;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    None
+                </div>
+            ` + partnerLinksApp.iconLibrary.map(iconClass => `
+                <div onclick="infoUtilityApp.selectIcon('${iconClass}')" style="font-size: 24px; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                    <i class="${iconClass}"></i>
+                </div>
+            `).join('');
+        }
+        document.getElementById('icon-modal').style.display = 'flex';
+    },
+
+    selectIcon(iconClass) {
+        document.getElementById('iu-link-icon').value = iconClass;
+        document.getElementById('icon-modal').style.display = 'none';
+        
+        // Restore icon modal back to partner links if needed
+        if (typeof partnerLinksApp !== 'undefined' && partnerLinksApp.iconLibrary) {
+            const iconGrid = document.getElementById('icon-grid');
+            if (iconGrid) {
+                iconGrid.innerHTML = `
+                    <div onclick="partnerLinksApp.selectIcon('')" style="font-size: 14px; font-weight: bold; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; color: #ef4444;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                        None
+                    </div>
+                ` + partnerLinksApp.iconLibrary.map(cls => `
+                    <div onclick="partnerLinksApp.selectIcon('${cls}')" style="font-size: 24px; padding: 15px 10px; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='white'; this.style.borderColor='#e2e8f0'">
+                        <i class="${cls}"></i>
+                    </div>
+                `).join('');
+            }
+        }
+    },
+
+    renderList() {
+        const listContainer = document.getElementById('iu-groups-list');
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        this.groups.forEach(group => {
+            let linksHtml = '';
+            if (group.links && group.links.length > 0) {
+                linksHtml = '<ul style="list-style: none; padding: 0; margin: 0; margin-top: 10px;">' + group.links.map(link => `
+                    <li style="display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #f1f5f9; background: white;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="${link.icon || 'fa-solid fa-star'}" style="color: ${link.iconColor || '#333'}; font-size: 16px; width: 20px; text-align: center;"></i>
+                            <a href="${link.url}" target="_blank" style="text-decoration: none; color: #333; font-size: 14px;">${link.title}</a>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <button type="button" onclick="infoUtilityApp.editLink(${group.id}, ${link.id})" style="background-color: #f59e0b; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;"><i class="fa-solid fa-pen"></i></button>
+                            <button type="button" onclick="infoUtilityApp.deleteLink(${group.id}, ${link.id})" style="background-color: #ef4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </li>
+                `).join('') + '</ul>';
+            } else {
+                linksHtml = '<div style="color: #94a3b8; font-style: italic; margin-top: 10px; font-size: 13px;">Chưa có mục nào trong cột này.</div>';
+            }
+
+            const div = document.createElement('div');
+            div.style.cssText = 'border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #f8fafc;';
+            div.innerHTML = `
+                <div style="background-color: ${group.bgColor || '#ffffff'}; padding: 12px 15px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; position: relative;">
+                    ${group.bgImage ? `<div style="position: absolute; inset: 0; background-image: url('${group.bgImage}'); background-size: cover; background-position: center; opacity: 0.3; z-index: 1;"></div>` : ''}
+                    <div style="font-weight: 600; color: #1e293b; font-size: 15px; position: relative; z-index: 2;">
+                        ${group.title} 
+                        <span style="font-size: 12px; font-weight: normal; color: #64748b; margin-left: 10px;">(${group.links ? group.links.length : 0} mục)</span>
+                    </div>
+                    <div style="display: flex; gap: 5px; position: relative; z-index: 2;">
+                        <button type="button" onclick="infoUtilityApp.addLink(${group.id})" style="background-color: var(--primary); color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 13px; cursor: pointer;"><i class="fa-solid fa-plus"></i> Thêm Mục</button>
+                        <button type="button" onclick="infoUtilityApp.editGroup(${group.id})" style="background-color: #f59e0b; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 13px; cursor: pointer;"><i class="fa-solid fa-pen"></i> Sửa Cột</button>
+                        <button type="button" onclick="infoUtilityApp.deleteGroup(${group.id})" style="background-color: #ef4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 13px; cursor: pointer;"><i class="fa-solid fa-trash"></i> Xóa Cột</button>
+                    </div>
+                </div>
+                <div style="padding: 10px;">
+                    ${linksHtml}
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
+    },
+
+    // Group methods
+    addGroup() {
+        document.getElementById('iu-group-form-title').textContent = 'Thêm Cột (Nhóm) Mới';
+        document.getElementById('iu-group-id').value = '';
+        document.getElementById('iu-group-title').value = '';
+        document.getElementById('iu-group-bgColor').value = '#164e9a';
+        document.getElementById('iu-group-bgImage').value = '';
+        
+        document.getElementById('iu-group-form-container').style.display = 'block';
+        document.getElementById('iu-link-form-container').style.display = 'none';
+    },
+
+    editGroup(id) {
+        const group = this.groups.find(x => x.id === id);
+        if (!group) return;
+
+        document.getElementById('iu-group-form-title').textContent = 'Chỉnh Sửa Cột (Nhóm)';
+        document.getElementById('iu-group-id').value = group.id;
+        document.getElementById('iu-group-title').value = group.title;
+        document.getElementById('iu-group-bgColor').value = group.bgColor || '#164e9a';
+        document.getElementById('iu-group-bgImage').value = group.bgImage || '';
+        
+        document.getElementById('iu-group-form-container').style.display = 'block';
+        document.getElementById('iu-link-form-container').style.display = 'none';
+    },
+
+    deleteGroup(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa toàn bộ Cột này và các Mục bên trong?')) {
+            this.groups = this.groups.filter(x => x.id !== id);
+            this.renderList();
+        }
+    },
+
+    saveGroup() {
+        const idVal = document.getElementById('iu-group-id').value;
+        const title = document.getElementById('iu-group-title').value || 'Chưa có tên';
+        const bgColor = document.getElementById('iu-group-bgColor').value;
+        const bgImage = document.getElementById('iu-group-bgImage').value;
+
+        if (idVal) {
+            const idx = this.groups.findIndex(x => x.id === parseInt(idVal));
+            if (idx >= 0) {
+                this.groups[idx].title = title;
+                this.groups[idx].bgColor = bgColor;
+                this.groups[idx].bgImage = bgImage;
+            }
+        } else {
+            this.groups.push({
+                id: Date.now(),
+                title,
+                bgColor,
+                bgImage,
+                links: []
+            });
+        }
+
+        this.renderList();
+        this.cancelEditGroup();
+    },
+
+    cancelEditGroup() {
+        document.getElementById('iu-group-form-container').style.display = 'none';
+    },
+
+    // Link methods
+    addLink(groupId) {
+        document.getElementById('iu-link-form-title').textContent = 'Thêm Mục Tiện Ích';
+        document.getElementById('iu-link-groupId').value = groupId;
+        document.getElementById('iu-link-id').value = '';
+        document.getElementById('iu-link-title').value = '';
+        document.getElementById('iu-link-url').value = '#';
+        document.getElementById('iu-link-icon').value = 'fa-solid fa-star';
+        document.getElementById('iu-link-iconColor').value = '#e74c3c';
+        
+        document.getElementById('iu-link-form-container').style.display = 'block';
+        document.getElementById('iu-group-form-container').style.display = 'none';
+    },
+
+    editLink(groupId, linkId) {
+        const group = this.groups.find(x => x.id === groupId);
+        if (!group) return;
+        const link = group.links.find(x => x.id === linkId);
+        if (!link) return;
+
+        document.getElementById('iu-link-form-title').textContent = 'Chỉnh Sửa Mục Tiện Ích';
+        document.getElementById('iu-link-groupId').value = groupId;
+        document.getElementById('iu-link-id').value = link.id;
+        document.getElementById('iu-link-title').value = link.title;
+        document.getElementById('iu-link-url').value = link.url;
+        document.getElementById('iu-link-icon').value = link.icon || 'fa-solid fa-star';
+        document.getElementById('iu-link-iconColor').value = link.iconColor || '#e74c3c';
+        
+        document.getElementById('iu-link-form-container').style.display = 'block';
+        document.getElementById('iu-group-form-container').style.display = 'none';
+    },
+
+    deleteLink(groupId, linkId) {
+        if (confirm('Bạn có chắc muốn xóa mục này?')) {
+            const group = this.groups.find(x => x.id === groupId);
+            if (group) {
+                group.links = group.links.filter(x => x.id !== linkId);
+                this.renderList();
+            }
+        }
+    },
+
+    saveLink() {
+        const groupId = parseInt(document.getElementById('iu-link-groupId').value);
+        const linkIdVal = document.getElementById('iu-link-id').value;
+        
+        const title = document.getElementById('iu-link-title').value || 'Mục chưa tên';
+        const url = document.getElementById('iu-link-url').value || '#';
+        const icon = document.getElementById('iu-link-icon').value;
+        const iconColor = document.getElementById('iu-link-iconColor').value;
+
+        const group = this.groups.find(x => x.id === groupId);
+        if (group) {
+            if (linkIdVal) {
+                const linkId = parseInt(linkIdVal);
+                const lIdx = group.links.findIndex(x => x.id === linkId);
+                if (lIdx >= 0) {
+                    group.links[lIdx] = { ...group.links[lIdx], title, url, icon, iconColor };
+                }
+            } else {
+                group.links.push({
+                    id: Date.now(),
+                    title,
+                    url,
+                    icon,
+                    iconColor
+                });
+            }
+            this.renderList();
+        }
+        this.cancelEditLink();
+    },
+
+    cancelEditLink() {
+        document.getElementById('iu-link-form-container').style.display = 'none';
+    },
+
+    async saveAllToServer() {
+        try {
+            let currentConfig = {};
+            const fetchRes = await fetch(`${API_BASE}/cau-hinh`);
+            if (fetchRes.ok) {
+                currentConfig = await fetchRes.json();
+            }
+
+            currentConfig.infoUtilityConfig = this.groups;
+
+            const token = localStorage.getItem('accessToken');
+            const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+            
+            const res = await fetch(`${API_BASE}/cau-hinh`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `${tokenType} ${token}`
+                },
+                body: JSON.stringify(currentConfig)
+            });
+
+            if (res.ok) {
+                const result = await res.json();
+                if (result.success) {
+                    showAlert('Lưu cấu hình Thông tin & Tiện ích thành công!');
+                } else {
+                    showAlert(result.message || 'Lỗi khi lưu.', false);
+                }
+            } else {
+                showAlert('Lỗi server khi lưu.', false);
+            }
+        } catch (e) {
+            console.error(e);
+            showAlert('Lỗi kết nối khi lưu cấu hình.', false);
+        }
+    }
+};
 

@@ -401,6 +401,79 @@ async function loadConfig() {
             });
         }
         
+        // Sidebar Banners (Quản lý sidebar tin tức)
+        if (config.sidebarBanners && Array.isArray(config.sidebarBanners)) {
+            const sidebarContainer = document.getElementById('dynamic-news-sidebar');
+            if (sidebarContainer) {
+                sidebarContainer.innerHTML = '';
+                config.sidebarBanners.forEach(banner => {
+                    let bannerHtml = '';
+                    const styleType = banner.style || 'original';
+                    
+                    if (styleType === 'image_right') {
+                        bannerHtml = `
+                        <a href="${banner.url}" class="sidebar-banner style-image-right" style="display: flex; align-items: center; height: 100px; border-radius: 8px; margin-bottom: 15px; text-decoration: none; color: white; overflow: hidden; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: ${banner.color}; transition: transform 0.2s;">
+                            <div style="display: flex; align-items: center; gap: 15px; padding: 0 20px; z-index: 2; width: 30%; box-sizing: border-box;">
+                                ${banner.icon ? `<i class="${banner.icon}" style="font-size: 32px; flex-shrink: 0;"></i>` : ''}
+                                <span style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; line-height: 1.4; word-wrap: break-word;">${banner.title}</span>
+                            </div>
+                            ${banner.bgImage ? `<div style="position: absolute; right: 0; top: 0; bottom: 0; width: 70%; background-image: url('${banner.bgImage}'); background-size: cover; background-position: center right; z-index: 1; mask-image: linear-gradient(to right, transparent 0%, black 40%); -webkit-mask-image: linear-gradient(to right, transparent 0%, black 40%);"></div>` : ''}
+                        </a>
+                        `;
+                    } else {
+                        // Original style
+                        bannerHtml = `
+                        <a href="${banner.url}" class="sidebar-banner style-original" style="display: flex; align-items: center; justify-content: center; height: 100px; border-radius: 8px; margin-bottom: 15px; text-decoration: none; color: white; overflow: hidden; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); background-color: ${banner.color}; transition: transform 0.2s;">
+                            ${banner.bgImage ? `<div style="position: absolute; inset: 0; background-image: url('${banner.bgImage}'); background-size: cover; background-position: center; opacity: ${banner.bgOpacity !== undefined ? banner.bgOpacity : 0.2}; z-index: 1;"></div>` : ''}
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; z-index: 2; width: 100%; padding: 0 15px;">
+                                ${banner.icon ? `<i class="${banner.icon}" style="font-size: 28px;"></i>` : ''}
+                                <span style="font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 600; text-align: center;">${banner.title}</span>
+                            </div>
+                        </a>
+                        `;
+                    }
+                    sidebarContainer.innerHTML += bannerHtml;
+                });
+            }
+        } else {
+            // Fallback for older configs
+            const sidebarContainer = document.getElementById('dynamic-news-sidebar');
+            if (sidebarContainer) {
+                sidebarContainer.innerHTML = `
+                    <a href="#" class="sidebar-banner" style="display: block; text-decoration: none;">
+                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="280" height="100" rx="8" fill="#0a59ab" />
+                            <text x="140" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="600" font-family="Inter">Dịch vụ công trực tuyến</text>
+                        </svg>
+                    </a>
+                    <a href="#" class="sidebar-banner" style="display: block; text-decoration: none;">
+                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="280" height="100" rx="8" fill="#e74c3c" />
+                            <text x="140" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="600" font-family="Inter">Gửi phản hồi</text>
+                        </svg>
+                    </a>
+                    <a href="#" class="sidebar-banner" style="display: block; text-decoration: none;">
+                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="280" height="100" rx="8" fill="#27ae60" />
+                            <text x="140" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="600" font-family="Inter">Hỏi cơ quan nhà nước</text>
+                        </svg>
+                    </a>
+                    <a href="#" class="sidebar-banner" style="display: block; text-decoration: none;">
+                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="280" height="100" rx="8" fill="#f39c12" />
+                            <text x="140" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="600" font-family="Inter">Tương tác báo chí</text>
+                        </svg>
+                    </a>
+                    <a href="#" class="sidebar-banner" style="display: block; text-decoration: none;">
+                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="280" height="100" rx="8" fill="#2c3e50" />
+                            <text x="140" y="55" text-anchor="middle" fill="white" font-size="16" font-weight="600" font-family="Inter">Tìm hiểu về chuyển đổi số</text>
+                        </svg>
+                    </a>
+                `;
+            }
+        }
+        
         // Agency Links (Liên kết cơ quan) logic
         if (config.agencyLinksGroups && Array.isArray(config.agencyLinksGroups)) {
             const container = document.getElementById('agency-links-container');
@@ -445,19 +518,107 @@ async function loadConfig() {
 
 async function loadDynamicNews() {
     try {
+        const renderFeaturedNews = async () => {
+            try {
+                const configRes = await fetch(`${API_BASE}/cau-hinh`);
+                const config = await configRes.json();
+                const featuredIds = config.featuredNewsIds || [];
+                
+                let featuredPosts = [];
+                if (featuredIds.length > 0) {
+                    const categories = ['cap-nhat-bao-lu', 'cds-doi-moi-sang-tao', 'chi-dao-dieu-hanh', 'cong-tac-xay-dung-dang', 'giai-phap-an-toan-mang', 'giai-phap-an-toan-thong-tin', 'thong-bao', 'tieu-chuan-chat-luong', 'tin-hoat-dong', 'trao-doi-kinh-nghiem', 'tuong-tac-cong-dan'];
+                    let allPosts = [];
+                    for (const cat of categories) {
+                        const res = await fetch(`${API_BASE}/${cat}`);
+                        if (res.ok) {
+                            const data = await res.json();
+                            if (data && data.posts) {
+                                data.posts.forEach(p => p.categoryId = cat);
+                                allPosts = allPosts.concat(data.posts);
+                            }
+                        }
+                    }
+                    
+                    featuredIds.forEach(id => {
+                        const post = allPosts.find(p => p.id === id);
+                        if (post) featuredPosts.push(post);
+                    });
+                }
+                
+                if (featuredPosts.length === 0) {
+                    const fallbackRes = await fetch(`${API_BASE}/chi-dao-dieu-hanh`);
+                    if (fallbackRes.ok) {
+                        const data = await fallbackRes.json();
+                        if (data && data.posts) {
+                            data.posts.forEach(p => p.categoryId = 'chi-dao-dieu-hanh');
+                            data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                            featuredPosts = data.posts.slice(0, 4);
+                        }
+                    }
+                }
+                
+                const featuredContainer = document.getElementById('dynamic-featured-main');
+                const ul = document.getElementById('dynamic-featured-list');
+                
+                if (featuredPosts.length > 0) {
+                    const featured = featuredPosts[0];
+                    if (featuredContainer && featured) {
+                        let imageHtml = featured.imageUrl 
+                            ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                            : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
+                            
+                        featuredContainer.innerHTML = `
+                            <div class="news-card featured">
+                                <div class="news-card-image">${imageHtml}</div>
+                                <div class="news-card-body">
+                                    <span class="news-date">
+                                        <span><i class="fa-regular fa-calendar"></i> ${featured.createdAt}</span>
+                                        <span class="trending-badge"><i class="fa-solid fa-eye"></i> ${featured.views || 0} lượt xem</span>
+                                    </span>
+                                    <h3><a href="${featured.linkUrl || `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${featured.categoryId || 'chi-dao-dieu-hanh'}&id=${featured.id}`}">${featured.title}</a></h3>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    if (ul && featuredPosts.length > 1) {
+                        const displayList = featuredPosts.slice(1, 4);
+                        let html = '';
+                        displayList.forEach(item => {
+                            html += `
+                                <li>
+                                    <a href="${item.linkUrl || `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${item.categoryId || 'chi-dao-dieu-hanh'}&id=${item.id}`}">
+                                        <span class="news-list-date">${item.createdAt || ''} <span style="margin-left:8px; color: #64748b; font-size: 0.85em;"><i class="fa-solid fa-eye"></i> ${item.views || 0}</span></span>
+                                        <span>${item.title || ''}</span>
+                                    </a>
+                                </li>
+                            `;
+                        });
+                        ul.innerHTML = html;
+                    }
+                }
+            } catch (e) {
+                console.error("Lỗi lấy tin nổi bật:", e);
+            }
+        };
+
         const fetchAndRender = async (categoryId, listId, featuredId) => {
             const response = await fetch(`${API_BASE}/${categoryId}`);
             if (!response.ok) return;
             const data = await response.json();
             const ul = document.getElementById(listId);
             const featuredContainer = document.getElementById(featuredId);
+            
+            if (ul) ul.innerHTML = '';
+            if (featuredContainer) featuredContainer.innerHTML = '';
+            
             if (data && data.posts && data.posts.length > 0) {
                 data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 const featured = data.posts[0];
                 if (featuredContainer && featured) {
                     let imageHtml = featured.imageUrl 
-                        ? `<img src="${featured.imageUrl.startsWith('http') ? featured.imageUrl : `http://localhost:5100${featured.imageUrl}`}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                        ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
                         : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
                         
                     featuredContainer.innerHTML = `
@@ -468,7 +629,7 @@ async function loadDynamicNews() {
                                     <span><i class="fa-regular fa-calendar"></i> ${featured.createdAt}</span>
                                     <span class="trending-badge"><i class="fa-solid fa-arrow-trend-up"></i> Mới nhất</span>
                                 </span>
-                                <h3><a href="${featured.linkUrl || '#'}">${featured.title}</a></h3>
+                                <h3><a href="${featured.linkUrl || `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${categoryId}&id=${featured.id}`}">${featured.title}</a></h3>
                             </div>
                         </div>
                     `;
@@ -480,7 +641,7 @@ async function loadDynamicNews() {
                     displayList.forEach(item => {
                         html += `
                             <li>
-                                <a href="${item.linkUrl || '#'}">
+                                <a href="${item.linkUrl || `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${item.categoryId || 'chi-dao-dieu-hanh'}&id=${item.id}`}">
                                     <span class="news-list-date">${item.createdAt || ''}</span>
                                     <span>${item.title || ''}</span>
                                 </a>
@@ -493,7 +654,7 @@ async function loadDynamicNews() {
         };
 
         await Promise.all([
-            fetchAndRender('chi-dao-dieu-hanh', 'dynamic-chidao-list', 'dynamic-chidao-featured'),
+            renderFeaturedNews(),
             fetchAndRender('tuong-tac-cong-dan', 'dynamic-tuongtac-list', 'dynamic-tuongtac-featured'),
             fetchAndRender('cds-doi-moi-sang-tao', 'dynamic-cds-list', 'dynamic-cds-featured'),
             fetchAndRender('cap-nhat-bao-lu', 'dynamic-baolu-list', 'dynamic-baolu-featured')
@@ -660,12 +821,12 @@ function ensureSearchResultPanel() {
 
 function resolveBackendUrl(url) {
     if (!url || url === '#') return '#';
-    return url.startsWith('http') ? url : `http://localhost:5100${url}`;
+    return url.match(/^(http|data:)/) ? url : `http://localhost:5100${url}`;
 }
 
 function resolveFrontendUrl(url) {
     if (!url || url === '#') return '#';
-    if (url.startsWith('http')) return url;
+    if (url.match(/^(http|data:)/)) return url;
     return url.startsWith('/') ? `${window.location.origin}${url}` : url;
 }
 
@@ -827,9 +988,35 @@ async function loadCategoryNews() {
     if (!titleEl && !contentEl) return;
 
     try {
-        const response = await fetch(`${API_BASE}/${categoryId}`);
-        if (!response.ok) return;
-        const data = await response.json();
+        let data = { title: '', posts: [] };
+        
+        if (categoryId === 'tat-ca-tin-tuc') {
+            data.title = 'Tất cả tin tức';
+            const categories = ['cap-nhat-bao-lu', 'cds-doi-moi-sang-tao', 'chi-dao-dieu-hanh', 'cong-tac-xay-dung-dang', 'giai-phap-an-toan-mang', 'giai-phap-an-toan-thong-tin', 'thong-bao', 'tieu-chuan-chat-luong', 'tin-hoat-dong', 'trao-doi-kinh-nghiem', 'tuong-tac-cong-dan'];
+            let allPosts = [];
+            for (const cat of categories) {
+                try {
+                    const res = await fetch(`${API_BASE}/${cat}`);
+                    if (res.ok) {
+                        const catData = await res.json();
+                        if (catData && catData.posts) {
+                            catData.posts.forEach(p => p.categoryId = cat);
+                            allPosts = allPosts.concat(catData.posts);
+                        }
+                    }
+                } catch (e) {
+                    console.warn(`Failed to fetch ${cat}:`, e);
+                }
+            }
+            data.posts = allPosts;
+        } else {
+            const response = await fetch(`${API_BASE}/${categoryId}`);
+            if (!response.ok) return;
+            data = await response.json();
+            if (data && data.posts) {
+                data.posts.forEach(p => p.categoryId = categoryId);
+            }
+        }
         
         if (titleEl && data.title) titleEl.innerText = data.title;
         if (contentEl) {
@@ -850,19 +1037,25 @@ async function loadCategoryNews() {
             };
 
             const renderCard = (post) => {
-                const card = document.createElement('div');
+                const card = document.createElement('a');
                 card.className = 'baolu-card';
+                card.style.textDecoration = 'none';
+                card.style.color = 'inherit';
                 
                 let imageHtml = '';
-                if (post.imageUrl) {
-                    const imgUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `http://localhost:5100${post.imageUrl}`;
-                    imageHtml = `<div class="baolu-img"><img src="${imgUrl}" alt="${post.title}"></div>`;
+                if (post.imageUrl && post.imageUrl.trim() !== '') {
+                    const imgUrl = post.imageUrl.match(/^(http|data:)/) ? post.imageUrl : `http://localhost:5100${post.imageUrl}`;
+                    imageHtml = `<div class="baolu-img"><img src="${imgUrl}" alt="${post.title}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\\'no-image-placeholder\\'>Không có hình ảnh</div>';"></div>`;
+                } else {
+                    imageHtml = `<div class="baolu-img"><div class="no-image-placeholder">Không có hình ảnh</div></div>`;
                 }
                 
                 // Ưu tiên linkUrl nếu có, nếu không thì dùng trang chi tiết nội bộ
-                const detailLink = post.linkUrl ? post.linkUrl : `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${categoryId}&id=${post.id}`;
-                const targetAttr = post.linkUrl ? 'target="_blank"' : '';
-                const linkHtml = `<a href="${detailLink}" ${targetAttr} class="baolu-link"><i class="fa-solid fa-link"></i> Xem chi tiết</a>`;
+                const detailLink = post.linkUrl ? post.linkUrl : `../../user/tin-tuc/chi-tiet-tin-tuc.html?category=${post.categoryId || categoryId}&id=${post.id}`;
+                card.href = detailLink;
+                if (post.linkUrl) {
+                    card.target = '_blank';
+                }
                 
                 card.innerHTML = `
                     ${imageHtml}
@@ -873,10 +1066,9 @@ async function loadCategoryNews() {
                             ${post.author ? `<span><i class="fa-solid fa-user"></i> ${post.author}</span>` : ''}
                             ${post.source ? `<span><i class="fa-solid fa-newspaper"></i> ${post.source}</span>` : ''}
                         </div>
-                        <div class="baolu-card-content" style="color: #475569; font-size: 15px; margin-bottom: 15px;">
+                        <div class="baolu-card-content">
                             ${getExcerpt(post.content)}
                         </div>
-                        ${linkHtml}
                     </div>
                 `;
                 return card;
@@ -895,16 +1087,197 @@ async function loadCategoryNews() {
             }
 
             if (regularPosts.length > 0) {
+                const itemsPerPage = 10;
+                let currentPage = 1;
+                const totalPages = Math.ceil(regularPosts.length / itemsPerPage);
+
+                const listContainer = document.createElement('div');
                 const regularGrid = document.createElement('div');
-                regularGrid.className = 'baolu-grid'; // Vẫn giữ class cũ để hiển thị list 1 cột
-                regularPosts.forEach(post => {
-                    regularGrid.appendChild(renderCard(post));
-                });
-                contentEl.appendChild(regularGrid);
+                regularGrid.className = 'baolu-grid'; 
+                listContainer.appendChild(regularGrid);
+                
+                const paginationContainer = document.createElement('div');
+                paginationContainer.className = 'pagination';
+                listContainer.appendChild(paginationContainer);
+
+                contentEl.appendChild(listContainer);
+
+                const renderPage = (page) => {
+                    regularGrid.innerHTML = '';
+                    const start = (page - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    const pageItems = regularPosts.slice(start, end);
+                    
+                    pageItems.forEach(post => {
+                        regularGrid.appendChild(renderCard(post));
+                    });
+                };
+
+                const renderPagination = (page) => {
+                    if (totalPages <= 1) {
+                        paginationContainer.innerHTML = '';
+                        return;
+                    }
+                    
+                    let html = '';
+                    const maxButtons = 5;
+                    let startPage = Math.max(1, page - Math.floor(maxButtons / 2));
+                    let endPage = startPage + maxButtons - 1;
+
+                    if (endPage > totalPages) {
+                        endPage = totalPages;
+                        startPage = Math.max(1, endPage - maxButtons + 1);
+                    }
+
+                    if (startPage > 1) {
+                        html += `<button class="page-btn" data-page="1">1</button>`;
+                        if (startPage > 2) html += `<span class="page-ellipsis">...</span>`;
+                    }
+
+                    for (let i = startPage; i <= endPage; i++) {
+                        html += `<button class="page-btn ${i === page ? 'active' : ''}" data-page="${i}">${i}</button>`;
+                    }
+
+                    if (endPage < totalPages) {
+                        if (endPage < totalPages - 1) html += `<span class="page-ellipsis">...</span>`;
+                        html += `<button class="page-btn" data-page="${totalPages}">${totalPages}</button>`;
+                    }
+
+                    paginationContainer.innerHTML = html;
+                    
+                    paginationContainer.querySelectorAll('.page-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const newPage = parseInt(btn.getAttribute('data-page'));
+                            if (newPage !== currentPage) {
+                                currentPage = newPage;
+                                renderPage(currentPage);
+                                renderPagination(currentPage);
+                                const y = listContainer.getBoundingClientRect().top + window.scrollY - 100;
+                                window.scrollTo({top: y, behavior: 'smooth'});
+                            }
+                        });
+                    });
+                };
+
+                renderPage(currentPage);
+                renderPagination(currentPage);
             }
         }
     } catch (e) {
         console.warn(`Backend C# is not running. Failed to load ${categoryId}.`, e);
         if (contentEl) contentEl.innerHTML = "<p>Lỗi kết nối tới Server. Vui lòng bật Backend.</p>";
+    }
+}
+
+// ==========================================
+// PARTNER LINKS DYNAMIC RENDERING
+// ==========================================
+async function loadDynamicPartnerLinks() {
+    const container = document.getElementById('dynamic-partner-links');
+    if (!container) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/cau-hinh`);
+        if (res.ok) {
+            const config = await res.json();
+            const links = config.partnerLinks || [
+                { title: 'Chuyển đổi số', url: '#', color1: '#2e8b57', color2: '#3cb371', icon: 'fa-solid fa-rocket' },
+                { title: 'Đổi mới sáng tạo', url: '#', color1: '#c0392b', color2: '#e74c3c', icon: 'fa-solid fa-lightbulb' },
+                { title: 'Sự kiện', url: '#', color1: '#8e44ad', color2: '#9b59b6', icon: 'fa-solid fa-calendar-days' },
+                { title: 'Khoa học Công nghệ', url: '#', color1: '#1a5276', color2: '#2980b9', icon: 'fa-solid fa-microchip' }
+            ];
+
+            container.innerHTML = '';
+            links.forEach(link => {
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.className = 'partner-card';
+                a.style.background = `linear-gradient(135deg, ${link.color1}, ${link.color2})`;
+                a.style.position = 'relative';
+                a.style.overflow = 'hidden';
+                
+                // If it's a FontAwesome class, render i tag, else assume it might be SVG code
+                let iconHtml = '';
+                if (link.icon && link.icon.includes('<svg')) {
+                    iconHtml = link.icon;
+                } else {
+                    iconHtml = `<i class="${link.icon || 'fa-solid fa-link'}" style="font-size: 32px; color: white;"></i>`;
+                }
+
+                let bgHtml = '';
+                if (link.bgImage) {
+                    bgHtml = `<div style="position: absolute; inset: 0; background-image: url(${link.bgImage}); background-size: cover; background-position: center; opacity: ${link.bgOpacity !== undefined ? link.bgOpacity : 0.2}; z-index: 1;"></div>`;
+                }
+
+                a.innerHTML = `
+                    ${bgHtml}
+                    <div class="partner-icon" style="position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">
+                        ${iconHtml}
+                    </div>
+                    <span style="position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.6);">${link.title}</span>
+                    <i class="fa-solid fa-arrow-right" style="position: relative; z-index: 2; text-shadow: 0 2px 4px rgba(0,0,0,0.6);"></i>
+                `;
+                container.appendChild(a);
+            });
+        }
+    } catch (e) {
+        console.error("Lỗi khi tải Liên kết đối tác:", e);
+        // Fallback or leave empty
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadDynamicPartnerLinks();
+});
+
+function renderInfoUtility(config) {
+    const iuWrapper = document.querySelector('.info-utility-wrapper');
+    if (!iuWrapper) return;
+    
+    // Check if we have dynamic config
+    if (config.infoUtilityConfig && config.infoUtilityConfig.length > 0) {
+        iuWrapper.innerHTML = ''; // Clear static HTML
+        
+        config.infoUtilityConfig.forEach((group, index) => {
+            // Default classes matching the static layout
+            // index 0 -> iu-card-blue
+            // index 1 -> iu-card-blue
+            // index 2 -> iu-card-gradient
+            const defaultClass = index === 2 ? 'iu-card-gradient' : 'iu-card-blue';
+            const cardClass = 'iu-card ' + defaultClass;
+            
+            // Build inline styles for custom background
+            let bgStyle = '';
+            // Only apply custom color if it's explicitly chosen and not #ffffff (or if they want white, maybe let them, but white breaks white text)
+            // Let's just apply it. In admin we will fix the default to #164e9a
+            if (group.bgColor) {
+                bgStyle += `background-color: ${group.bgColor}; `;
+            }
+            if (group.bgImage) {
+                bgStyle += `background-image: url('${group.bgImage}'); background-size: cover; background-position: center;`;
+            }
+
+            let linksHtml = '';
+            if (group.links && group.links.length > 0) {
+                linksHtml = group.links.map(link => `
+                    <a href="${link.url}" class="iu-grid-item">
+                        <div class="iu-icon" style="color: ${link.iconColor || '#333'};"><i class="${link.icon || 'fa-solid fa-star'}"></i></div>
+                        <span>${link.title}</span>
+                    </a>
+                `).join('');
+            }
+
+            const cardHtml = `
+                <div class="${cardClass}" style="${bgStyle}">
+                    <div class="iu-header">
+                        <h2 class="iu-title">${group.title}</h2>
+                    </div>
+                    <div class="iu-inner-grid">
+                        ${linksHtml}
+                    </div>
+                </div>
+            `;
+            iuWrapper.innerHTML += cardHtml;
+        });
     }
 }

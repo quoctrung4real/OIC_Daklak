@@ -61,7 +61,7 @@ const commonComponents = {
                             <a href="${window.BASE_URL || ''}user/gioi-thieu/co-cau-to-chuc.html">Cơ cấu tổ chức</a>
                         </li>
                         <li class="nav-item has-dropdown" data-nav="tin-tuc">
-                            <a href="#">Tin tức <i class="fa-solid fa-angle-down"></i></a>
+                            <a href="${window.BASE_URL || ''}user/tin-tuc/danh-sach-tin-tuc.html">Tin tức <i class="fa-solid fa-angle-down"></i></a>
                             <ul class="dropdown">
                                 <li><a href="${window.BASE_URL || ''}user/tin-tuc/cap-nhat-bao-lu.html">Cập nhật bão lũ</a></li>
                                 <li><a href="${window.BASE_URL || ''}user/tin-tuc/cds-doi-moi-sang-tao.html">CĐS - Đổi mới sáng tạo</a></li>

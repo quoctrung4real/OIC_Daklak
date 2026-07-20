@@ -127,7 +127,7 @@
                 }
 
                 if (post.imageUrl) {
-                    const imgUrl = post.imageUrl.startsWith('http') ? post.imageUrl : `http://localhost:5100${post.imageUrl}`;
+                    const imgUrl = post.imageUrl.match(/^(http|data:)/) ? post.imageUrl : `http://localhost:5100${post.imageUrl}`;
                     const imgEl = document.getElementById('detail-image');
                     imgEl.src = imgUrl;
                     imgEl.alt = post.title;

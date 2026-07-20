@@ -179,5 +179,64 @@
         }
       ]
     }
+  ],
+  "featuredNewsIds": [
+    "1783997362554",
+    "1784194584598",
+    "1783908053403"
+  ],
+  "infoUtilityConfig": [
+    {
+      "id": 1,
+      "title": "TH\u00D4NG TIN TUY\u00CAN TRUY\u1EC0N",
+      "bgColor": "",
+      "bgImage": "",
+      "links": [
+        {
+          "id": 101,
+          "title": "C\u1ED5ng d\u1ECBch v\u1EE5 c\u00F4ng qu\u1ED1c gia",
+          "url": "https://dichvucong.gov.vn/",
+          "icon": "fa-solid fa-star",
+          "iconColor": "#e74c3c"
+        },
+        {
+          "id": 102,
+          "title": "Ph\u1EA3n \u00E1nh, ki\u1EBFn ngh\u1ECB v\u0103n b\u1EA3n QPPL",
+          "url": "#",
+          "icon": "fa-solid fa-folder-open",
+          "iconColor": "#f39c12"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "TH\u00D4NG TIN TRA C\u1EE8U",
+      "bgColor": "",
+      "bgImage": "",
+      "links": [
+        {
+          "id": 201,
+          "title": "C\u01A1 c\u1EA5u t\u1ED5 ch\u1EE9c",
+          "url": "#",
+          "icon": "fa-solid fa-sitemap",
+          "iconColor": "#27ae60"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "TIN C\u1EA6N BI\u1EBET",
+      "bgColor": "",
+      "bgImage": "",
+      "links": [
+        {
+          "id": 301,
+          "title": "D\u1EF1 b\u00E1o th\u1EDDi ti\u1EBFt",
+          "url": "#",
+          "icon": "fa-solid fa-cloud-sun-rain",
+          "iconColor": "#3498db"
+        }
+      ]
+    }
   ]
 }

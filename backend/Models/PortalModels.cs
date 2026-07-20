@@ -31,6 +31,7 @@ public sealed class NewsPostDto
     public string? LinkUrl { get; set; }
     public string? LinkText { get; set; }
     public string? CreatedAt { get; set; }
+    public int Views { get; set; } = 0;
 }
 
 public sealed class UserDto

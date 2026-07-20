@@ -2081,17 +2081,18 @@ body.is-sticky .nav-wrapper {
     flex-direction: column;
 }
 .baolu-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 .baolu-img {
     width: 100%;
-    height: 250px;
+    min-height: 140px;
     overflow: hidden;
+    display: flex;
 }
 .baolu-img img {
     width: 100%;
-    height: 100%;
+    flex: 1;
     object-fit: cover;
     transition: transform 0.5s ease;
 }
@@ -2099,23 +2100,23 @@ body.is-sticky .nav-wrapper {
     transform: scale(1.05);
 }
 .baolu-info {
-    padding: 25px;
+    padding: 10px 15px;
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 .baolu-card-title {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
     color: var(--primary-dark);
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     line-height: 1.4;
 }
 .baolu-meta {
     display: flex;
     gap: 15px;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     color: var(--text-light);
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     flex-wrap: wrap;
 }
 .baolu-meta span {
@@ -2124,9 +2125,13 @@ body.is-sticky .nav-wrapper {
     gap: 5px;
 }
 .baolu-card-content {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-medium);
-    margin-bottom: 20px;
+    margin-bottom: 5px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
     flex: 1;
 }
 .baolu-link {
@@ -2148,11 +2153,28 @@ body.is-sticky .nav-wrapper {
 @media (min-width: 768px) {
     .baolu-card {
         flex-direction: row;
+        align-items: stretch;
     }
     .baolu-img {
-        width: 35%;
+        width: 30%;
         height: auto;
+        min-height: unset;
+        max-height: unset;
+        flex-shrink: 0;
     }
+}
+
+.no-image-placeholder {
+    width: 100%;
+    min-height: 120px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
 }
 
 /* ===== FEATURED NEWS GRID (2x1) ===== */
@@ -2168,7 +2190,43 @@ body.is-sticky .nav-wrapper {
 }
 .news-featured-grid .baolu-img {
     width: 100%;
-    height: 250px;
+}
+
+/* ===== PAGINATION ===== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+.page-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    background: #fff;
+    color: var(--primary-dark);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.page-btn:hover {
+    background: #e9ecef;
+}
+.page-btn.active {
+    background: var(--primary-blue);
+    color: #fff;
+    border-color: var(--primary-blue);
+}
+.page-ellipsis {
+    color: #6c757d;
+    font-weight: 500;
+    padding: 0 5px;
 }
 .news-featured-grid .baolu-card-title {
     font-size: 1.5rem;

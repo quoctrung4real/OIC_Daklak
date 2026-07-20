@@ -267,56 +267,8 @@
     <!-- ===== PARTNER LINKS CAROUSEL ===== -->
     <section class="partner-links-section">
         <div class="container">
-            <div class="partner-links-grid">
-                <a href="#" class="partner-card" style="background: linear-gradient(135deg, #2e8b57, #3cb371);">
-                    <div class="partner-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="24" cy="24" r="20" stroke="white" stroke-width="2" opacity="0.6" />
-                            <path d="M16 24 L22 18 L28 22 L34 16" stroke="white" stroke-width="2" fill="none"
-                                stroke-linecap="round" />
-                            <circle cx="24" cy="30" r="4" fill="white" opacity="0.7" />
-                        </svg>
-                    </div>
-                    <span>Chuyển đổi số</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-                <a href="#" class="partner-card" style="background: linear-gradient(135deg, #c0392b, #e74c3c);">
-                    <div class="partner-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="24" cy="20" r="6" stroke="white" stroke-width="2" />
-                            <path d="M14 38 C14 30 34 30 34 38" stroke="white" stroke-width="2" fill="none" />
-                            <path d="M20 14 L24 8 L28 14" stroke="white" stroke-width="2" fill="none"
-                                stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    <span>Đổi mới sáng tạo</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-                <a href="#" class="partner-card" style="background: linear-gradient(135deg, #8e44ad, #9b59b6);">
-                    <div class="partner-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="12" y="16" width="24" height="16" rx="3" stroke="white" stroke-width="2" />
-                            <circle cx="24" cy="24" r="5" stroke="white" stroke-width="2" />
-                            <path d="M18 36 L30 36" stroke="white" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    <span>Sự kiện</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
-                <a href="#" class="partner-card" style="background: linear-gradient(135deg, #1a5276, #2980b9);">
-                    <div class="partner-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="24" cy="24" r="12" stroke="white" stroke-width="2" />
-                            <circle cx="24" cy="24" r="4" fill="white" opacity="0.6" />
-                            <path d="M24 12 L24 8" stroke="white" stroke-width="2" stroke-linecap="round" />
-                            <path d="M24 40 L24 36" stroke="white" stroke-width="2" stroke-linecap="round" />
-                            <path d="M12 24 L8 24" stroke="white" stroke-width="2" stroke-linecap="round" />
-                            <path d="M40 24 L36 24" stroke="white" stroke-width="2" stroke-linecap="round" />
-                        </svg>
-                    </div>
-                    <span>Khoa học Công nghệ</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </a>
+            <div class="partner-links-grid" id="dynamic-partner-links">
+                <!-- Partner links will be rendered here dynamically -->
             </div>
         </div>
     </section>
@@ -331,52 +283,12 @@
                             <span class="section-label">Tin tức</span>
                             <h2 class="section-title">Tin nổi bật</h2>
                         </div>
-                        <div class="news-featured" id="dynamic-chidao-featured">
-                            <div class="news-card featured">
-                                <div class="news-card-image">
-                                    <svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
-                                        <rect width="400" height="240" fill="#d4e5f7" />
-                                        <rect x="40" y="60" width="100" height="60" rx="4" fill="#8fb3ce" />
-                                        <rect x="160" y="40" width="120" height="80" rx="4" fill="#a8c4db" />
-                                        <rect x="300" y="70" width="60" height="50" rx="4" fill="#b5d0e3" />
-                                        <circle cx="200" cy="180" r="20" fill="#0a59ab" opacity="0.2" />
-                                        <text x="200" y="210" text-anchor="middle" fill="#6b7280" font-size="12"
-                                            font-family="Inter">Ảnh Hội nghị</text>
-                                    </svg>
-                                </div>
-                                <div class="news-card-body">
-                                    <span class="news-date">
-                                        <span><i class="fa-regular fa-calendar"></i> 26/06/2026</span>
-                                        <span class="trending-badge"><i class="fa-solid fa-arrow-trend-up"></i> Xem
-                                            nhiều nhất</span>
-                                    </span>
-                                    <h3><a href="#">Đắk Lắk sẵn sàng cho Hội nghị Công bố Quy hoạch và Xúc tiến đầu tư
-                                            năm 2026</a></h3>
-                                </div>
-                            </div>
+                        <div class="news-featured" id="dynamic-featured-main">
                         </div>
-                        <ul class="news-list" id="dynamic-chidao-list">
-                            <li>
-                                <a href="#">
-                                    <span class="news-list-date">25/06/2026</span>
-                                    <span>Tăng cường truyền thông về Hội nghị Công bố Quy hoạch tỉnh Đắk Lắk</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="news-list-date">24/06/2026</span>
-                                    <span>Đoàn công tác của Bộ Thông tin và Truyền thông làm việc tại Đắk Lắk</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#">
-                                    <span class="news-list-date">23/06/2026</span>
-                                    <span>Triển khai các nhiệm vụ chuyển đổi số năm 2026 trên địa bàn tỉnh</span>
-                                </a>
-                            </li>
+                        <ul class="news-list" id="dynamic-featured-list">
                         </ul>
                         <div style="display: flex; margin-top: 15px;">
-                            <a href="#" class="show-more-link">
+                            <a href="../../user/tin-tuc/danh-sach-tin-tuc.html" class="show-more-link">
                                 <span>Xem thêm</span>
                                 <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -437,7 +349,7 @@
                             </li>
                         </ul>
                         <div style="display: flex; margin-top: 15px;">
-                            <a href="#" class="show-more-link">
+                            <a href="../../user/chuyen-muc-khac/tuong-tac-cong-dan.html" class="show-more-link">
                                 <span>Xem thêm</span>
                                 <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -498,7 +410,7 @@
                             </li>
                         </ul>
                         <div style="display: flex; margin-top: 15px;">
-                            <a href="#" class="show-more-link">
+                            <a href="../../user/tin-tuc/cds-doi-moi-sang-tao.html" class="show-more-link">
                                 <span>Xem thêm</span>
                                 <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -553,7 +465,7 @@
                             </li>
                         </ul>
                         <div style="display: flex; margin-top: 15px;">
-                            <a href="#" class="show-more-link">
+                            <a href="../../user/tin-tuc/cap-nhat-bao-lu.html" class="show-more-link">
                                 <span>Xem thêm</span>
                                 <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -566,68 +478,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="news-sidebar">
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#0a59ab" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Dịch vụ công trực tuyến</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#e74c3c" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Gửi phản hồi</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#27ae60" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Hỏi cơ quan nhà nước</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#f39c12" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Tương tác báo chí</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#8e44ad" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Tham quan bảo tàng Đăk Lăk</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#2c3e50" />
-                            <text x="140" y="45" text-anchor="middle" fill="white" font-size="14" font-weight="600"
-                                font-family="Inter">Tìm hiểu về chuyển đổi số</text>
-                            <text x="140" y="65" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="11"
-                                font-family="Inter"></text>
-                        </svg>
-                    </div>
-                    <div class="sidebar-banner">
-                        <svg viewBox="0 0 280 100" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="280" height="100" rx="8" fill="#16a085" />
-                            <text x="140" y="50" text-anchor="middle" fill="white" font-size="16" font-weight="700"
-                                font-family="Inter">Đăk Lăk Số</text>
-                        </svg>
-                    </div>
+                <div class="news-sidebar" id="dynamic-news-sidebar">
+                    <!-- Sidebar banners will be populated by JS -->
                 </div>
             </div>
         </div>
