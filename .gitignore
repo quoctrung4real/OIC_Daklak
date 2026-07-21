@@ -7,6 +7,9 @@ backend/obj/
 backend/.env
 backend/.env.*
 !backend/.env.example
+backend/appsettings.json
+backend/appsettings.*.json
+!backend/appsettings.example.json
 *.md
 backend/BAO_CAO_TIEN_DO.md
 backend/data/
