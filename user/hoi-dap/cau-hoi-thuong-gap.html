@@ -201,45 +201,24 @@
             loadFAQs();
         });
 
-        function loadFAQs() {
-            // 1. Lấy danh sách FAQ từ Admin (Thường gặp)
-            const adminFaqs = JSON.parse(localStorage.getItem('portal_faqs') || '[]');
-            
-            // 2. Lấy danh sách câu hỏi của Người dân đã được duyệt công khai (isPublic = true) và đã trả lời
-            const userQuestionsRaw = JSON.parse(localStorage.getItem('portal_user_questions') || '[]');
-            const publicUserQuestions = userQuestionsRaw.filter(q => q.isPublic && q.status === 'answered');
-
-            // 3. Hợp nhất cả hai danh sách lại
-            // - adminFaqs: { id, title, question, answer, order }
-            // - publicUserQuestions: { id, title, content (question), answer, isPublic, ... }
-            
-            let combinedFaqs = [];
-
-            // Chuẩn hóa cấu trúc
-            adminFaqs.forEach(faq => {
-                combinedFaqs.push({
-                    id: 'admin_' + faq.id,
-                    title: faq.question,
-                    question: faq.question,
-                    answer: faq.answer,
-                    order: faq.order || 0
-                });
-            });
-
-            publicUserQuestions.forEach(q => {
-                combinedFaqs.push({
-                    id: 'user_' + q.id,
-                    title: q.title || q.content.substring(0, 50) + '...',
-                    question: q.content,
-                    answer: q.answer,
-                    order: 999 // Câu hỏi người dân xếp sau cùng hoặc tuỳ logic
-                });
-            });
-
-            // Sắp xếp theo order
-            combinedFaqs.sort((a, b) => a.order - b.order);
-
-            renderFAQs(combinedFaqs);
+        async function loadFAQs() {
+            try {
+                const [faqResponse, questionResponse] = await Promise.all([
+                    fetch('/api/faq'),
+                    fetch('/api/cau-hoi-nguoi-dan?publicOnly=true')
+                ]);
+                if (!faqResponse.ok || !questionResponse.ok) throw new Error('Không tải được dữ liệu hỏi đáp');
+                const adminFaqs = await faqResponse.json();
+                const publicQuestions = await questionResponse.json();
+                const combinedFaqs = [
+                    ...adminFaqs.map(faq => ({ id: `admin_${faq.id}`, title: faq.question, question: faq.question, answer: faq.answer, order: faq.order || 0 })),
+                    ...publicQuestions.map(item => ({ id: `user_${item.id}`, title: item.title || item.content.slice(0, 50), question: item.content, answer: item.answer, order: 999 }))
+                ].sort((a, b) => a.order - b.order);
+                renderFAQs(combinedFaqs);
+            } catch (error) {
+                console.error(error);
+                renderFAQs([]);
+            }
         }
 
         function renderFAQs(faqs) {

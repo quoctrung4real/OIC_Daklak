@@ -49,4 +49,12 @@ public interface IPortalDataStore
     Task<List<OpinionFeedbackDto>> GetFeedbacksAsync(int? draftOpinionId, CancellationToken cancellationToken);
     Task<OpinionFeedbackDto> AddFeedbackAsync(OpinionFeedbackDto payload, CancellationToken cancellationToken);
     Task DeleteFeedbackAsync(int id, CancellationToken cancellationToken);
+
+    Task<List<FaqDto>> GetFaqsAsync(CancellationToken cancellationToken);
+    Task<FaqDto> SaveFaqAsync(int? id, FaqDto payload, CancellationToken cancellationToken);
+    Task DeleteFaqAsync(int id, CancellationToken cancellationToken);
+    Task<List<UserQuestionDto>> GetUserQuestionsAsync(bool publicOnly, CancellationToken cancellationToken);
+    Task<UserQuestionDto> AddUserQuestionAsync(UserQuestionDto payload, CancellationToken cancellationToken);
+    Task<UserQuestionDto> UpdateUserQuestionAsync(int id, UserQuestionDto payload, CancellationToken cancellationToken);
+    Task DeleteUserQuestionAsync(int id, CancellationToken cancellationToken);
 }

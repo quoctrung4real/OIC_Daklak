@@ -35,6 +35,10 @@ public sealed class JsonToSqlMigrationService
         await MigrateMainNewsAsync(dataDir, report, cancellationToken);
         await MigrateUsersAsync(dataDir, report, cancellationToken);
         await MigrateCommentsAsync(dataDir, report, cancellationToken);
+        await MigrateDocumentsAsync(dataDir, report, cancellationToken);
+        await MigrateDraftOpinionsAsync(dataDir, report, cancellationToken);
+        await MigrateFeedbacksAsync(dataDir, report, cancellationToken);
+        await MigrateQnaAsync(dataDir, report, cancellationToken);
 
         return report;
     }
@@ -169,6 +173,63 @@ public sealed class JsonToSqlMigrationService
         }
 
         report.CompletedSteps.Add($"Đã migrate bình luận: {successCount}/{comments.Count} bình luận.");
+    }
+
+    private async Task MigrateDocumentsAsync(string dataDir, MigrationReport report, CancellationToken cancellationToken)
+    {
+        var items = await ReadJsonAsync<List<DocumentDto>>(dataDir, "van-ban.json", report, cancellationToken);
+        if (items is null) return;
+        var currentItems = await _store.GetDocumentsAsync(null, int.MaxValue, cancellationToken);
+        foreach (var item in items)
+        {
+            var existing = currentItems.FirstOrDefault(value =>
+                (!string.IsNullOrWhiteSpace(item.DocumentNumber) && value.DocumentNumber == item.DocumentNumber) ||
+                (value.Title == item.Title && value.PublishedAt == item.PublishedAt));
+            if (existing is null) await _store.AddDocumentAsync(item, cancellationToken);
+            else await _store.UpdateDocumentAsync(existing.Id, item, cancellationToken);
+        }
+        report.CompletedSteps.Add($"Đã migrate văn bản: {items.Count} văn bản.");
+    }
+
+    private async Task MigrateDraftOpinionsAsync(string dataDir, MigrationReport report, CancellationToken cancellationToken)
+    {
+        var items = await ReadJsonAsync<List<DraftOpinionDto>>(dataDir, "y-kien-du-thao.json", report, cancellationToken);
+        if (items is null) return;
+        var existing = await _store.GetDraftOpinionsAsync(cancellationToken);
+        foreach (var item in items)
+        {
+            if (item.Id > 0 && existing.Any(value => value.Id == item.Id)) await _store.UpdateDraftOpinionAsync(item.Id, item, cancellationToken);
+            else await _store.AddDraftOpinionAsync(item, cancellationToken);
+        }
+        report.CompletedSteps.Add($"Đã migrate dự thảo: {items.Count} bản ghi.");
+    }
+
+    private async Task MigrateFeedbacksAsync(string dataDir, MigrationReport report, CancellationToken cancellationToken)
+    {
+        var items = await ReadJsonAsync<List<OpinionFeedbackDto>>(dataDir, "gop-y.json", report, cancellationToken);
+        if (items is null) return;
+        var existing = await _store.GetFeedbacksAsync(null, cancellationToken);
+        var newItems = items.Where(item => !existing.Any(value => value.Id == item.Id)).ToList();
+        foreach (var item in newItems) await _store.AddFeedbackAsync(item, cancellationToken);
+        report.CompletedSteps.Add($"Đã migrate góp ý dự thảo: {newItems.Count}/{items.Count} bản ghi mới.");
+    }
+
+    private async Task MigrateQnaAsync(string dataDir, MigrationReport report, CancellationToken cancellationToken)
+    {
+        var faqs = await ReadJsonAsync<List<FaqDto>>(dataDir, "faq.json", report, cancellationToken);
+        if (faqs is not null)
+        {
+            foreach (var item in faqs) await _store.SaveFaqAsync(item.Id > 0 ? item.Id : null, item, cancellationToken);
+            report.CompletedSteps.Add($"Đã migrate FAQ: {faqs.Count} câu hỏi.");
+        }
+        var questions = await ReadJsonAsync<List<UserQuestionDto>>(dataDir, "cau-hoi-nguoi-dan.json", report, cancellationToken);
+        if (questions is not null)
+        {
+            var existing = await _store.GetUserQuestionsAsync(false, cancellationToken);
+            var newItems = questions.Where(item => !existing.Any(value => value.Id == item.Id)).ToList();
+            foreach (var item in newItems) await _store.AddUserQuestionAsync(item, cancellationToken);
+            report.CompletedSteps.Add($"Đã migrate câu hỏi người dân: {newItems.Count}/{questions.Count} câu hỏi mới.");
+        }
     }
 
     private async Task<T?> ReadJsonAsync<T>(string dataDir, string fileName, MigrationReport report, CancellationToken cancellationToken)

@@ -310,7 +310,7 @@ CREATE TABLE Cms.Articles (
     Slug            VARCHAR(500)                    NULL,
     Summary         NVARCHAR(1000)                  NULL,
     Content         NVARCHAR(MAX)                   NOT NULL,
-    ImageUrl        VARCHAR(500)                    NULL,
+    ImageUrl        NVARCHAR(MAX)                   NULL,
     Source          NVARCHAR(250)                   NULL,
     Author          NVARCHAR(150)                   NULL,
     PublishedAt     DATETIME2(7)                    NULL,
@@ -879,6 +879,43 @@ GO
 IF COL_LENGTH('Portal.SystemConfigs', 'ConfigValue') IS NOT NULL
 BEGIN
     ALTER TABLE Portal.SystemConfigs ALTER COLUMN ConfigValue NVARCHAR(MAX) NULL;
+END
+GO
+
+-- Hỏi đáp: FAQ và câu hỏi do người dân gửi
+IF OBJECT_ID('Portal.Faqs', 'U') IS NULL
+BEGIN
+    CREATE TABLE Portal.Faqs (
+        Id INT NOT NULL PRIMARY KEY,
+        Question NVARCHAR(1000) NOT NULL,
+        Answer NVARCHAR(MAX) NOT NULL,
+        DisplayOrder INT NOT NULL DEFAULT 0,
+        IsDeleted BIT NOT NULL DEFAULT 0,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedAt DATETIME2 NULL
+    );
+END
+GO
+
+IF OBJECT_ID('Portal.UserQuestions', 'U') IS NULL
+BEGIN
+    CREATE TABLE Portal.UserQuestions (
+        Id INT NOT NULL PRIMARY KEY,
+        Topic NVARCHAR(255) NULL,
+        Title NVARCHAR(500) NULL,
+        SenderName NVARCHAR(255) NULL,
+        SenderEmail NVARCHAR(255) NULL,
+        SenderPhone NVARCHAR(50) NULL,
+        Address NVARCHAR(500) NULL,
+        Content NVARCHAR(MAX) NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        Status VARCHAR(20) NOT NULL DEFAULT 'pending',
+        Answer NVARCHAR(MAX) NULL,
+        IsPublic BIT NOT NULL DEFAULT 0,
+        IsDeleted BIT NOT NULL DEFAULT 0,
+        UpdatedAt DATETIME2 NULL,
+        CONSTRAINT CK_UserQuestions_Status CHECK (Status IN ('pending', 'answered'))
+    );
 END
 GO
 

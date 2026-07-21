@@ -119,7 +119,11 @@ try
                 )
                 BEGIN
                     ALTER TABLE Gov.Documents ADD OriginalFileName NVARCHAR(255) NULL;
-                END
+                END;
+                IF COL_LENGTH('Cms.Articles', 'ImageUrl') IS NOT NULL
+                BEGIN
+                    ALTER TABLE Cms.Articles ALTER COLUMN ImageUrl NVARCHAR(MAX) NULL;
+                END;
             ", connection);
             command.ExecuteNonQuery();
         }
@@ -273,6 +277,50 @@ app.MapPost("/api/y-kien-du-thao/{id:int}/gop-y", async (int id, OpinionFeedback
 app.MapDelete("/api/gop-y/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
     await store.DeleteFeedbackAsync(id, cancellationToken);
+    return Results.Json(new { success = true });
+}).RequireAuthorization("AdminOnly");
+
+app.MapGet("/api/faq", async (IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(await store.GetFaqsAsync(cancellationToken)));
+
+app.MapPost("/api/faq", async (FaqDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(new { success = true, faq = await store.SaveFaqAsync(null, payload, cancellationToken) }))
+    .RequireAuthorization("AdminOnly");
+
+app.MapPut("/api/faq/{id:int}", async (int id, FaqDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(new { success = true, faq = await store.SaveFaqAsync(id, payload, cancellationToken) }))
+    .RequireAuthorization("AdminOnly");
+
+app.MapDelete("/api/faq/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    await store.DeleteFaqAsync(id, cancellationToken);
+    return Results.Json(new { success = true });
+}).RequireAuthorization("AdminOnly");
+
+app.MapGet("/api/cau-hoi-nguoi-dan", async (IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(await store.GetUserQuestionsAsync(true, cancellationToken)));
+
+app.MapGet("/api/admin/cau-hoi-nguoi-dan", async (IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(await store.GetUserQuestionsAsync(false, cancellationToken)))
+    .RequireAuthorization("AdminOnly");
+
+app.MapPost("/api/cau-hoi-nguoi-dan", async (UserQuestionDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    if (string.IsNullOrWhiteSpace(payload.SenderName) || string.IsNullOrWhiteSpace(payload.SenderEmail) || string.IsNullOrWhiteSpace(payload.Content))
+        return Results.BadRequest(new { success = false, message = "Vui lòng nhập họ tên, email và nội dung." });
+    payload.Status = "pending";
+    payload.Answer = null;
+    payload.IsPublic = false;
+    return Results.Json(new { success = true, question = await store.AddUserQuestionAsync(payload, cancellationToken) });
+});
+
+app.MapPut("/api/admin/cau-hoi-nguoi-dan/{id:int}", async (int id, UserQuestionDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+    Results.Json(new { success = true, question = await store.UpdateUserQuestionAsync(id, payload, cancellationToken) }))
+    .RequireAuthorization("AdminOnly");
+
+app.MapDelete("/api/admin/cau-hoi-nguoi-dan/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    await store.DeleteUserQuestionAsync(id, cancellationToken);
     return Results.Json(new { success = true });
 }).RequireAuthorization("AdminOnly");
 

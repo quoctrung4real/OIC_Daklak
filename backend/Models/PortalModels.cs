@@ -213,3 +213,27 @@ public sealed class OpinionFeedbackDto
     public string? Content { get; set; }
     public string? CreatedAt { get; set; }
 }
+
+public sealed class FaqDto
+{
+    public int Id { get; set; }
+    public string? Question { get; set; }
+    public string? Answer { get; set; }
+    public int Order { get; set; }
+}
+
+public sealed class UserQuestionDto
+{
+    public int Id { get; set; }
+    public string? Topic { get; set; }
+    public string? Title { get; set; }
+    public string? SenderName { get; set; }
+    public string? SenderEmail { get; set; }
+    public string? SenderPhone { get; set; }
+    public string? Address { get; set; }
+    public string? Content { get; set; }
+    public string? CreatedAt { get; set; }
+    public string Status { get; set; } = "pending";
+    public string? Answer { get; set; }
+    public bool IsPublic { get; set; }
+}

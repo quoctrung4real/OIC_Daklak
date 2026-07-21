@@ -346,31 +346,29 @@
             }
         });
 
-        document.getElementById('contact-form').addEventListener('submit', function(e) {
+        document.getElementById('contact-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // Xử lý gửi câu hỏi (lưu vào localStorage giả lập gửi lên server)
             const newQuestion = {
-                id: Date.now().toString(),
                 senderName: document.getElementById('fname').value,
                 senderEmail: document.getElementById('femail').value,
                 senderPhone: document.getElementById('fphone').value,
                 content: document.getElementById('fcon').value,
                 topic: document.getElementById('fcat').options[document.getElementById('fcat').selectedIndex].text,
                 title: document.getElementById('ftitle').value,
-                address: document.getElementById('faddress').value,
-                createdAt: new Date().toISOString(),
-                status: 'pending',
-                answer: '',
-                isPublic: false
+                address: document.getElementById('faddress').value
             };
-
-            const existingQuestions = JSON.parse(localStorage.getItem('portal_user_questions') || '[]');
-            existingQuestions.push(newQuestion);
-            localStorage.setItem('portal_user_questions', JSON.stringify(existingQuestions));
-
-            alert('Cảm ơn bạn đã gửi phản hồi/câu hỏi. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất!');
-            this.reset();
+            try {
+                const response = await fetch('/api/cau-hoi-nguoi-dan', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newQuestion)
+                });
+                const result = await response.json();
+                if (!response.ok) throw new Error(result.message || 'Không gửi được câu hỏi');
+                alert('Cảm ơn bạn đã gửi phản hồi/câu hỏi. Chúng tôi sẽ liên hệ lại trong thời gian sớm nhất!');
+                this.reset();
+            } catch (error) {
+                alert(error.message);
+            }
         });
     </script>
 </body>
