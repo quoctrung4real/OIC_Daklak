@@ -585,6 +585,14 @@ app.MapPost("/api/binh-luan/{id}/dislike", async (string id, IPortalDataStore st
         : Results.Json(new { success = true, dislikes });
 });
 
+app.MapDelete("/api/binh-luan/{id}", async (string id, [Microsoft.AspNetCore.Mvc.FromQuery] string username, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    var result = await store.DeleteCommentAsync(id, username ?? string.Empty, cancellationToken);
+    return result.Success
+        ? (IResult)Results.Json(new { success = true, message = result.Message })
+        : Results.BadRequest(new { success = false, message = result.Message });
+});
+
 app.MapPost("/api/admin/nguoi-dung", async (UserDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
     var result = await store.AdminSaveUserAsync(null, payload, cancellationToken);

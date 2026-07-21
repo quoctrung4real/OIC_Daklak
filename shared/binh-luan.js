@@ -70,8 +70,14 @@ document.addEventListener('DOMContentLoaded', () => {
             commentsList.innerHTML = '<p class="no-comments">Chưa có bình luận nào. Hãy là người đầu tiên bình luận!</p>';
             return;
         }
+        const currentUser = localStorage.getItem('currentUser');
         
         sorted.forEach(c => {
+            const isOwnComment = currentUser && c.Username === currentUser;
+            const deleteBtnHtml = isOwnComment 
+                ? `<button class="delete-comment-btn" data-id="${c.Id}" style="position: absolute; top: 15px; right: 15px; color: #dc2626; border: none; background: transparent; cursor: pointer; font-size: 14px;" title="Xoá bình luận"><i class="fa-solid fa-trash"></i></button>`
+                : '';
+                
             const div = document.createElement('div');
             div.className = 'comment-item';
                         const avatarHtml = c.AvatarUrl 
@@ -80,7 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 
             div.innerHTML = `
                 <div class="comment-avatar">${avatarHtml}</div>
-                <div class="comment-content-box">
+                <div class="comment-content-box" style="position: relative;">
+                    ${deleteBtnHtml}
                     <div class="comment-meta">
                         <span class="comment-author">${c.Username}</span>
                         <span class="comment-date">${c.CreatedAt}</span>
@@ -141,6 +148,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 } catch(err) {
                     console.error(err);
+                }
+            });
+        });
+
+        document.querySelectorAll('.delete-comment-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const currentUser = localStorage.getItem('currentUser');
+                if (!currentUser) return;
+                
+                if (!confirm('Bạn có chắc chắn muốn xoá bình luận này?')) return;
+                
+                const id = e.currentTarget.getAttribute('data-id');
+                try {
+                    const res = await fetch(`http://localhost:5100/api/binh-luan/${id}?username=${encodeURIComponent(currentUser)}`, { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.success) {
+                        fetchComments();
+                    } else {
+                        alert(data.message || 'Có lỗi xảy ra.');
+                    }
+                } catch(err) {
+                    console.error(err);
+                    alert('Lỗi khi xoá bình luận.');
                 }
             });
         });

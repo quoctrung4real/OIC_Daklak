@@ -27,6 +27,7 @@ public interface IPortalDataStore
     Task<List<CommentDto>> GetCommentsAsync(string pageId, CancellationToken cancellationToken);
     Task<CommentDto> AddCommentAsync(CommentDto comment, CancellationToken cancellationToken);
     Task<int?> VoteCommentAsync(string id, bool isLike, CancellationToken cancellationToken);
+    Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken);
 
     Task<List<AnnouncementDto>> GetAnnouncementsAsync(int take, CancellationToken cancellationToken);
     Task<List<DocumentTypeDto>> GetDocumentTypesAsync(CancellationToken cancellationToken);

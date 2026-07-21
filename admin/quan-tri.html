@@ -1240,12 +1240,14 @@
                 <form id="footer-config-form">
                     <!-- Cấu hình Footer -->
                     <div class="admin-card" style="margin-top: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary);">
-                        <div style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;">
+                        <div class="config-section-header" style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
                             <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-shoe-prints"></i> Cấu hình Footer</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
                         </div>
-                        <div style="padding: 15px;">
-                            <h5 style="margin-top:0;">Thông tin Trung tâm</h5>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="config-section-content" style="display: none;">
+                            <div style="padding: 15px;">
+                                <h5 style="margin-top:0;">Thông tin Trung tâm</h5>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                                 <div class="form-group">
                                     <label>Tên Thương Hiệu (Brand Name)</label>
                                     <input type="text" id="footerBrandName" class="form-control">
@@ -1333,6 +1335,7 @@
                         </div>
                         <div style="padding: 15px; background: #f8f9fa; border-top: 1px solid #eee; border-radius: 0 0 8px 8px; text-align: right;">
                             <button type="submit" style="padding: 10px 25px; font-size: 15px; background-color: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-save"></i> Lưu Cấu Hình Footer</button>
+                        </div>
                         </div>
                     </div>
                 </form>

@@ -531,3 +531,91 @@ const commonComponents = {
         }
     }, 100);
 })();
+
+window.currentFontSize = 17;
+window.changeFontSize = function(step) {
+    window.currentFontSize += step;
+    
+    // Giới hạn cỡ chữ
+    if (window.currentFontSize < 12) window.currentFontSize = 12;
+    if (window.currentFontSize > 30) window.currentFontSize = 30;
+
+    // Cập nhật phần trăm hiển thị
+    const zoomText = document.getElementById('zoom-percentage');
+    if (zoomText) {
+        const percentage = Math.round((window.currentFontSize / 17) * 100);
+        zoomText.innerText = percentage + '%';
+    }
+
+    const contentDiv = document.getElementById('detail-content') || document.querySelector('.article-detail-content') || document.querySelector('.doc-detail-content');
+    if (contentDiv) {
+        contentDiv.style.fontSize = window.currentFontSize + 'px';
+        contentDiv.style.lineHeight = '1.8';
+        const allTextElements = contentDiv.querySelectorAll('p, div, span, li');
+        allTextElements.forEach(el => {
+            el.style.fontSize = window.currentFontSize + 'px';
+            el.style.lineHeight = '1.8';
+        });
+    }
+
+    const docTables = document.querySelectorAll('.doc-detail-meta-table td, .doc-detail-meta-table th');
+    if (docTables.length > 0) {
+        docTables.forEach(el => {
+            el.style.fontSize = Math.max(12, window.currentFontSize - 2) + 'px';
+        });
+    }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    const pageId = document.body.getAttribute('data-page-id');
+    const isDetailPage = ['chi-tiet-tin-tuc', 'chi-tiet-video', 'chi-tiet-van-ban', 'chi-tiet-y-kien'].includes(pageId);
+    
+    if (isDetailPage) {
+        const zoomWidget = document.createElement('div');
+        zoomWidget.id = 'zoom-widget';
+        zoomWidget.style.position = 'fixed';
+        zoomWidget.style.left = 'max(20px, calc(50% - 550px))';
+        zoomWidget.style.top = '50%';
+        zoomWidget.style.transform = 'translateY(-50%)';
+        zoomWidget.style.display = 'flex';
+        zoomWidget.style.flexDirection = 'column';
+        zoomWidget.style.background = '#fff';
+        zoomWidget.style.border = '1px solid #cbd5e1';
+        zoomWidget.style.borderRadius = '30px';
+        zoomWidget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.1)';
+        zoomWidget.style.overflow = 'hidden';
+        zoomWidget.style.zIndex = '9999';
+        zoomWidget.style.transition = 'opacity 0.3s ease';
+        
+        let initialPercentage = 100;
+        if (window.currentFontSize) {
+            initialPercentage = Math.round((window.currentFontSize / 17) * 100);
+        }
+
+        zoomWidget.innerHTML = `
+            <button onclick="changeFontSize(1)" style="background: transparent; color: #0f172a; border: none; padding: 12px 15px; cursor: pointer; font-size: 18px; transition: background 0.2s; border-bottom: 1px solid #cbd5e1;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'" title="Tăng cỡ chữ">
+                <i class="fa-solid fa-plus" style="color: #64748b;"></i>
+            </button>
+            <div id="zoom-percentage" style="padding: 10px 0; text-align: center; font-size: 13px; font-weight: bold; color: #475569; border-bottom: 1px solid #cbd5e1; user-select: none;">${initialPercentage}%</div>
+            <button onclick="changeFontSize(-1)" style="background: transparent; color: #0f172a; border: none; padding: 12px 15px; cursor: pointer; font-size: 18px; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'" title="Giảm cỡ chữ">
+                <i class="fa-solid fa-minus" style="color: #64748b;"></i>
+            </button>
+        `;
+        document.body.appendChild(zoomWidget);
+
+        window.addEventListener('scroll', () => {
+            const contentDiv = document.getElementById('detail-content') || document.querySelector('.article-detail-content') || document.querySelector('.doc-detail-content');
+            if (contentDiv && zoomWidget) {
+                const contentRect = contentDiv.getBoundingClientRect();
+                // When the bottom of the article goes above the middle of the screen (where widget is), hide the widget
+                if (contentRect.bottom < (window.innerHeight / 2)) {
+                    zoomWidget.style.opacity = '0';
+                    zoomWidget.style.pointerEvents = 'none';
+                } else {
+                    zoomWidget.style.opacity = '1';
+                    zoomWidget.style.pointerEvents = 'auto';
+                }
+            }
+        });
+    }
+});

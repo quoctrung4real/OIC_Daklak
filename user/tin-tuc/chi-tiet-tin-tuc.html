@@ -20,9 +20,6 @@
             gap: 15px;
             color: #64748b;
             font-size: 14px;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e2e8f0;
         }
         .article-detail-content img {
             max-width: 100%;
@@ -57,9 +54,16 @@
                 Đang tải dữ liệu...
             </h1>
             
-            <div id="detail-meta" class="article-detail-meta" style="display: none;">
-                <span id="detail-date"><i class="fa-solid fa-clock"></i> </span>
-                <span id="detail-source"><i class="fa-solid fa-newspaper"></i> </span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
+                <div id="detail-meta" class="article-detail-meta" style="display: none; gap: 15px; flex-wrap: wrap; color: #64748b; font-size: 14px;">
+                    <span id="detail-date"><i class="fa-solid fa-clock"></i> </span>
+                    <span id="detail-source"><i class="fa-solid fa-newspaper"></i> </span>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <button id="read-news-btn" style="background: #f8fafc; color: #0f172a; border: 1px solid #cbd5e1; padding: 6px 15px; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 500; display: none; align-items: center; gap: 8px; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+                        <i class="fa-solid fa-volume-high" style="color: #0a59ab;"></i> Đọc tin tức
+                    </button>
+                </div>
             </div>
 
             <img id="detail-image" class="article-detail-image" style="display: none;" src="" alt="">
@@ -124,6 +128,8 @@
                 document.getElementById('detail-title').innerText = post.title;
                 
                 document.getElementById('detail-meta').style.display = 'flex';
+                const readBtn = document.getElementById('read-news-btn');
+                if(readBtn) readBtn.style.display = 'flex';
                 document.getElementById('detail-date').innerHTML = `<i class="fa-solid fa-clock"></i> ${post.createdAt}`;
                 if (post.author) {
                     let authorSpan = document.getElementById('detail-author');

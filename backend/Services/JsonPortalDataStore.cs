@@ -228,6 +228,25 @@ public sealed class JsonPortalDataStore : IPortalDataStore
         return isLike ? comment.Likes : comment.Dislikes;
     }
 
+    public async Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken)
+    {
+        var comments = await ReadCommentsAsync(cancellationToken);
+        var comment = comments.FirstOrDefault(c => string.Equals(c.Id, id, StringComparison.OrdinalIgnoreCase));
+        if (comment is null)
+        {
+            return (false, "Không tìm thấy bình luận.");
+        }
+
+        if (!string.Equals(comment.Username, username, StringComparison.OrdinalIgnoreCase))
+        {
+            return (false, "Bạn không có quyền xoá bình luận này.");
+        }
+
+        comments.Remove(comment);
+        await WriteFileAsync("danh-sach-binh-luan.json", JsonSerializer.Serialize(comments, _jsonOptions), cancellationToken);
+        return (true, "Đã xoá bình luận.");
+    }
+
     public Task<List<AnnouncementDto>> GetAnnouncementsAsync(int take, CancellationToken cancellationToken)
     {
         return Task.FromResult(new List<AnnouncementDto>());
