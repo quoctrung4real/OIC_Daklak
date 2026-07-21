@@ -729,8 +729,8 @@ static IReadOnlyList<FrontendRouteInfo> GetFrontendRoutes()
         new("/chuyen-muc-khac/trao-doi-kinh-nghiem", "user/chuyen-muc-khac/trao-doi-kinh-nghiem.html", "user", "Trao đổi kinh nghiệm"),
         new("/chuyen-muc-khac/tuong-tac-cong-dan", "user/chuyen-muc-khac/tuong-tac-cong-dan.html", "user", "Tương tác công dân"),
 
-        new("/giai-phap/giai-phap-an-toan-mang", "user/giai-phap/giai-phap-an-toan-mang.html", "user", "Giải pháp An toàn mạng"),
-        new("/giai-phap/giai-phap-an-toan-thong-tin", "user/giai-phap/giai-phap-an-toan-thong-tin.html", "user", "Giải pháp An toàn thông tin")
+        new("/giai-phap/giai-phap-an-toan-mang", "user/tin-tuc/giai-phap-an-toan-mang.html", "user", "Giải pháp An toàn mạng"),
+        new("/giai-phap/giai-phap-an-toan-thong-tin", "user/tin-tuc/giai-phap-an-toan-thong-tin.html", "user", "Giải pháp An toàn thông tin")
     ];
 }
 
