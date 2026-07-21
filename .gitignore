@@ -11,6 +11,7 @@ backend/appsettings.json
 backend/appsettings.*.json
 !backend/appsettings.example.json
 *.md
+!docs/API_TEST_DATA.md
 backend/BAO_CAO_TIEN_DO.md
 backend/data/
 backend/database/*

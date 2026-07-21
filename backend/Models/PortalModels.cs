@@ -214,6 +214,102 @@ public sealed class OpinionFeedbackDto
     public string? CreatedAt { get; set; }
 }
 
+public sealed class LoginRequestDto
+{
+    public required string Username { get; set; }
+    public required string Password { get; set; }
+}
+
+public sealed class RegisterRequestDto
+{
+    public required string Username { get; set; }
+    public required string Password { get; set; }
+    public string? FullName { get; set; }
+    public string? Email { get; set; }
+    public string? DateOfBirth { get; set; }
+    public string? AvatarUrl { get; set; }
+}
+
+public sealed class FaqRequestDto
+{
+    public required string Question { get; set; }
+    public required string Answer { get; set; }
+    public int Order { get; set; }
+}
+
+public sealed class UserQuestionRequestDto
+{
+    public string? Topic { get; set; }
+    public string? Title { get; set; }
+    public required string SenderName { get; set; }
+    public required string SenderEmail { get; set; }
+    public string? SenderPhone { get; set; }
+    public string? Address { get; set; }
+    public required string Content { get; set; }
+}
+
+public sealed class UserQuestionReplyRequestDto
+{
+    public required string Answer { get; set; }
+    public bool IsPublic { get; set; }
+}
+
+public sealed class OpinionFeedbackRequestDto
+{
+    public required string FullName { get; set; }
+    public required string Email { get; set; }
+    public string? PhoneNumber { get; set; }
+    public required string Content { get; set; }
+}
+
+public sealed class CommentRequestDto
+{
+    public required string PageId { get; set; }
+    public required string Content { get; set; }
+}
+
+public sealed class UpdateProfileRequestDto
+{
+    public string? Password { get; set; }
+    public string? FullName { get; set; }
+    public string? Email { get; set; }
+    public string? DateOfBirth { get; set; }
+    public string? AvatarUrl { get; set; }
+}
+
+public sealed class AdminUserRequestDto
+{
+    public required string Username { get; set; }
+    public string? Password { get; set; }
+    public string Role { get; set; } = "User";
+    public string? FullName { get; set; }
+    public string? Email { get; set; }
+    public string? DateOfBirth { get; set; }
+    public string? AvatarUrl { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class DocumentRequestDto
+{
+    public required string TypeCode { get; set; }
+    public string? DocumentNumber { get; set; }
+    public string? PublishedAt { get; set; }
+    public required string Title { get; set; }
+    public string? FileUrl { get; set; }
+    public string? OriginalFileName { get; set; }
+    public string? IssuingAuthority { get; set; }
+}
+
+public sealed class DraftOpinionRequestDto
+{
+    public string? DocumentNumber { get; set; }
+    public required string Title { get; set; }
+    public string? FileUrl { get; set; }
+    public string? OriginalFileName { get; set; }
+    public string? EndDate { get; set; }
+    public string? Category { get; set; }
+}
+
 public sealed class FaqDto
 {
     public int Id { get; set; }
