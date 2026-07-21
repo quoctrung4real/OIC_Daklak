@@ -740,7 +740,8 @@ static IReadOnlyList<NewsCategoryInfo> GetNewsCategories()
         new() { Slug = "tieu-chuan-chat-luong", Title = "Tiêu chuẩn - Chất lượng" },
         new() { Slug = "tin-hoat-dong", Title = "Tin hoạt động" },
         new() { Slug = "trao-doi-kinh-nghiem", Title = "Trao đổi kinh nghiệm" },
-        new() { Slug = "tuong-tac-cong-dan", Title = "Tương tác công dân" }
+        new() { Slug = "tuong-tac-cong-dan", Title = "Tương tác công dân" },
+        new() { Slug = "tin-tuc-da-phuong-tien", Title = "Tin tức đa phương tiện" }
     ];
 }
 

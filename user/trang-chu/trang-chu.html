@@ -607,46 +607,10 @@
                     <span class="section-label light">Truyền thông</span>
                     <h2 class="section-title light">Đa phương tiện</h2>
                 </div>
-                <div class="media-types">
-                    <a href="#" class="media-type">
-                        <span class="media-icon video-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#DA251D" />
-                                <path
-                                    d="M21 15.88V16.12C21 16.23 20.97 16.33 20.92 16.43C20.86 16.52 20.79 16.6 20.69 16.66L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z"
-                                    fill="white" />
-                            </svg>
-                        </span>
-                        <span>Video</span>
-                    </a>
-                    <a href="#" class="media-type">
-                        <span class="media-icon photo-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#0FA246" />
-                                <rect x="9" y="10" width="14" height="12" rx="2" stroke="white" stroke-width="1.5" />
-                                <circle cx="13" cy="14" r="1.5" fill="white" />
-                                <path d="M9 19 L14 15 L17 18 L20 16 L23 19" stroke="white" stroke-width="1.5"
-                                    fill="none" />
-                            </svg>
-                        </span>
-                        <span>Hình ảnh</span>
-                    </a>
-                    <a href="#" class="media-type">
-                        <span class="media-icon info-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#EAAA08" />
-                                <rect x="10" y="8" width="5" height="16" rx="2" fill="white" opacity="0.8" />
-                                <rect x="17" y="12" width="5" height="12" rx="2" fill="white" opacity="0.6" />
-                                <rect x="24" y="16" width="5" height="8" rx="2" fill="white" opacity="0.4" />
-                            </svg>
-                        </span>
-                        <span>Infographic</span>
-                    </a>
+                <div class="media-types" id="multimedia-tabs-container">
+                    <!-- Tabs will be rendered here by JS -->
                 </div>
-                <a href="#" class="show-more-btn light">
+                <a href="#" class="show-more-btn light" id="multimedia-show-more-btn">
                     <span>Xem thêm</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path
@@ -658,44 +622,8 @@
                     </svg>
                 </a>
             </div>
-            <div class="multimedia-content">
-                <div class="video-featured">
-                    <div class="video-thumbnail">
-                        <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="videoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1a5276;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="640" height="360" fill="url(#videoGrad)" />
-                            <!-- Bridge silhouette -->
-                            <path d="M0 280 Q160 220 320 280 Q480 220 640 280 L640 360 L0 360Z" fill="#1a4d8f"
-                                opacity="0.5" />
-                            <!-- Mountains -->
-                            <path d="M400 180 L500 280 L300 280Z" fill="#2c6fa0" opacity="0.3" />
-                            <path d="M500 200 L600 280 L400 280Z" fill="#2c6fa0" opacity="0.25" />
-                            <!-- Cloud -->
-                            <ellipse cx="320" cy="140" rx="80" ry="50" fill="white" opacity="0.15" />
-                            <text x="320" y="130" text-anchor="middle" fill="white" font-size="36" font-weight="800"
-                                font-family="Inter">Đăk Lăk Số</text>
-                            <text x="320" y="175" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="14"
-                                font-weight="600" font-family="Inter" letter-spacing="3">DỊCH VỤ ĐÔ THỊ THÔNG
-                                MINH</text>
-                            <text x="320" y="200" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="12"
-                                font-family="Inter">TỈNH ĐĂK LĂK</text>
-                        </svg>
-                        <div class="play-button">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#DA251D" />
-                                <path
-                                    d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z"
-                                    fill="white" />
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="video-title">Bản tin video an toàn thông tin số 165</p>
+            <div class="multimedia-content" id="multimedia-content-container">
+                <!-- Content will be rendered here by JS -->
                 </div>
             </div>
         </div>

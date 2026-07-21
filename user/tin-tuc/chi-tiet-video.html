@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết tin tức - Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk</title>
+    <meta name="description" content="Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk - DakLakIOC">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/giao-dien.css">
+    <style>
+        .article-detail-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .article-detail-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .article-detail-content p {
+            margin-bottom: 15px;
+        }
+        .article-detail-image {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body data-page-id="chi-tiet-tin-tuc">
+
+    <!-- ===== BREADCRUMB ===== -->
+    <div style="border-bottom: 1px solid #e2e8f0; background: #fff;">
+        <div class="container" style="max-width: 1000px; margin: 0 auto; display: flex;">
+            <div style="background: #f1f5f9; padding: 12px 30px 12px 20px; font-size: 14px; color: #475569; display: flex; align-items: center; gap: 10px; clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); font-weight: 500;">
+                <i class="fa-solid fa-house" style="color: #64748b;"></i>
+                <span>Tin Tức</span>
+                <i class="fa-solid fa-caret-right" style="font-size: 12px; color: #94a3b8;"></i>
+                <span style="color: #475569;">Video</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ARTICLE CONTENT ===== -->
+    <section class="article-section" style="padding: 30px 0 50px 0; background: #fff;">
+        <div class="container" style="max-width: 1000px; margin: 0 auto; line-height: 1.8;">
+            
+            <div style="background: #f4f6f8; padding: 30px; border-radius: 8px;">
+                <h1 id="detail-title" style="font-size: 28px; color: #0f172a; margin-bottom: 20px; font-weight: bold; line-height: 1.4;">
+                    Đang tải dữ liệu...
+                </h1>
+                
+                <div id="detail-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                    <div style="display: flex; gap: 15px; align-items: center; color: #475569; font-size: 14px; font-weight: 500;">
+                        <span id="detail-date"><i class="fa-regular fa-clock"></i> <span id="date-text">...</span></span>
+                        <span><i class="fa-solid fa-eye"></i> 185</span>
+                        <span><i class="fa-regular fa-comment"></i> 0</span>
+                    </div>
+                    <div style="display: flex; gap: 15px; color: #64748b; font-size: 18px;">
+                        <i class="fa-solid fa-envelope" style="cursor: pointer;"></i>
+                        <i class="fa-solid fa-print" style="cursor: pointer;"></i>
+                        <i class="fa-solid fa-floppy-disk" style="cursor: pointer;"></i>
+                    </div>
+                </div>
+
+                <div id="detail-content" class="article-detail-content" style="font-size: 17px; color: #1e293b; font-weight: 500; margin-bottom: 30px;">
+                    <div style="text-align: center; padding: 50px;">
+                        <i class="fa-solid fa-circle-notch fa-spin" style="font-size: 30px; color: #0a59ab;"></i>
+                    </div>
+                </div>
+
+                <a id="detail-video-link" href="#" target="_blank" style="display: none; position: relative; width: 100%; margin-bottom: 40px; border-radius: 0; overflow: hidden; text-align: center; background: #000; text-decoration: none;">
+                    <img id="detail-video-thumb" src="" style="width: 100%; height: auto; max-height: 500px; object-fit: contain; opacity: 0.8; transition: opacity 0.3s;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 70px; opacity: 0.9; text-shadow: 0 0 10px rgba(0,0,0,0.5);">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </div>
+                </a>
+
+                <div style="border-top: 1px solid #cbd5e1; padding-top: 20px; display: flex; gap: 15px; font-size: 20px; align-items: center;">
+                    <i class="fa-brands fa-twitter" style="color: #38bdf8; cursor: pointer;"></i>
+                    <i class="fa-solid fa-comment-dots" style="color: #3b82f6; cursor: pointer;"></i> <!-- Thay cho Zalo -->
+                    <i class="fa-brands fa-facebook" style="color: #1877f2; cursor: pointer;"></i>
+                    <i class="fa-brands fa-youtube" style="color: #ef4444; cursor: pointer;"></i>
+                    <i class="fa-solid fa-link" style="color: #ef4444; cursor: pointer; background: #fee2e2; border-radius: 50%; padding: 4px; font-size: 14px;"></i>
+                    <i class="fa-solid fa-qrcode" style="color: #334155; cursor: pointer;"></i>
+                </div>
+
+                <div style="border-top: 1px solid #cbd5e1; margin-top: 20px; padding-top: 15px; text-align: right; font-size: 15px; font-weight: bold; color: #0f172a;">
+                    Nguồn tin: <a id="detail-link" href="#" target="_blank" style="color: #0f172a; text-decoration: none;">antoanthongtin.vn</a>
+                </div>
+            </div>
+
+            <div style="background: #f1f5f9; padding: 25px; border-radius: 0; margin-top: 30px; border: 1px solid #e2e8f0;">
+                <div style="font-weight: bold; margin-bottom: 10px; color: #0f172a; font-size: 16px;">Tổng số điểm của bài viết là: 0 trong 0 đánh giá</div>
+                <div style="display: flex; gap: 5px; color: #cbd5e1; font-size: 18px; align-items: center;">
+                    <i class="fa-solid fa-circle-minus" style="font-size: 16px; margin-right: 5px;"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <span style="font-size: 13px; color: #0f172a; margin-left: 15px; font-weight: 500;">Click để đánh giá bài viết</span>
+                </div>
+            </div>
+
+            <div id="common-comments" style="margin-top: 40px;"></div>
+        </div>
+    </section>
+
+    <script>window.BASE_URL = "../../";</script>
+    <script src="../../shared/components.js"></script>
+    <script src="../../user/trang-chu/trang-chu.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'tin-tuc-da-phuong-tien';
+            const id = urlParams.get('id');
+
+            if (!id) {
+                document.getElementById('detail-title').innerText = 'Không tìm thấy bài viết';
+                document.getElementById('detail-content').innerHTML = 'Đường dẫn không hợp lệ hoặc bài viết không tồn tại.';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/${category}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                
+                const post = data.posts.find(p => p.id === id);
+                if (!post) {
+                    document.getElementById('detail-title').innerText = 'Không tìm thấy bài viết';
+                    document.getElementById('detail-content').innerHTML = 'Bài viết có thể đã bị xóa.';
+                    return;
+                }
+
+                // Render dữ liệu
+                document.getElementById('detail-title').innerText = post.title;
+                
+                document.getElementById('detail-meta').style.display = 'flex';
+                document.title = post.title + ' - Tin Tức';
+                
+                // Format date string for Vietnamese display
+                const dateObj = new Date(post.publishedAt || post.createdAt || Date.now());
+                const days = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
+                const dayName = days[dateObj.getDay()];
+                const dateString = `${dayName} - ${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()} ${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+                
+                document.getElementById('date-text').innerText = dateString;
+
+                if (post.sourceUrl) {
+                    try {
+                        const domain = new URL(post.sourceUrl).hostname.replace('www.', '');
+                        document.getElementById('detail-link').href = post.sourceUrl;
+                        document.getElementById('detail-link').innerText = domain;
+                    } catch (err) {
+                        document.getElementById('detail-link').href = '#';
+                        document.getElementById('detail-link').innerText = post.sourceUrl;
+                    }
+                } else {
+                    document.getElementById('detail-link').innerText = 'IOC Đắk Lắk';
+                    document.getElementById('detail-link').href = '#';
+                }
+
+                if (document.getElementById('detail-content')) {
+                    document.getElementById('detail-content').innerHTML = post.content || '';
+                }
+
+                let vUrl = post.videoUrl || post.linkUrl;
+                if (vUrl) {
+                    const videoLinkEl = document.getElementById('detail-video-link');
+                    const videoThumbEl = document.getElementById('detail-video-thumb');
+                    if (videoLinkEl && videoThumbEl) {
+                        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+                        const match = vUrl.match(regExp);
+                        if (match && match[2].length === 11) {
+                            // Convert embed URLs back to watch URLs if necessary, or just use the original
+                            videoLinkEl.href = vUrl;
+                            videoThumbEl.src = `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
+                            videoLinkEl.style.display = 'block';
+                        }
+                    }
+                }
+
+                if (post.linkUrl) {
+                    const linkContainer = document.getElementById('detail-link-container');
+                    if (linkContainer) {
+                        linkContainer.style.display = 'block';
+                        const linkEl = document.getElementById('detail-link');
+                        if (linkEl) {
+                            linkEl.href = post.linkUrl;
+                            linkEl.innerText = post.linkText || post.linkUrl;
+                        }
+                    }
+                }
+
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('detail-title').innerText = 'Lỗi kết nối';
+                document.getElementById('detail-content').innerHTML = 'Không thể tải dữ liệu từ máy chủ.';
+            }
+        });
+    </script>
+    <script src="../../shared/binh-luan.js"></script>
+    <script src="../../auth/xac-thuc.js"></script>
+</body>
+
+</html>

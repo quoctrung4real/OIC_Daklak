@@ -511,9 +511,8 @@ async function loadConfig() {
                 });
             }
         }
-        
-        // Render Info & Utility Section
         renderInfoUtility(config);
+        renderMultimedia(config);
     } catch (e) {
         console.warn('Backend C# is not running. Using default local styles.');
     }
@@ -1246,24 +1245,26 @@ function renderInfoUtility(config) {
             // index 0 -> iu-card-blue
             // index 1 -> iu-card-blue
             // index 2 -> iu-card-gradient
-            const defaultClass = index === 2 ? 'iu-card-gradient' : 'iu-card-blue';
-            const cardClass = 'iu-card ' + defaultClass;
-            
-            // Build inline styles for custom background
+            let defaultClass = index === 2 ? 'iu-card-gradient' : 'iu-card-blue';
             let bgStyle = '';
-            // Only apply custom color if it's explicitly chosen and not #ffffff (or if they want white, maybe let them, but white breaks white text)
-            // Let's just apply it. In admin we will fix the default to #164e9a
-            if (group.bgColor) {
-                bgStyle += `background-color: ${group.bgColor}; `;
+            
+            if (group.bgColor || group.bgImage) {
+                // If custom background is set, don't use default class to avoid gradient overrides
+                defaultClass = '';
+                if (group.bgColor) {
+                    bgStyle += `background-color: ${group.bgColor}; `;
+                }
+                if (group.bgImage) {
+                    bgStyle += `background-image: url('${group.bgImage}'); background-size: cover; background-position: center; `;
+                }
             }
-            if (group.bgImage) {
-                bgStyle += `background-image: url('${group.bgImage}'); background-size: cover; background-position: center;`;
-            }
+            
+            const cardClass = ('iu-card ' + defaultClass).trim();
 
             let linksHtml = '';
             if (group.links && group.links.length > 0) {
                 linksHtml = group.links.map(link => `
-                    <a href="${link.url}" class="iu-grid-item">
+                    <a href="${link.url}" target="_blank" class="iu-grid-item">
                         <div class="iu-icon" style="color: ${link.iconColor || '#333'};"><i class="${link.icon || 'fa-solid fa-star'}"></i></div>
                         <span>${link.title}</span>
                     </a>
@@ -1284,3 +1285,208 @@ function renderInfoUtility(config) {
         });
     }
 }
+
+
+let currentMultimediaTab = 'video';
+let multimediaData = {
+    videos: [],
+    images: [],
+    infographics: []
+};
+
+async function renderMultimedia(config) {
+    const section = document.querySelector('.multimedia-section');
+    if (section && config.multimediaBgColor) {
+        section.style.background = config.multimediaBgColor;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/tin-tuc-da-phuong-tien`);
+        const data = await res.json();
+        const posts = data.posts || [];
+        
+        const videoPosts = posts.filter(n => !n.multimediaType || n.multimediaType === 'video');
+        const imagePosts = posts.filter(n => n.multimediaType === 'image');
+        const infoPosts = posts.filter(n => n.multimediaType === 'infographic');
+
+        function getItemsForTab(postsArray, priorityId, secondaryIds = []) {
+            let priorityItem = null;
+            let secondaryItems = [];
+            let remainingItems = [];
+
+            postsArray.forEach(p => {
+                if (p.id == priorityId) {
+                    priorityItem = p;
+                } else if (secondaryIds.includes(p.id) || secondaryIds.includes(p.id.toString())) {
+                    secondaryItems.push(p);
+                } else {
+                    remainingItems.push(p);
+                }
+            });
+            
+            secondaryItems.sort((a, b) => {
+                const indexA = secondaryIds.findIndex(id => id == a.id);
+                const indexB = secondaryIds.findIndex(id => id == b.id);
+                return indexA - indexB;
+            });
+
+            let finalPosts = [];
+            if (priorityItem) finalPosts.push(priorityItem);
+            finalPosts = finalPosts.concat(secondaryItems, remainingItems);
+            
+            return finalPosts.slice(0, 6).map(post => ({
+                title: post.title,
+                url: (window.BASE_URL || '../../') + `user/tin-tuc/chi-tiet-video.html?id=${post.id}`,
+                thumbnail: post.imageUrl || '',
+                videoUrl: post.videoUrl || post.linkUrl || '',
+                createdAt: post.createdAt || ''
+            }));
+        }
+
+        multimediaData.videos = getItemsForTab(videoPosts, config.multimediaPriorityVideoId, config.multimediaSecondaryVideoIds);
+        multimediaData.images = getItemsForTab(imagePosts, config.multimediaPriorityImageId, config.multimediaSecondaryImageIds);
+        multimediaData.infographics = getItemsForTab(infoPosts, config.multimediaPriorityInfographicId, config.multimediaSecondaryInfographicIds);
+
+    } catch (e) {
+        console.error('Error fetching multimedia news:', e);
+        multimediaData.videos = [];
+        multimediaData.images = [];
+        multimediaData.infographics = [];
+    }
+
+    renderMultimediaTabs();
+    renderMultimediaContent();
+}
+
+function renderMultimediaTabs() {
+    const container = document.getElementById('multimedia-tabs-container');
+    if (!container) return;
+
+    const tabsHtml = `
+        <a href="#" class="media-type ${currentMultimediaTab === 'video' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'video')">
+            <span class="media-icon video-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#DA251D" />
+                    <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                </svg>
+            </span>
+            <span>Video</span>
+        </a>
+        <a href="#" class="media-type ${currentMultimediaTab === 'image' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'image')">
+            <span class="media-icon photo-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#0FA246" />
+                    <rect x="9" y="10" width="14" height="12" rx="2" stroke="white" stroke-width="1.5" />
+                    <circle cx="13" cy="14" r="1.5" fill="white" />
+                    <path d="M9 19 L14 15 L17 18 L20 16 L23 19" stroke="white" stroke-width="1.5" fill="none" />
+                </svg>
+            </span>
+            <span>Hình ảnh</span>
+        </a>
+        <a href="#" class="media-type ${currentMultimediaTab === 'infographic' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'infographic')">
+            <span class="media-icon info-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#EAAA08" />
+                    <rect x="10" y="8" width="5" height="16" rx="2" fill="white" opacity="0.8" />
+                    <rect x="17" y="12" width="5" height="12" rx="2" fill="white" opacity="0.6" />
+                    <rect x="24" y="16" width="5" height="8" rx="2" fill="white" opacity="0.4" />
+                </svg>
+            </span>
+            <span>Infographic</span>
+        </a>
+    `;
+    container.innerHTML = tabsHtml;
+}
+
+function switchMultimediaTab(event, tabId) {
+    if (event) {
+        event.preventDefault();
+    }
+    currentMultimediaTab = tabId;
+    renderMultimediaTabs();
+    renderMultimediaContent();
+}
+
+function renderMultimediaContent() {
+    const container = document.getElementById('multimedia-content-container');
+    if (!container) return;
+
+    let items = [];
+    if (currentMultimediaTab === 'video') items = multimediaData.videos;
+    if (currentMultimediaTab === 'image') items = multimediaData.images;
+    if (currentMultimediaTab === 'infographic') items = multimediaData.infographics;
+
+    if (items.length === 0) {
+        container.innerHTML = '<p style="color: white; padding: 20px;">Đang cập nhật nội dung...</p>';
+        return;
+    }
+
+    const mainItem = items[0];
+    const subItems = items.slice(1);
+
+    function getYoutubeThumbnailUrl(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
+        }
+        return null;
+    }
+
+    let html = `
+        <div style="display: flex; gap: 24px; width: 100%;">
+            <a href="${mainItem.url}" target="_blank" style="text-decoration: none; display: block; flex: 1; position: relative; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16/9;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    ${(mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)) ? 
+                        `<img src="${mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)}" alt="${mainItem.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                        `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2980b9); display: flex; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; font-size: 20px; font-weight: bold;">${currentMultimediaTab.toUpperCase()}</div>`
+                    }
+                </div>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; z-index: 10;">
+                    <p style="color: white; font-size: 20px; font-weight: bold; margin: 0 0 8px 0; line-height: 1.4;">${mainItem.title}</p>
+                    ${mainItem.createdAt ? `<p style="color: #cbd5e1; font-size: 14px; margin: 0;">${mainItem.createdAt}</p>` : ''}
+                </div>
+                ${currentMultimediaTab === 'video' ? `
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 15;">
+                    <svg width="64" height="64" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px !important; height: 64px !important; pointer-events: auto; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <rect width="32" height="32" rx="4" fill="#DA251D" />
+                        <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                    </svg>
+                </div>` : ''}
+            </a>
+    `;
+
+    if (subItems.length > 0) {
+        html += `<div class="multimedia-sub-list" style="width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px;">`;
+        subItems.slice(0, 5).forEach(item => {
+            html += `
+                <a href="${item.url}" target="_blank" class="multimedia-sub-item" style="text-decoration: none; display: flex; gap: 15px; align-items: stretch; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">
+                    <div style="width: 140px; height: 85px; flex-shrink: 0; border-radius: 6px; overflow: hidden; position: relative; background: #000;">
+                        ${(item.thumbnail || getYoutubeThumbnailUrl(item.videoUrl || item.url)) ? 
+                            `<img src="${item.thumbnail || getYoutubeThumbnailUrl(item.videoUrl || item.url)}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                            `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2980b9); display: flex; align-items: center; justify-content: center; color: white; padding: 10px; text-align: center; font-size: 10px; font-weight: bold;">${currentMultimediaTab.toUpperCase()}</div>`
+                        }
+                        ${currentMultimediaTab === 'video' ? `
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                            <div style="background: rgba(0,0,0,0.5); border-radius: 50%; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                                <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px !important; height: 24px !important;">
+                                    <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                                </svg>
+                            </div>
+                        </div>` : ''}
+                    </div>
+                    <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 2px 0;">
+                        <p style="color: white; font-size: 15px; font-weight: 500; margin: 0 0 8px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${item.title}</p>
+                        ${item.createdAt ? `<p style="margin: 0; font-size: 13px; color: #cbd5e1;">${item.createdAt}</p>` : ''}
+                    </div>
+                </a>
+            `;
+        });
+        html += `</div>`;
+    }
+
+    html += `</div>`;
+    container.innerHTML = html;
+}
+

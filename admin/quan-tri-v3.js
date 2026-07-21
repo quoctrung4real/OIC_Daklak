@@ -165,6 +165,14 @@ document.querySelectorAll('.tab-link').forEach(link => {
 // Load danh sách người dùng
 let allUsers = [];
 
+document.getElementById('newsFormMultimediaType').addEventListener('change', function(e) {
+    if (currentNewsCategory === 'tin-tuc-da-phuong-tien') {
+        const isVideo = e.target.value === 'video';
+        document.getElementById('newsFormVideoUrlContainer').style.display = isVideo ? 'block' : 'none';
+        document.getElementById('newsFormVideoUrl').required = isVideo;
+    }
+});
+
 async function loadUsers() {
     try {
         const res = await apiFetch(`${API_BASE}/nguoi-dung`);
@@ -776,6 +784,7 @@ function renderNewsTable() {
             <td style="padding: 12px;">${post.source || '-'}</td>
             <td style="padding: 12px; color: #64748b;">${post.createdAt}</td>
             <td class="sys-action-cell">
+                ${currentNewsCategory === 'tin-tuc-da-phuong-tien' ? `<button type="button" onclick="navigator.clipboard.writeText(window.location.origin + '/user/tin-tuc/chi-tiet-video.html?id=${post.id}'); showAlert('Đã copy link bài viết!');" title="Copy Link" style="background-color: #3b82f6; color: white; border: none; padding: 5px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-right: 5px;"><i class="fa-solid fa-link"></i></button>` : ''}
                 <button type="button" class="sys-btn-edit" onclick="editNews('${post.id}')" title="Sửa"><i class="fa-solid fa-pen-to-square"></i></button>
                 <button type="button" class="sys-btn-delete" onclick="deleteNews('${post.id}')" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
@@ -793,6 +802,17 @@ function openNewsModal() {
     document.getElementById('newsModalTitle').textContent = 'Đăng tin bài mới';
     document.getElementById('newsPostForm').reset();
     document.getElementById('newsFormId').value = '';
+    
+    document.getElementById('newsFormVideoUrlContainer').style.display = currentNewsCategory === 'tin-tuc-da-phuong-tien' ? 'block' : 'none';
+    document.getElementById('newsFormMultimediaTypeContainer').style.display = currentNewsCategory === 'tin-tuc-da-phuong-tien' ? 'block' : 'none';
+    if(currentNewsCategory === 'tin-tuc-da-phuong-tien') {
+        document.getElementById('newsFormMultimediaType').value = 'video';
+        document.getElementById('newsFormVideoUrl').required = true;
+    } else {
+        document.getElementById('newsFormVideoUrl').required = false;
+    }
+    document.getElementById('newsFormVideoUrl').value = '';
+
     newsEditor.root.innerHTML = '';
     
     updateFeaturedCountPreview();
@@ -818,6 +838,20 @@ function editNews(id) {
     document.getElementById('newsFormAuthor').value = post.author || '';
     document.getElementById('newsFormLinkUrl').value = post.linkUrl || '';
     document.getElementById('newsFormLinkText').value = post.linkText || '';
+
+    document.getElementById('newsFormMultimediaTypeContainer').style.display = currentNewsCategory === 'tin-tuc-da-phuong-tien' ? 'block' : 'none';
+    
+    if(currentNewsCategory === 'tin-tuc-da-phuong-tien') {
+        document.getElementById('newsFormMultimediaType').value = post.multimediaType || 'video';
+        document.getElementById('newsFormVideoUrlContainer').style.display = (post.multimediaType === 'video' || !post.multimediaType) ? 'block' : 'none';
+        document.getElementById('newsFormVideoUrl').required = (post.multimediaType === 'video' || !post.multimediaType);
+    } else {
+        document.getElementById('newsFormVideoUrlContainer').style.display = 'none';
+        document.getElementById('newsFormVideoUrl').required = false;
+    }
+    
+    document.getElementById('newsFormVideoUrl').value = post.videoUrl || '';
+
     document.getElementById('newsFormIsFeatured').checked = post.isFeatured || false;
     newsEditor.root.innerHTML = post.content || '';
     
@@ -867,6 +901,8 @@ document.getElementById('newsPostForm').addEventListener('submit', async (e) => 
         content: newsEditor.root.innerHTML,
         linkUrl: document.getElementById('newsFormLinkUrl').value,
         linkText: document.getElementById('newsFormLinkText').value,
+        videoUrl: (currentNewsCategory === 'tin-tuc-da-phuong-tien' && document.getElementById('newsFormMultimediaType').value === 'video') ? document.getElementById('newsFormVideoUrl').value : '',
+        multimediaType: currentNewsCategory === 'tin-tuc-da-phuong-tien' ? document.getElementById('newsFormMultimediaType').value : undefined,
         isFeatured: document.getElementById('newsFormIsFeatured').checked
     };
     
@@ -1171,6 +1207,193 @@ window.applyCrop = function() {
         originalApplyCrop();
     }
 };
+
+
+const multimediaApp = {
+    bgColor: '#0a59ab',
+    priorityVideoId: null,
+    priorityImageId: null,
+    priorityInfographicId: null,
+    secondaryVideoIds: [],
+    secondaryImageIds: [],
+    secondaryInfographicIds: [],
+    allNews: [],
+    currentTab: 'video',
+
+    async init() {
+        try {
+            const res = await fetch(`${API_BASE}/cau-hinh`);
+            if (res.ok) {
+                const config = await res.json();
+                if (config.multimediaBgColor) this.bgColor = config.multimediaBgColor;
+                if (config.multimediaPriorityVideoId) this.priorityVideoId = config.multimediaPriorityVideoId;
+                if (config.multimediaPriorityImageId) this.priorityImageId = config.multimediaPriorityImageId;
+                if (config.multimediaPriorityInfographicId) this.priorityInfographicId = config.multimediaPriorityInfographicId;
+                
+                if (config.multimediaSecondaryVideoIds) this.secondaryVideoIds = config.multimediaSecondaryVideoIds;
+                if (config.multimediaSecondaryImageIds) this.secondaryImageIds = config.multimediaSecondaryImageIds;
+                if (config.multimediaSecondaryInfographicIds) this.secondaryInfographicIds = config.multimediaSecondaryInfographicIds;
+            }
+
+            const newsRes = await fetch(`${API_BASE}/tin-tuc-da-phuong-tien`);
+            if (newsRes.ok) {
+                const newsData = await newsRes.json();
+                this.allNews = newsData.posts || [];
+            }
+        } catch(e) {}
+
+        document.getElementById('multimedia-bgColor').value = this.bgColor;
+        this.renderSelector();
+    },
+
+    switchTab(tab) {
+        this.currentTab = tab;
+        document.querySelectorAll('.mm-tab').forEach(el => {
+            el.classList.remove('active');
+            el.style.background = 'white';
+            el.style.color = '#0A59AB';
+        });
+        const activeBtn = document.querySelector(`.mm-tab[onclick="multimediaApp.switchTab('${tab}')"]`);
+        if (activeBtn) {
+            activeBtn.classList.add('active');
+            activeBtn.style.background = '#0A59AB';
+            activeBtn.style.color = 'white';
+        }
+
+        this.renderSelector();
+    },
+
+    renderSelector() {
+        const container = document.getElementById('mm-items-list');
+        if (!container) return;
+        
+        let selectedId = null;
+        let secondaryIds = [];
+        if (this.currentTab === 'video') {
+            selectedId = this.priorityVideoId;
+            secondaryIds = this.secondaryVideoIds;
+        }
+        if (this.currentTab === 'image') {
+            selectedId = this.priorityImageId;
+            secondaryIds = this.secondaryImageIds;
+        }
+        if (this.currentTab === 'infographic') {
+            selectedId = this.priorityInfographicId;
+            secondaryIds = this.secondaryInfographicIds;
+        }
+
+        const typeName = this.currentTab === 'video' ? 'Video' : (this.currentTab === 'image' ? 'Hình ảnh' : 'Infographic');
+        
+        let currentNewsList = [];
+        if (this.currentTab === 'video') currentNewsList = this.allNews.filter(n => !n.multimediaType || n.multimediaType === 'video');
+        if (this.currentTab === 'image') currentNewsList = this.allNews.filter(n => n.multimediaType === 'image');
+        if (this.currentTab === 'infographic') currentNewsList = this.allNews.filter(n => n.multimediaType === 'infographic');
+
+        let html = `
+            <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                <label style="font-weight: 600; color: #1e293b; margin-bottom: 10px; display: block;">
+                    Chọn tin tức ưu tiên nhất cho tab ${typeName} (Hiển thị lớn bên trái)
+                </label>
+                <select id="mm-priority-select" onchange="multimediaApp.updatePriority(this.value)" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-family: 'Inter', sans-serif; margin-bottom: 20px;">
+                    <option value="">-- Mặc định (Lấy tin mới nhất) --</option>
+                    ${currentNewsList.map(news => `<option value="${news.id}" ${news.id == selectedId ? 'selected' : ''}>${news.title}</option>`).join('')}
+                </select>
+
+                <label style="font-weight: 600; color: #1e293b; margin-bottom: 10px; display: block;">
+                    Chọn các tin tức ưu tiên phụ (Hiển thị nhỏ bên phải)
+                </label>
+                <div style="max-height: 250px; overflow-y: auto; border: 1px solid #cbd5e1; padding: 15px; border-radius: 6px; background: white;">
+                    ${currentNewsList.map(news => `
+                        <label style="display: flex; gap: 10px; margin-bottom: 10px; cursor: pointer; align-items: flex-start;">
+                            <input type="checkbox" value="${news.id}" 
+                                   onchange="multimediaApp.updateSecondary(this.value, this.checked)"
+                                   ${secondaryIds.includes(news.id) || secondaryIds.includes(news.id.toString()) ? 'checked' : ''}
+                                   style="margin-top: 3px;">
+                            <span style="font-size: 14px; color: #334155; line-height: 1.4;">${news.title}</span>
+                        </label>
+                    `).join('')}
+                    ${currentNewsList.length === 0 ? '<div style="color: #94a3b8; font-style: italic; font-size: 13px;">Chưa có tin tức nào.</div>' : ''}
+                </div>
+
+                <p style="margin-top: 15px; margin-bottom: 0; color: #64748b; font-size: 13px; line-height: 1.5;">
+                    Bạn có thể chọn nhiều tin tức phụ. Các tin tức được chọn sẽ ưu tiên hiển thị ở danh sách bên phải. Các vị trí trống còn lại sẽ tự động điền bằng các tin tức mới nhất.
+                </p>
+            </div>
+        `;
+        container.innerHTML = html;
+    },
+
+    updatePriority(val) {
+        if (this.currentTab === 'video') this.priorityVideoId = val;
+        if (this.currentTab === 'image') this.priorityImageId = val;
+        if (this.currentTab === 'infographic') this.priorityInfographicId = val;
+    },
+
+    updateSecondary(val, isChecked) {
+        let list = [];
+        if (this.currentTab === 'video') list = this.secondaryVideoIds;
+        if (this.currentTab === 'image') list = this.secondaryImageIds;
+        if (this.currentTab === 'infographic') list = this.secondaryInfographicIds;
+
+        const numVal = Number(val);
+        if (isChecked) {
+            if (!list.includes(numVal) && !list.includes(numVal.toString())) {
+                list.push(numVal);
+            }
+        } else {
+            const index = list.findIndex(x => x == numVal);
+            if (index > -1) {
+                list.splice(index, 1);
+            }
+        }
+    },
+
+    async saveAllToServer() {
+        try {
+            this.bgColor = document.getElementById('multimedia-bgColor').value || '#0a59ab';
+
+            const response = await fetch(`${API_BASE}/cau-hinh`);
+            let currentConfig = {};
+            if (response.ok) {
+                currentConfig = await response.json();
+            }
+
+            currentConfig.multimediaBgColor = this.bgColor;
+            currentConfig.multimediaPriorityVideoId = this.priorityVideoId;
+            currentConfig.multimediaPriorityImageId = this.priorityImageId;
+            currentConfig.multimediaPriorityInfographicId = this.priorityInfographicId;
+            
+            currentConfig.multimediaSecondaryVideoIds = this.secondaryVideoIds;
+            currentConfig.multimediaSecondaryImageIds = this.secondaryImageIds;
+            currentConfig.multimediaSecondaryInfographicIds = this.secondaryInfographicIds;
+            
+            // Dọn dẹp dữ liệu cũ (tuỳ chọn, để giảm dung lượng file config)
+            currentConfig.multimediaVideos = undefined;
+            currentConfig.multimediaImages = undefined;
+            currentConfig.multimediaInfographics = undefined;
+
+            const saveRes = await fetch(`${API_BASE}/cau-hinh`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentConfig)
+            });
+
+            if (saveRes.ok) {
+                showAlert('Đã lưu cấu hình đa phương tiện thành công!', true);
+            } else {
+                showAlert('Lỗi server khi lưu.', false);
+            }
+        } catch (e) {
+            console.error(e);
+            showAlert('Lỗi kết nối khi lưu cấu hình.', false);
+        }
+    }
+};
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    multimediaApp.init();
+});
 
 // ========================================
 // TIN NỔI BẬT (FEATURED NEWS TICKER)
