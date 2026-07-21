@@ -163,6 +163,23 @@ const commonComponents = {
                             </form>
                         </div>
                     </div>
+                    <div class="lang-switcher" id="langSwitcher" style="margin-left: 15px; position: relative;">
+                        <button id="langBtn" title="Chuyển đổi ngôn ngữ" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.2s;">
+                            <i class="fa-solid fa-globe" style="font-size: 16px;"></i>
+                            <span id="currentLangText">VI</span>
+                            <i class="fa-solid fa-caret-down" style="font-size: 10px; opacity: 0.7;"></i>
+                        </button>
+                        <div id="langDropdown" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden; min-width: 170px; z-index: 9999; border: 1px solid #e2e8f0;">
+                            <div style="padding: 10px 14px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 12px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Ngôn ngữ / Language</div>
+                            <a href="#" class="lang-option" data-lang="vi" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇻🇳 Tiếng Việt</a>
+                            <a href="#" class="lang-option" data-lang="en" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇬🇧 English</a>
+                            <a href="#" class="lang-option" data-lang="zh-CN" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇨🇳 中文</a>
+                            <a href="#" class="lang-option" data-lang="ja" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇯🇵 日本語</a>
+                            <a href="#" class="lang-option" data-lang="ko" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s; border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇰🇷 한국어</a>
+                            <a href="#" class="lang-option" data-lang="fr" style="display: flex; align-items: center; gap: 10px; padding: 10px 14px; text-decoration: none; color: #1e293b; font-size: 14px; transition: background 0.15s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">🇫🇷 Français</a>
+                        </div>
+                    </div>
+                    <div id="google_translate_element" style="display: none;"></div>
                     <div class="user-dropdown-container" id="userDropdownContainer" style="margin-left: 20px; margin-right: 0;">
                         <button class="user-btn" id="userBtn" title="Tài khoản" style="display: flex; align-items: center;">
                             <i class="fa-solid fa-user"></i> <span id="userBtnText" style="font-family: 'Inter', sans-serif; font-size: 14px; margin-left: 8px; font-weight: 500;">Đăng nhập</span>
@@ -435,6 +452,89 @@ const commonComponents = {
             searchForm.classList.remove('active');
             if (navList) navList.classList.remove('search-active');
         });
+    }
+
+    // 4.7. Google Translate Widget
+    const langBtn = document.getElementById('langBtn');
+    const langDropdown = document.getElementById('langDropdown');
+    
+    if (langBtn && langDropdown) {
+        // Toggle dropdown
+        langBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            langDropdown.style.display = langDropdown.style.display === 'none' ? 'block' : 'none';
+        });
+        
+        // Đóng khi click ra ngoài
+        document.addEventListener('click', (e) => {
+            if (!langBtn.contains(e.target) && !langDropdown.contains(e.target)) {
+                langDropdown.style.display = 'none';
+            }
+        });
+        
+        // Hover effect cho nút
+        langBtn.addEventListener('mouseover', () => { langBtn.style.borderColor = 'rgba(255,255,255,0.6)'; langBtn.style.background = 'rgba(255,255,255,0.1)'; });
+        langBtn.addEventListener('mouseout', () => { langBtn.style.borderColor = 'rgba(255,255,255,0.3)'; langBtn.style.background = 'transparent'; });
+        
+        const langLabels = { 'vi': 'VI', 'en': 'EN', 'zh-CN': '中', 'ja': 'JA', 'ko': 'KO', 'fr': 'FR' };
+        
+        // Khôi phục trạng thái nút từ cookie nếu có
+        const match = document.cookie.match(/(?:^|;)\s*googtrans=([^;]*)/);
+        if (match) {
+            const currentLang = match[1].split('/').pop();
+            const currentLangText = document.getElementById('currentLangText');
+            if (currentLangText && langLabels[currentLang]) {
+                currentLangText.textContent = langLabels[currentLang];
+            }
+        }
+        
+        // Xử lý chọn ngôn ngữ
+        document.querySelectorAll('.lang-option').forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.preventDefault();
+                const lang = opt.getAttribute('data-lang');
+                langDropdown.style.display = 'none';
+                
+                const currentLangText = document.getElementById('currentLangText');
+                if (currentLangText) currentLangText.textContent = langLabels[lang] || lang.toUpperCase();
+                
+                // Đặt cookie
+                const expires = "expires=Thu, 01 Jan 2030 00:00:00 UTC";
+                const expirePast = "expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                
+                if (lang === 'vi') {
+                    // Xóa cookie ngôn ngữ để khôi phục mặc định
+                    document.cookie = `googtrans=; ${expirePast}; path=/;`;
+                    document.cookie = `googtrans=; ${expirePast}; domain=${location.hostname}; path=/;`;
+                    document.cookie = `googtrans=; ${expirePast}; domain=.${location.hostname}; path=/;`;
+                } else {
+                    // Đặt cookie cho Google Translate
+                    const val = `/vi/${lang}`;
+                    document.cookie = `googtrans=${val}; ${expires}; path=/;`;
+                    document.cookie = `googtrans=${val}; ${expires}; domain=${location.hostname}; path=/;`;
+                    document.cookie = `googtrans=${val}; ${expires}; domain=.${location.hostname}; path=/;`;
+                }
+                
+                // Tải lại trang để Google Translate script tự động dịch theo Cookie mới
+                location.reload();
+            });
+        });
+    }
+    
+    // Inject Google Translate script
+    if (!document.getElementById('google-translate-script')) {
+        window.googleTranslateElementInit = function() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'vi',
+                includedLanguages: 'vi,en,zh-CN,ja,ko,fr',
+                autoDisplay: false,
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        };
+        const gtScript = document.createElement('script');
+        gtScript.id = 'google-translate-script';
+        gtScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+        document.body.appendChild(gtScript);
     }
 
     // 4.6. Chức năng cuộn trang (Sticky Header & Scroll Top)

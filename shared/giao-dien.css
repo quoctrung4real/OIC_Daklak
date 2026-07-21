@@ -7,6 +7,14 @@
     box-sizing: border-box;
 }
 
+/* ===== Google Translate Widget Overrides ===== */
+.goog-te-banner-frame { display: none !important; }
+body { top: 0 !important; }
+#google_translate_element { position: absolute; top: -9999px; left: -9999px; opacity: 0; pointer-events: none; }
+.goog-te-gadget { font-size: 0 !important; }
+.VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+
 :root {
     --primary-blue: #1322BC;
     --primary-dark: #1a3a5c;
