@@ -124,7 +124,7 @@ const API_BASE = 'http://localhost:5100/api';
 
 async function loadConfig() {
     try {
-        const response = await fetch(`${API_BASE}/cau-hinh`);
+        const response = await fetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`);
         if (!response.ok) return;
         const config = await response.json();
 
@@ -138,6 +138,11 @@ async function loadConfig() {
         }
         
         
+        // Render External Links
+        if (config.externalLinks && Array.isArray(config.externalLinks)) {
+            renderExternalLinks(config.externalLinks);
+        }
+
         // Inject dynamic links from config
         const menu_ubnd = document.getElementById('menu-ubnd');
         if (menu_ubnd) {
@@ -511,6 +516,8 @@ async function loadConfig() {
                 });
             }
         }
+        renderInfoUtility(config);
+        renderMultimedia(config);
     } catch (e) {
         console.warn('Backend C# is not running. Using default local styles.');
     }
@@ -520,7 +527,7 @@ async function loadDynamicNews() {
     try {
         const renderFeaturedNews = async () => {
             try {
-                const configRes = await fetch(`${API_BASE}/cau-hinh`);
+                const configRes = await fetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`);
                 const config = await configRes.json();
                 const featuredIds = config.featuredNewsIds || [];
                 
@@ -682,7 +689,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadHomePageGovData() {
     try {
-        const response = await fetch(`${API_BASE}/trang-chu`);
+        const response = await fetch(`${API_BASE}/trang-chu?t=${new Date().getTime()}`);
         if (!response.ok) return;
 
         const homeData = await response.json();
@@ -996,7 +1003,7 @@ async function loadCategoryNews() {
             let allPosts = [];
             for (const cat of categories) {
                 try {
-                    const res = await fetch(`${API_BASE}/${cat}`);
+                    const res = await fetch(`${API_BASE}/${cat}?t=${new Date().getTime()}`);
                     if (res.ok) {
                         const catData = await res.json();
                         if (catData && catData.posts) {
@@ -1010,7 +1017,7 @@ async function loadCategoryNews() {
             }
             data.posts = allPosts;
         } else {
-            const response = await fetch(`${API_BASE}/${categoryId}`);
+            const response = await fetch(`${API_BASE}/${categoryId}?t=${new Date().getTime()}`);
             if (!response.ok) return;
             data = await response.json();
             if (data && data.posts) {
@@ -1057,6 +1064,26 @@ async function loadCategoryNews() {
                     card.target = '_blank';
                 }
                 
+                let attachmentHtml = '';
+                if (post.attachmentUrl) {
+                    const attName = post.attachmentName || 'Tài liệu đính kèm';
+                    let attUrl = post.attachmentUrl;
+                    if (!post.attachmentUrl.match(/^(http|data:)/)) {
+                        attUrl = `${API_BASE}/download?file=${encodeURIComponent(post.attachmentUrl)}&name=${encodeURIComponent(attName)}`;
+                    }
+                    attachmentHtml = `
+                        <div style="margin-top: 10px; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; gap: 10px;">
+                            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden;">
+                                <i class="fa-solid fa-file-lines" style="color: #0284c7; font-size: 18px;"></i>
+                                <span style="font-size: 14px; font-weight: 500; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${attName}</span>
+                            </div>
+                            <a href="${attUrl}" download target="_blank" onclick="event.stopPropagation();" style="padding: 5px 10px; background: #0ea5e9; color: white; text-decoration: none; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                                <i class="fa-solid fa-download"></i> Tải về
+                            </a>
+                        </div>
+                    `;
+                }
+                
                 card.innerHTML = `
                     ${imageHtml}
                     <div class="baolu-info">
@@ -1069,6 +1096,7 @@ async function loadCategoryNews() {
                         <div class="baolu-card-content">
                             ${getExcerpt(post.content)}
                         </div>
+                        ${attachmentHtml}
                     </div>
                 `;
                 return card;
@@ -1177,7 +1205,7 @@ async function loadDynamicPartnerLinks() {
     if (!container) return;
 
     try {
-        const res = await fetch(`${API_BASE}/cau-hinh`);
+        const res = await fetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`);
         if (res.ok) {
             const config = await res.json();
             const links = config.partnerLinks || [
@@ -1225,11 +1253,133 @@ async function loadDynamicPartnerLinks() {
         // Fallback or leave empty
     }
 }
+async function loadHomeAnnouncements() {
+    const listEl = document.getElementById('home-thong-bao-list');
+    if (!listEl) return;
+    
+    try {
+        const res = await fetch(`${API_BASE}/thong-bao?t=${new Date().getTime()}`);
+        if (!res.ok) throw new Error('Network error');
+        const data = await res.json();
+        
+        listEl.innerHTML = '';
+        if (!data.posts || data.posts.length === 0) {
+            listEl.innerHTML = '<li style="text-align: center; color: #666; font-style: italic; border: none;">Chưa có thông báo nào.</li>';
+            return;
+        }
+        
+        // Sắp xếp giảm dần theo thời gian, lấy tối đa 5 bài
+        data.posts.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        const topPosts = data.posts.slice(0, 5);
+        
+        topPosts.forEach(post => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.href = post.linkUrl ? post.linkUrl : `../tin-tuc/chi-tiet-tin-tuc.html?category=thong-bao&id=${post.id}`;
+            if (post.linkUrl) a.target = '_blank';
+            
+            // Cắt tiêu đề nếu quá dài
+            let titleText = post.title;
+            if (titleText.length > 80) titleText = titleText.substring(0, 80) + '...';
+            
+            // Nếu có đính kèm, thêm icon ghim
+            if (post.attachmentUrl) {
+                a.innerHTML = `<i class="fa-solid fa-paperclip" style="color: #0a59ab; margin-right: 5px;"></i>${titleText}`;
+            } else {
+                a.innerText = titleText;
+            }
+            
+            li.appendChild(a);
+            listEl.appendChild(li);
+        });
+        
+    } catch (e) {
+        console.error("Lỗi tải thông báo:", e);
+        listEl.innerHTML = '<li style="text-align: center; color: red; font-style: italic; border: none;">Lỗi tải dữ liệu.</li>';
+    }
+}
+
+let homeDocumentTypes = [];
+
+async function loadHomeDocuments() {
+    const tabsContainer = document.getElementById('home-document-tabs');
+    const contentContainer = document.getElementById('home-documents-content');
+    if (!tabsContainer || !contentContainer) return;
+
+    try {
+        const res = await fetch(`${API_BASE}/loai-van-ban?t=${new Date().getTime()}`);
+        if (!res.ok) throw new Error("Failed to fetch document types");
+        const types = await res.json();
+        
+        homeDocumentTypes = await Promise.all(types.map(async (type) => {
+            try {
+                const docRes = await fetch(`${API_BASE}/van-ban?type=${type.code}&take=5&t=${new Date().getTime()}`);
+                type.documents = docRes.ok ? await docRes.json() : [];
+            } catch (e) {
+                type.documents = [];
+            }
+            return type;
+        }));
+        
+        if (!homeDocumentTypes || homeDocumentTypes.length === 0) {
+            tabsContainer.innerHTML = '<div style="color: #666; font-style: italic; padding: 10px;">Chưa có dữ liệu văn bản.</div>';
+            contentContainer.innerHTML = '';
+            return;
+        }
+
+        // Render Tabs
+        tabsContainer.innerHTML = homeDocumentTypes.map((type, index) => `
+            <button class="doc-tab ${index === 0 ? 'active' : ''}" data-tab="${index}" onclick="switchHomeDocTab(${index})">${type.name}</button>
+        `).join('');
+
+        // Render Content
+        contentContainer.innerHTML = homeDocumentTypes.map((type, index) => `
+            <div class="documents-table ${index === 0 ? '' : 'hidden'}" id="homeDocTab${index}">
+                <div class="table-header">
+                    <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
+                    <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
+                </div>
+                ${(type.documents || []).length > 0 ? (type.documents || []).slice(0, 5).map(doc => `
+                    <div class="table-row">
+                        <div class="table-col-id">
+                            <p class="doc-number">${doc.documentNumber || ''}</p>
+                            <p class="doc-date">${doc.publishedAt ? new Date(doc.publishedAt).toLocaleDateString('vi-VN') : ''}</p>
+                        </div>
+                        <div class="table-col-content">
+                            <p>${doc.title}</p>
+                            ${doc.fileUrl ? `<a href="${API_BASE}/download?file=${encodeURIComponent(doc.fileUrl)}&name=${encodeURIComponent(doc.originalFileName || 'tai-lieu')}" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài liệu</a>` : ''}
+                        </div>
+                    </div>
+                `).join('') : '<div class="table-row"><div class="table-col-content"><p style="color: #666; font-style: italic;">Chưa có văn bản nào trong mục này.</p></div></div>'}
+            </div>
+        `).join('');
+
+    } catch (e) {
+        console.error("Lỗi tải văn bản:", e);
+        tabsContainer.innerHTML = '<div style="color: red; font-style: italic; padding: 10px;">Lỗi tải dữ liệu.</div>';
+    }
+}
+
+window.switchHomeDocTab = function(index) {
+    const tabs = document.querySelectorAll('#home-document-tabs .doc-tab');
+    const contents = document.querySelectorAll('#home-documents-content .documents-table');
+    
+    tabs.forEach((tab, i) => {
+        if (i === index) tab.classList.add('active');
+        else tab.classList.remove('active');
+    });
+    
+    contents.forEach((content, i) => {
+        if (i === index) content.classList.remove('hidden');
+        else content.classList.add('hidden');
+    });
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     loadDynamicPartnerLinks();
+    loadHomeAnnouncements();
+    loadHomeDocuments();
 });
-
 function renderInfoUtility(config) {
     const iuWrapper = document.querySelector('.info-utility-wrapper');
     if (!iuWrapper) return;
@@ -1243,24 +1393,26 @@ function renderInfoUtility(config) {
             // index 0 -> iu-card-blue
             // index 1 -> iu-card-blue
             // index 2 -> iu-card-gradient
-            const defaultClass = index === 2 ? 'iu-card-gradient' : 'iu-card-blue';
-            const cardClass = 'iu-card ' + defaultClass;
-            
-            // Build inline styles for custom background
+            let defaultClass = index === 2 ? 'iu-card-gradient' : 'iu-card-blue';
             let bgStyle = '';
-            // Only apply custom color if it's explicitly chosen and not #ffffff (or if they want white, maybe let them, but white breaks white text)
-            // Let's just apply it. In admin we will fix the default to #164e9a
-            if (group.bgColor) {
-                bgStyle += `background-color: ${group.bgColor}; `;
+            
+            if (group.bgColor || group.bgImage) {
+                // If custom background is set, don't use default class to avoid gradient overrides
+                defaultClass = '';
+                if (group.bgColor) {
+                    bgStyle += `background-color: ${group.bgColor}; `;
+                }
+                if (group.bgImage) {
+                    bgStyle += `background-image: url('${group.bgImage}'); background-size: cover; background-position: center; `;
+                }
             }
-            if (group.bgImage) {
-                bgStyle += `background-image: url('${group.bgImage}'); background-size: cover; background-position: center;`;
-            }
+            
+            const cardClass = ('iu-card ' + defaultClass).trim();
 
             let linksHtml = '';
             if (group.links && group.links.length > 0) {
                 linksHtml = group.links.map(link => `
-                    <a href="${link.url}" class="iu-grid-item">
+                    <a href="${link.url}" target="_blank" class="iu-grid-item">
                         <div class="iu-icon" style="color: ${link.iconColor || '#333'};"><i class="${link.icon || 'fa-solid fa-star'}"></i></div>
                         <span>${link.title}</span>
                     </a>
@@ -1280,4 +1432,242 @@ function renderInfoUtility(config) {
             iuWrapper.innerHTML += cardHtml;
         });
     }
+}
+
+
+let currentMultimediaTab = 'video';
+let multimediaData = {
+    videos: [],
+    images: [],
+    infographics: []
+};
+
+async function renderMultimedia(config) {
+    const section = document.querySelector('.multimedia-section');
+    if (section && config.multimediaBgColor) {
+        section.style.background = config.multimediaBgColor;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/tin-tuc-da-phuong-tien?t=${new Date().getTime()}`);
+        const data = await res.json();
+        const posts = data.posts || [];
+        
+        const videoPosts = posts.filter(n => !n.multimediaType || n.multimediaType === 'video');
+        const imagePosts = posts.filter(n => n.multimediaType === 'image');
+        const infoPosts = posts.filter(n => n.multimediaType === 'infographic');
+
+        function getItemsForTab(postsArray, priorityId, secondaryIds = [], tabName = 'video') {
+            let priorityItem = null;
+            let secondaryItems = [];
+            let remainingItems = [];
+
+            postsArray.forEach(p => {
+                if (p.id == priorityId) {
+                    priorityItem = p;
+                } else if (secondaryIds.includes(p.id) || secondaryIds.includes(p.id.toString())) {
+                    secondaryItems.push(p);
+                } else {
+                    remainingItems.push(p);
+                }
+            });
+            
+            secondaryItems.sort((a, b) => {
+                const indexA = secondaryIds.findIndex(id => id == a.id);
+                const indexB = secondaryIds.findIndex(id => id == b.id);
+                return indexA - indexB;
+            });
+
+            let finalPosts = [];
+            if (priorityItem) finalPosts.push(priorityItem);
+            finalPosts = finalPosts.concat(secondaryItems, remainingItems);
+            
+            return finalPosts.slice(0, 6).map(post => {
+                let itemUrl = (window.BASE_URL || '../../') + `user/tin-tuc/chi-tiet-video.html?id=${post.id}`;
+                if (tabName !== 'video') {
+                    itemUrl = (window.BASE_URL || '../../') + `user/tin-tuc/chi-tiet-tin-tuc.html?category=tin-tuc-da-phuong-tien&id=${post.id}`;
+                }
+                
+                return {
+                    title: post.title,
+                    url: itemUrl,
+                    thumbnail: post.imageUrl || '',
+                    videoUrl: post.videoUrl || post.linkUrl || '',
+                    createdAt: post.createdAt || ''
+                };
+            });
+        }
+
+        multimediaData.videos = getItemsForTab(videoPosts, config.multimediaPriorityVideoId, config.multimediaSecondaryVideoIds, 'video');
+        multimediaData.images = getItemsForTab(imagePosts, config.multimediaPriorityImageId, config.multimediaSecondaryImageIds, 'image');
+        multimediaData.infographics = getItemsForTab(infoPosts, config.multimediaPriorityInfographicId, config.multimediaSecondaryInfographicIds, 'infographic');
+
+    } catch (e) {
+        console.error('Error fetching multimedia news:', e);
+        multimediaData.videos = [];
+        multimediaData.images = [];
+        multimediaData.infographics = [];
+    }
+
+    renderMultimediaTabs();
+    renderMultimediaContent();
+}
+
+function renderMultimediaTabs() {
+    const container = document.getElementById('multimedia-tabs-container');
+    if (!container) return;
+
+    const tabsHtml = `
+        <a href="#" class="media-type ${currentMultimediaTab === 'video' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'video')">
+            <span class="media-icon video-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#DA251D" />
+                    <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                </svg>
+            </span>
+            <span>Video</span>
+        </a>
+        <a href="#" class="media-type ${currentMultimediaTab === 'image' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'image')">
+            <span class="media-icon photo-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#0FA246" />
+                    <rect x="9" y="10" width="14" height="12" rx="2" stroke="white" stroke-width="1.5" />
+                    <circle cx="13" cy="14" r="1.5" fill="white" />
+                    <path d="M9 19 L14 15 L17 18 L20 16 L23 19" stroke="white" stroke-width="1.5" fill="none" />
+                </svg>
+            </span>
+            <span>Hình ảnh</span>
+        </a>
+        <a href="#" class="media-type ${currentMultimediaTab === 'infographic' ? 'active' : ''}" onclick="switchMultimediaTab(event, 'infographic')">
+            <span class="media-icon info-icon">
+                <svg width="28" height="28" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="4" fill="#EAAA08" />
+                    <rect x="10" y="8" width="5" height="16" rx="2" fill="white" opacity="0.8" />
+                    <rect x="17" y="12" width="5" height="12" rx="2" fill="white" opacity="0.6" />
+                    <rect x="24" y="16" width="5" height="8" rx="2" fill="white" opacity="0.4" />
+                </svg>
+            </span>
+            <span>Infographic</span>
+        </a>
+    `;
+    container.innerHTML = tabsHtml;
+}
+
+function switchMultimediaTab(event, tabId) {
+    if (event) {
+        event.preventDefault();
+    }
+    currentMultimediaTab = tabId;
+    renderMultimediaTabs();
+    renderMultimediaContent();
+}
+
+function renderMultimediaContent() {
+    const container = document.getElementById('multimedia-content-container');
+    if (!container) return;
+
+    // Update 'Xem thêm' button link
+    const showMoreBtn = document.getElementById('multimedia-show-more-btn');
+    if (showMoreBtn) {
+        showMoreBtn.href = `../tin-tuc/danh-sach-da-phuong-tien.html?type=${currentMultimediaTab}`;
+    }
+
+    let items = [];
+    if (currentMultimediaTab === 'video') items = multimediaData.videos;
+    if (currentMultimediaTab === 'image') items = multimediaData.images;
+    if (currentMultimediaTab === 'infographic') items = multimediaData.infographics;
+
+    if (items.length === 0) {
+        container.innerHTML = '<p style="color: white; padding: 20px;">Đang cập nhật nội dung...</p>';
+        return;
+    }
+
+    const mainItem = items[0];
+    const subItems = items.slice(1);
+
+    function getYoutubeThumbnailUrl(url) {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+        const match = url.match(regExp);
+        if (match && match[2].length === 11) {
+            return `https://img.youtube.com/vi/${match[2]}/hqdefault.jpg`;
+        }
+        return null;
+    }
+
+    let html = `
+        <div style="display: flex; gap: 24px; width: 100%;">
+            <a href="${mainItem.url}" target="_blank" style="text-decoration: none; display: block; flex: 1; position: relative; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16/9;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    ${(mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)) ? 
+                        `<img src="${mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)}" alt="${mainItem.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
+                        `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2980b9); display: flex; align-items: center; justify-content: center; color: white; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; text-transform: uppercase;">${currentMultimediaTab}</div>`
+                    }
+                </div>
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 40px 20px 20px 20px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); display: flex; flex-direction: column; justify-content: flex-end; z-index: 10;">
+                    <p style="color: white; font-size: 20px; font-weight: bold; margin: 0 0 8px 0; line-height: 1.4;">${mainItem.title}</p>
+                    ${mainItem.createdAt ? `<p style="color: #cbd5e1; font-size: 14px; margin: 0;">${mainItem.createdAt}</p>` : ''}
+                </div>
+                ${currentMultimediaTab === 'video' ? `
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; pointer-events: none; z-index: 15;">
+                    <svg width="64" height="64" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 64px !important; height: 64px !important; pointer-events: auto; transition: transform 0.2s; cursor: pointer;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <rect width="32" height="32" rx="4" fill="#DA251D" />
+                        <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                    </svg>
+                </div>` : ''}
+            </a>
+            
+            <div class="multimedia-sub-list" style="width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px;">
+                ${subItems.slice(0, 5).map(item => `
+                    <a href="${item.url}" target="_blank" class="multimedia-sub-item" style="text-decoration: none; display: flex; gap: 15px; align-items: stretch; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">
+                        <div style="width: 140px; height: 85px; flex-shrink: 0; border-radius: 6px; overflow: hidden; position: relative; background: #000;">
+                            ${(item.thumbnail || getYoutubeThumbnailUrl(item.videoUrl || item.url)) ? 
+                                `<img src="${item.thumbnail || getYoutubeThumbnailUrl(item.videoUrl || item.url)}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover;">` :
+                                `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2980b9); display: flex; align-items: center; justify-content: center; color: white; padding: 10px; text-align: center; font-size: 10px; font-weight: bold; text-transform: uppercase;">${currentMultimediaTab}</div>`
+                            }
+                            ${currentMultimediaTab === 'video' ? `
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                                <div style="background: rgba(0,0,0,0.5); border-radius: 50%; padding: 4px; display: flex; align-items: center; justify-content: center;">
+                                    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 24px !important; height: 24px !important;">
+                                        <path d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z" fill="white" />
+                                    </svg>
+                                </div>
+                            </div>` : ''}
+                        </div>
+                        <div style="display: flex; flex-direction: column; justify-content: center; flex: 1; padding: 2px 0;">
+                            <p style="color: white; font-size: 15px; font-weight: 500; margin: 0 0 8px 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; transition: color 0.2s;" onmouseover="this.style.color='#facc15'" onmouseout="this.style.color='white'">${item.title}</p>
+                            ${item.createdAt ? `<p style="margin: 0; font-size: 13px; color: #cbd5e1;">${item.createdAt}</p>` : ''}
+                        </div>
+                    </a>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    container.innerHTML = html;
+}
+
+function renderExternalLinks(links) {
+    const grid = document.getElementById('external-links-grid');
+    if (!grid) return;
+    
+    if (!links || links.length === 0) {
+        grid.innerHTML = '';
+        return;
+    }
+
+    grid.innerHTML = links.map(item => `
+        <a href="${item.url || '#'}" target="_blank" class="external-link-card" style="text-decoration: none; ${item.bgUrl ? `background-image: url('${item.bgUrl}'); background-size: cover; background-position: center; position: relative; z-index: 1; overflow: hidden;` : ''}">
+            ${item.bgUrl ? `<div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.85); z-index: -1;"></div>` : ''}
+            <div class="ext-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: ${(item.color || '#0a59ab')}15; border-radius: 50%;">
+                ${item.logoUrl 
+                    ? `<img src="${item.logoUrl}" style="max-width: 32px; max-height: 32px; object-fit: contain;">` 
+                    : `<svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+                        <circle cx="24" cy="24" r="18" fill="${item.color || '#0a59ab'}" opacity="0.15" />
+                        <text x="24" y="28" text-anchor="middle" fill="${item.color || '#0a59ab'}" font-size="${item.logoText && item.logoText.length > 3 ? '8' : '10'}" font-weight="700" font-family="Inter">${item.logoText ? item.logoText : (item.name ? item.name.substring(0,3).toUpperCase() : 'LNK')}</text>
+                       </svg>`
+                }
+            </div>
+            <span style="display: block; margin-top: 10px; font-weight: 500; color: #1e293b; text-align: center;">${item.name || ''}</span>
+        </a>
+    `).join('');
 }

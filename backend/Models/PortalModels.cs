@@ -27,9 +27,15 @@ public sealed class NewsPostDto
     public string? Title { get; set; }
     public string? ImageUrl { get; set; }
     public string? Source { get; set; }
+    public string? Author { get; set; }
     public string? Content { get; set; }
     public string? LinkUrl { get; set; }
     public string? LinkText { get; set; }
+    public string? VideoUrl { get; set; }
+    public string? MultimediaType { get; set; }
+    public string? AttachmentUrl { get; set; }
+    public string? AttachmentName { get; set; }
+    public bool IsFeatured { get; set; }
     public string? CreatedAt { get; set; }
     public int Views { get; set; } = 0;
 }

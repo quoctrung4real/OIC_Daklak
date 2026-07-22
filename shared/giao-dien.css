@@ -7,6 +7,14 @@
     box-sizing: border-box;
 }
 
+/* ===== Google Translate Widget Overrides ===== */
+.goog-te-banner-frame { display: none !important; }
+body { top: 0 !important; }
+#google_translate_element { position: absolute; top: -9999px; left: -9999px; opacity: 0; pointer-events: none; }
+.goog-te-gadget { font-size: 0 !important; }
+.VIpgJd-ZVi9od-ORHb-OEVmcd { display: none !important; }
+.VIpgJd-ZVi9od-aZ2wEe-wOHMyf { display: none !important; }
+
 :root {
     --primary-blue: #1322BC;
     --primary-dark: #1a3a5c;
@@ -1081,9 +1089,15 @@ body.is-sticky .nav-wrapper {
 
 .footer-main {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 40px;
     padding-bottom: 40px;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 .footer-brand {
@@ -1138,11 +1152,7 @@ body.is-sticky .nav-wrapper {
     text-decoration: underline;
 }
 
-.footer-right {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-}
+/* Removed .footer-right as it is replaced by .footer-column */
 
 .cert-badge {
     margin-bottom: 8px;

@@ -341,6 +341,7 @@
                     <li><a href="#" class="tab-link news-category-link" data-target="dynamic-news-tab" data-category="tin-hoat-dong"><i class="fa-solid fa-briefcase icon-main"></i> <span class="sidebar-text">Tin hoạt động</span></a></li>
                     <li><a href="#" class="tab-link news-category-link" data-target="dynamic-news-tab" data-category="trao-doi-kinh-nghiem"><i class="fa-solid fa-comments icon-main"></i> <span class="sidebar-text">Trao đổi kinh nghiệm</span></a></li>
                     <li><a href="#" class="tab-link news-category-link" data-target="dynamic-news-tab" data-category="tuong-tac-cong-dan"><i class="fa-solid fa-users-rays icon-main"></i> <span class="sidebar-text">Tương tác công dân</span></a></li>
+                    <li><a href="#" class="tab-link news-category-link" data-target="dynamic-news-tab" data-category="tin-tuc-da-phuong-tien"><i class="fa-solid fa-video icon-main"></i> <span class="sidebar-text">Tin tức đa phương tiện</span></a></li>
                 </ul>
             </li>
             <li>
@@ -1189,8 +1190,157 @@
                         </div>
                     </div>
 
-<button type="submit" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 10px;"><i class="fa-solid fa-save"></i> Lưu Toàn Bộ Cấu Hình Giao Diện</button>
+<!-- QUẢN LÝ ĐA PHƯƠNG TIỆN (MULTIMEDIA) -->
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-photo-film"></i> Quản lý Đa phương tiện</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            
+                            <!-- Cấu hình chung -->
+                            <div style="margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #e2e8f0;">
+                                <div class="form-group" style="margin-bottom: 10px;">
+                                    <label>Màu nền khối Đa phương tiện</label>
+                                    <input type="color" id="multimedia-bgColor" value="#0a59ab" style="width: 150px; height: 35px;">
+                                </div>
+                                <button type="button" onclick="multimediaApp.saveAllToServer()" style="background-color: #10b981; color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; cursor: pointer;"><i class="fa-solid fa-save"></i> Lưu Cấu Hình Đa Phương Tiện</button>
+                            </div>
+
+                            <!-- Tabs Phân loại -->
+                            <div class="multimedia-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <button type="button" class="mm-tab active" onclick="multimediaApp.switchTab('video')" style="padding: 8px 15px; border-radius: 4px; border: 1px solid #0A59AB; background: #0A59AB; color: white; cursor: pointer;"><i class="fa-solid fa-video"></i> Video</button>
+                                <button type="button" class="mm-tab" onclick="multimediaApp.switchTab('image')" style="padding: 8px 15px; border-radius: 4px; border: 1px solid #0A59AB; background: white; color: #0A59AB; cursor: pointer;"><i class="fa-solid fa-image"></i> Hình ảnh</button>
+                                <button type="button" class="mm-tab" onclick="multimediaApp.switchTab('infographic')" style="padding: 8px 15px; border-radius: 4px; border: 1px solid #0A59AB; background: white; color: #0A59AB; cursor: pointer;"><i class="fa-solid fa-chart-pie"></i> Infographic</button>
+                            </div>
+                            <div id="mm-items-list" style="margin-top: 15px;">
+                                <!-- Items will be rendered here -->
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                        <div class="config-section-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-link"></i> Cấu hình Liên Kết Ngoài (External Links)</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <p style="margin: 0; color: #475569; font-size: 0.9rem;">Quản lý các khối liên kết tĩnh ở cuối trang chủ (Bộ KHCN, Cổng TTĐT,...).</p>
+                                <button type="button" onclick="externalLinksApp.openAddModal()" style="background: #0A59AB; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-plus"></i> Thêm Box Mới</button>
+                            </div>
+                            <div id="external-links-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+                    </div>
                 </form>
+
+                <form id="footer-config-form">
+                    <!-- Cấu hình Footer -->
+                    <div class="admin-card" style="margin-top: 20px; background: white; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--primary);">
+                        <div class="config-section-header" style="padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none;" onclick="toggleConfigSection(this)">
+                            <h4 style="margin: 0; color: var(--primary); font-size: 1.1rem;"><i class="fa-solid fa-shoe-prints"></i> Cấu hình Footer</h4>
+                            <div class="toggle-indicator" style="display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.9rem; font-weight: 500;"><span class="toggle-text">Mở rộng</span><i class="fa-solid fa-chevron-up" style="transition: transform 0.3s; font-size: 1.1rem; transform: rotate(180deg);"></i></div>
+                        </div>
+                        <div class="config-section-content" style="display: none;">
+                            <div style="padding: 15px;">
+                                <h5 style="margin-top:0;">Thông tin Trung tâm</h5>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Tên Thương Hiệu (Brand Name)</label>
+                                    <input type="text" id="footerBrandName" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Mô Tả Thương Hiệu</label>
+                                    <input type="text" id="footerBrandDesc" class="form-control">
+                                </div>
+                                <div class="form-group" style="grid-column: span 2;">
+                                    <label>Địa Chỉ</label>
+                                    <input type="text" id="footerAddress" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Điện Thoại</label>
+                                    <input type="text" id="footerPhone" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Fax</label>
+                                    <input type="text" id="footerFax" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="footerEmail" class="form-control">
+                                </div>
+                            </div>
+
+                            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                            <h5 style="margin-top:0;">Mạng Xã Hội</h5>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Link Facebook</label>
+                                    <input type="text" id="footerFacebookLink" class="form-control" placeholder="https://facebook.com/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Link Zalo</label>
+                                    <input type="text" id="footerZaloLink" class="form-control" placeholder="https://zalo.me/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Link YouTube</label>
+                                    <input type="text" id="footerYoutubeLink" class="form-control" placeholder="https://youtube.com/...">
+                                </div>
+                                <div class="form-group">
+                                    <label>Link TikTok</label>
+                                    <input type="text" id="footerTiktokLink" class="form-control" placeholder="https://tiktok.com/...">
+                                </div>
+                            </div>
+
+                            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                            <h5 style="margin-top:0;">Chứng nhận NCSC & QR Code tải App</h5>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Link chứng nhận NCSC</label>
+                                    <input type="text" id="footerNcscLink" class="form-control">
+                                    <label style="margin-top: 10px;">Ảnh NCSC (Để trống sẽ dùng SVG mặc định)</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <input type="text" id="footerNcscImageUrl" class="form-control" placeholder="/uploads/..." style="flex:1;">
+                                        <button type="button" onclick="document.getElementById('uploadNcscImage').click()">Tải lên</button>
+                                        <input type="file" id="uploadNcscImage" style="display:none" onchange="handleFooterImageUpload(this, 'footerNcscImageUrl')">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>QR Code tải App</label>
+                                    <div style="display:flex; gap:10px;">
+                                        <input type="text" id="footerQrCodeUrl" class="form-control" placeholder="/uploads/..." style="flex:1;">
+                                        <button type="button" onclick="document.getElementById('uploadQrImage').click()">Tải lên</button>
+                                        <input type="file" id="uploadQrImage" style="display:none" onchange="handleFooterImageUpload(this, 'footerQrCodeUrl')">
+                                    </div>
+                                    <label style="margin-top: 10px;">Link App Store</label>
+                                    <input type="text" id="footerAppStoreLink" class="form-control">
+                                    <label style="margin-top: 10px;">Link Google Play</label>
+                                    <input type="text" id="footerGooglePlayLink" class="form-control">
+                                </div>
+                            </div>
+
+                            <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                            <h5 style="margin-top:0;">Bản Quyền (Copyright)</h5>
+                            <div class="form-group">
+                                <label>Dòng bản quyền chính</label>
+                                <input type="text" id="footerCopyrightText" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Ghi chú (Disclaimer)</label>
+                                <input type="text" id="footerDisclaimerText" class="form-control">
+                            </div>
+                        </div>
+                        <div style="padding: 15px; background: #f8f9fa; border-top: 1px solid #eee; border-radius: 0 0 8px 8px; text-align: right;">
+                            <button type="submit" style="padding: 10px 25px; font-size: 15px; background-color: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-save"></i> Lưu Cấu Hình Footer</button>
+                        </div>
+                        </div>
+                    </div>
+                </form>
+
+                <button type="submit" form="config-form" style="width: 100%; padding: 15px; font-size: 16px; margin-top: 30px; margin-bottom: 20px; background-color: #0A59AB; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;"><i class="fa-solid fa-save"></i> Lưu Toàn Bộ Các Cấu Hình Giao Diện Phía Trên</button>
             </div>
         </div>
 
@@ -1632,6 +1782,49 @@
 </div>
 </div>
 
+    <!-- Modal Liên Kết Ngoài -->
+    <div id="externalLinkModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: white; width: 500px; max-width: 90%; border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-height: 90vh; overflow-y: auto; position: relative;">
+            <button onclick="externalLinksApp.closeModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 20px; cursor: pointer; color: #64748b;">&times;</button>
+            <h3 id="extLinkModalTitle" style="margin-top: 0; margin-bottom: 15px; color: var(--primary);">Thêm Liên Kết Ngoài</h3>
+            <form id="extLinkForm" onsubmit="event.preventDefault(); externalLinksApp.saveExtLink();">
+                <input type="hidden" id="extLinkId">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="extLinkName" style="display: block; margin-bottom: 5px; font-weight: 500;">Tên hiển thị <span style="color:red">*</span></label>
+                    <input type="text" id="extLinkName" required placeholder="VD: Bộ Khoa học và Công Nghệ" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="extLinkUrl" style="display: block; margin-bottom: 5px; font-weight: 500;">Đường dẫn URL <span style="color:red">*</span></label>
+                    <input type="text" id="extLinkUrl" required placeholder="VD: https://mst.gov.vn" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="extLinkColor" style="display: block; margin-bottom: 5px; font-weight: 500;">Màu sắc chủ đạo</label>
+                    <input type="color" id="extLinkColor" value="#0a59ab" style="width: 100%; height: 40px; padding: 0; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer;">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Logo / Icon (Tùy chọn)</label>
+                    <input type="file" id="extLinkLogoFile" accept="image/png, image/jpeg, image/svg+xml" onchange="externalLinksApp.uploadImage('logo')" style="margin-bottom: 5px;">
+                    <input type="hidden" id="extLinkLogoUrl">
+                    <div id="extLinkLogoPreview" style="margin-top: 10px; max-height: 80px; overflow: hidden; display: none; background: #f1f5f9; padding: 10px; border-radius: 4px; text-align: center;">
+                        <img src="" style="max-width: 100%; max-height: 80px; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500;">Ảnh nền (Tùy chọn)</label>
+                    <input type="file" id="extLinkBgFile" accept="image/png, image/jpeg" onchange="externalLinksApp.uploadImage('bg')" style="margin-bottom: 5px;">
+                    <input type="hidden" id="extLinkBgUrl">
+                    <div id="extLinkBgPreview" style="margin-top: 10px; max-height: 80px; overflow: hidden; display: none; border-radius: 4px;">
+                        <img src="" style="width: 100%; height: 80px; object-fit: cover; border-radius: 4px;">
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn-cancel" onclick="externalLinksApp.closeModal()" style="background: #e2e8f0; color: #475569; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Hủy</button>
+                    <button type="submit" class="btn-save" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">Lưu Lại</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- User Modal -->
     <div id="userModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
         <div style="background: white; width: 500px; border-radius: 8px; padding: 25px; position: relative;">
@@ -1777,6 +1970,15 @@
                     <input type="text" id="newsFormTitle" required style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;">
                 </div>
                 
+                <div id="newsFormMultimediaTypeContainer" style="margin-bottom: 15px; display: none;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Loại đa phương tiện <span style="color: red;">*</span></label>
+                    <select id="newsFormMultimediaType" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; font-family: 'Inter', sans-serif;">
+                        <option value="video">Video</option>
+                        <option value="image">Hình ảnh</option>
+                        <option value="infographic">Infographic</option>
+                    </select>
+                </div>
+                
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Hình ảnh đại diện (Tải lên hoặc nhập URL)</label>
                     <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
@@ -1806,6 +2008,19 @@
                     </div>
                 </div>
 
+                <div style="margin-bottom: 15px;" id="newsFormAttachmentContainer">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Tệp đính kèm (dành cho Thông báo, Văn bản...)</label>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="file" id="newsFormAttachmentUpload" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar" onchange="handleNewsAttachmentUpload(this)" style="flex: 1; padding: 5px;">
+                        <input type="hidden" id="newsFormAttachmentUrl">
+                        <input type="hidden" id="newsFormAttachmentName">
+                        <button type="button" id="newsFormDeleteAttachmentBtn" onclick="clearNewsAttachment()" style="display: none; background: #fee2e2; color: #ef4444; border: 1px solid #fca5a5; border-radius: 4px; padding: 7px 12px; cursor: pointer; font-size: 13px; font-weight: 500; align-items: center; gap: 5px;" title="Xoá tệp">
+                            <i class="fa-solid fa-trash-can"></i> Xoá tệp
+                        </button>
+                    </div>
+                    <div id="newsFormAttachmentPreview" style="margin-top: 5px; font-size: 14px; color: #0ea5e9; font-weight: 500; display: none;"></div>
+                </div>
+
                 <div style="margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
                     <input type="checkbox" id="newsFormIsFeatured" style="width: 18px; height: 18px; cursor: pointer;">
                     <label id="newsFormIsFeaturedLabel" for="newsFormIsFeatured" style="font-weight: 500; color: #334155; cursor: pointer; margin: 0;">Tin tức nổi bật (tính năng đã chọn x/2 tin)</label>
@@ -1815,6 +2030,11 @@
                 <div style="margin-bottom: 15px;">
                     <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Nội dung bài viết</label>
                     <div id="newsFormContent" style="height: 200px; background: #fff;"></div>
+                </div>
+
+                <div id="newsFormVideoUrlContainer" style="margin-bottom: 15px; display: none;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #334155;">Đường dẫn Video (Youtube URL) <span style="color: red;">*</span></label>
+                    <input type="url" id="newsFormVideoUrl" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; font-family: 'Inter', sans-serif;" placeholder="https://www.youtube.com/watch?v=...">
                 </div>
 
                 <div style="display: flex; gap: 15px;">

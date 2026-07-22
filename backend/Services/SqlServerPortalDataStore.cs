@@ -431,6 +431,31 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         return value is null ? null : Convert.ToInt32(value, CultureInfo.InvariantCulture);
     }
 
+    public async Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken)
+    {
+        if (!int.TryParse(id, out var commentId))
+        {
+            return (false, "Không tìm thấy bình luận.");
+        }
+
+        await using var connection = await OpenConnectionAsync(cancellationToken);
+        await using var command = new SqlCommand("""
+            UPDATE c
+            SET c.IsDeleted = 1, c.UpdatedAt = SYSUTCDATETIME()
+            FROM Cms.Comments c
+            INNER JOIN Auth.Users u ON c.UserId = u.Id
+            WHERE c.Id = @Id AND u.Username = @Username AND c.IsDeleted = 0
+            """, connection);
+        command.Parameters.AddWithValue("@Id", commentId);
+        command.Parameters.AddWithValue("@Username", username);
+        var rowsAffected = await command.ExecuteNonQueryAsync(cancellationToken);
+        if (rowsAffected == 0)
+        {
+            return (false, "Bạn không có quyền xoá bình luận này hoặc bình luận không tồn tại.");
+        }
+        return (true, "Đã xoá bình luận.");
+    }
+
     public async Task<List<AnnouncementDto>> GetAnnouncementsAsync(int take, CancellationToken cancellationToken)
     {
         await using var connection = await OpenConnectionAsync(cancellationToken);

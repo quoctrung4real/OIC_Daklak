@@ -25,15 +25,6 @@
   "heroButtonText": "KH\u00C1M PH\u00C1 NGAY",
   "heroButtonFont": "\u0027Inter\u0027, sans-serif",
   "heroButtonBgColor": "#1a3a5c",
-  "primaryColor": "#1322bc",
-  "primaryDarkColor": "#1a3a5c",
-  "accentOrangeColor": "#f1592b",
-  "accentRedColor": "#da251d",
-  "bodyBgColor": "#f5fafe",
-  "newsSectionBgColor": "#eef4fa",
-  "infoUtilityBgColor": "#ffffff",
-  "bgImageUrl": "",
-  "footerBgColor": "#1a3a5c",
   "techSolutionsFont": "\u0027Inter\u0027, sans-serif",
   "techSolutionsColor": "#0a59ab",
   "boKhcnLink": "",
@@ -185,58 +176,80 @@
     "1784194584598",
     "1783908053403"
   ],
-  "infoUtilityConfig": [
+  "multimediaBgColor": "#0a59ab",
+  "multimediaPriorityVideoId": "1784634640218",
+  "multimediaSecondaryVideoIds": [
+    "111",
+    "222"
+  ],
+  "multimediaPriorityImageId": "1784637216428",
+  "multimediaPriorityInfographicId": "1784637217428",
+  "multimediaSecondaryImageIds": [],
+  "multimediaSecondaryInfographicIds": [],
+  "externalLinks": [
     {
-      "id": 1,
-      "title": "TH\u00D4NG TIN TUY\u00CAN TRUY\u1EC0N",
-      "bgColor": "",
-      "bgImage": "",
-      "links": [
-        {
-          "id": 101,
-          "title": "C\u1ED5ng d\u1ECBch v\u1EE5 c\u00F4ng qu\u1ED1c gia",
-          "url": "https://dichvucong.gov.vn/",
-          "icon": "fa-solid fa-star",
-          "iconColor": "#e74c3c"
-        },
-        {
-          "id": 102,
-          "title": "Ph\u1EA3n \u00E1nh, ki\u1EBFn ngh\u1ECB v\u0103n b\u1EA3n QPPL",
-          "url": "#",
-          "icon": "fa-solid fa-folder-open",
-          "iconColor": "#f39c12"
-        }
-      ]
+      "id": "ext1",
+      "name": "B\u1ED9 Khoa h\u1ECDc v\u00E0 C\u00F4ng Ngh\u1EC7",
+      "url": "#",
+      "color": "#c0392b",
+      "logoText": "BKH",
+      "logoUrl": "",
+      "bgUrl": ""
     },
     {
-      "id": 2,
-      "title": "TH\u00D4NG TIN TRA C\u1EE8U",
-      "bgColor": "",
-      "bgImage": "",
-      "links": [
-        {
-          "id": 201,
-          "title": "C\u01A1 c\u1EA5u t\u1ED5 ch\u1EE9c",
-          "url": "#",
-          "icon": "fa-solid fa-sitemap",
-          "iconColor": "#27ae60"
-        }
-      ]
+      "id": "ext2",
+      "name": "C\u1ED5ng th\u00F4ng tin \u0111i\u1EC7n t\u1EED t\u1EC9nh \u0110\u0103k L\u0103k",
+      "url": "#",
+      "color": "#c0392b",
+      "logoText": "CTT\u0110T",
+      "logoUrl": "",
+      "bgUrl": ""
     },
     {
-      "id": 3,
-      "title": "TIN C\u1EA6N BI\u1EBET",
-      "bgColor": "",
-      "bgImage": "",
-      "links": [
-        {
-          "id": 301,
-          "title": "D\u1EF1 b\u00E1o th\u1EDDi ti\u1EBFt",
-          "url": "#",
-          "icon": "fa-solid fa-cloud-sun-rain",
-          "iconColor": "#3498db"
-        }
-      ]
+      "id": "ext3",
+      "name": "S\u1EDF Khoa H\u1ECDc v\u00E0 C\u00F4ng Ngh\u1EC7",
+      "url": "#",
+      "color": "#0a59ab",
+      "logoText": "SKHCN",
+      "logoUrl": "",
+      "bgUrl": ""
+    },
+    {
+      "id": "ext4",
+      "name": "C\u00F4ng an t\u1EC9nh \u0110\u1EAFk L\u1EAFk",
+      "url": "#",
+      "color": "#0a59ab",
+      "logoText": "CADL",
+      "logoUrl": "",
+      "bgUrl": ""
+    },
+    {
+      "id": "ext5",
+      "name": "Trung t\u00E2m Khoa h\u1ECDc, C\u00F4ng ngh\u1EC7 v\u00E0 \u0110\u1ED5i m\u1EDBi s\u00E1ng t\u1EA1o t\u1EC9nh \u0110\u0103k L\u0103k",
+      "url": "#",
+      "color": "#0a59ab",
+      "logoText": "STIC",
+      "logoUrl": "",
+      "bgUrl": ""
     }
-  ]
+  ],
+  "footerConfig": {
+    "brandName": "DAKLAK IOC",
+    "brandDesc": "Trung t\u00E2m Gi\u00E1m s\u00E1t, \u0111i\u1EC1u h\u00E0nh \u0111\u00F4 th\u1ECB th\u00F4ng minh t\u1EC9nh \u0110\u0103k L\u0103k",
+    "address": "\u0110\u1ECBa ch\u1EC9: 28B Y Bih Aleo, Ph\u01B0\u1EDDng Bu\u00F4n Ma Thu\u1ED9t, t\u1EC9nh \u0110\u1EAFk L\u1EAFk",
+    "phone": "02621022",
+    "fax": "02621022",
+    "email": "banbientapioc.tttt@daklak.gov.vn",
+    "ncscImageUrl": "",
+    "ncscLink": "#",
+    "facebookLink": "www.facebook.com",
+    "zaloLink": "#",
+    "youtubeLink": "#",
+    "tiktokLink": "#",
+    "qrCodeUrl": "",
+    "appStoreLink": "#",
+    "googlePlayLink": "#",
+    "copyrightText": "\u00A9 2026 Trung t\u00E2m Gi\u00E1m s\u00E1t, \u0110i\u1EC1u h\u00E0nh \u0111\u00F4 th\u1ECB th\u00F4ng minh t\u1EC9nh \u0110\u1EAFk L\u1EAFk \u2013 All Rights Reserved",
+    "disclaimerText": "Ghi r\u00F5 ngu\u1ED3n \u0022Trang Th\u00F4ng tin \u0111i\u1EC7n t\u1EED Trung t\u00E2m IOC\u0022 ho\u1EB7c iocdaklak.vn khi ph\u00E1t h\u00E0nh l\u1EA1i th\u00F4ng tin t\u1EEB c\u00E1c ngu\u1ED3n n\u00E0y."
+  }
 }

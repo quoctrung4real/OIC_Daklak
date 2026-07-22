@@ -1,13 +1,10 @@
 using System.Text.Json.Nodes;
 using Backend.Models;
-using Backend.OpenApi;
 using Backend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
@@ -24,13 +21,6 @@ builder.Configuration.AddEnvironmentVariables();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
-
-var dataProtectionKeysPath = Path.Combine(projectRoot, ".tmp", "data-protection-keys");
-Directory.CreateDirectory(dataProtectionKeysPath);
-builder.Services
-    .AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
-    .SetApplicationName("IOC_Daklak_Backend");
 
 builder.Services.Configure<UploadOptions>(builder.Configuration.GetSection("Upload"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
@@ -59,29 +49,6 @@ builder.Services
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
-});
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "IOC Đắk Lắk API",
-        Version = "v1",
-        Description = "API quản trị nội dung, cấu hình giao diện, văn bản, dự thảo, hỏi đáp và người dùng của Cổng IOC Đắk Lắk."
-    });
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Nhập access token nhận được từ POST /api/login."
-    });
-    options.OperationFilter<AuthorizeOperationFilter>();
-    options.TagActionsBy(api => [GetSwaggerTag(api.RelativePath)]);
-    options.OrderActionsBy(api => $"{GetSwaggerTag(api.RelativePath)}_{api.RelativePath}_{api.HttpMethod}");
 });
 
 builder.Services.AddCors(options =>
@@ -127,23 +94,6 @@ builder.Services.AddTransient<ITextToSpeechService>(serviceProvider =>
 
 var app = builder.Build();
 
-var swaggerEnabled = app.Environment.IsDevelopment() ||
-    builder.Configuration.GetValue<bool>("Swagger:Enabled");
-if (swaggerEnabled)
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/swagger/v1/swagger.json", "IOC Đắk Lắk API v1");
-        options.DocumentTitle = "IOC Đắk Lắk API";
-        options.DisplayRequestDuration();
-        options.EnableTryItOutByDefault();
-        options.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-        options.DefaultModelsExpandDepth(-1);
-        options.EnableFilter();
-    });
-}
-
 try
 {
     var configuration = app.Services.GetRequiredService<IConfiguration>();
@@ -161,11 +111,7 @@ try
                 )
                 BEGIN
                     ALTER TABLE Gov.Documents ADD OriginalFileName NVARCHAR(255) NULL;
-                END;
-                IF COL_LENGTH('Cms.Articles', 'ImageUrl') IS NOT NULL
-                BEGIN
-                    ALTER TABLE Cms.Articles ALTER COLUMN ImageUrl NVARCHAR(MAX) NULL;
-                END;
+                END
             ", connection);
             command.ExecuteNonQuery();
         }
@@ -248,15 +194,15 @@ app.MapGet("/api/van-ban", async (string? type, int? take, IPortalDataStore stor
     return Results.Json(await store.GetDocumentsAsync(type, take ?? 20, cancellationToken));
 });
 
-app.MapPost("/api/van-ban", async (DocumentRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPost("/api/van-ban", async (DocumentDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.AddDocumentAsync(ToDocumentDto(payload), cancellationToken);
+    var result = await store.AddDocumentAsync(payload, cancellationToken);
     return Results.Json(new { success = true, document = result });
 }).RequireAuthorization("AdminOnly");
 
-app.MapPut("/api/van-ban/{id:int}", async (int id, DocumentRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPut("/api/van-ban/{id:int}", async (int id, DocumentDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.UpdateDocumentAsync(id, ToDocumentDto(payload), cancellationToken);
+    var result = await store.UpdateDocumentAsync(id, payload, cancellationToken);
     return Results.Json(new { success = true, document = result });
 }).RequireAuthorization("AdminOnly");
 
@@ -280,15 +226,15 @@ app.MapGet("/api/y-kien-du-thao/{id:int}", async (int id, IPortalDataStore store
     return Results.Json(new { success = true, draftOpinion = draft });
 });
 
-app.MapPost("/api/y-kien-du-thao", async (DraftOpinionRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPost("/api/y-kien-du-thao", async (DraftOpinionDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.AddDraftOpinionAsync(ToDraftOpinionDto(payload), cancellationToken);
+    var result = await store.AddDraftOpinionAsync(payload, cancellationToken);
     return Results.Json(new { success = true, draftOpinion = result });
 }).RequireAuthorization("AdminOnly");
 
-app.MapPut("/api/y-kien-du-thao/{id:int}", async (int id, DraftOpinionRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPut("/api/y-kien-du-thao/{id:int}", async (int id, DraftOpinionDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.UpdateDraftOpinionAsync(id, ToDraftOpinionDto(payload), cancellationToken);
+    var result = await store.UpdateDraftOpinionAsync(id, payload, cancellationToken);
     return Results.Json(new { success = true, draftOpinion = result });
 }).RequireAuthorization("AdminOnly");
 
@@ -309,69 +255,16 @@ app.MapGet("/api/gop-y", async (IPortalDataStore store, CancellationToken cancel
     return Results.Json(new { success = true, feedbacks = await store.GetFeedbacksAsync(null, cancellationToken) });
 }).RequireAuthorization("AdminOnly");
 
-app.MapPost("/api/y-kien-du-thao/{id:int}/gop-y", async (int id, OpinionFeedbackRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPost("/api/y-kien-du-thao/{id:int}/gop-y", async (int id, OpinionFeedbackDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.AddFeedbackAsync(new OpinionFeedbackDto
-    {
-        DraftOpinionId = id,
-        FullName = payload.FullName,
-        Email = payload.Email,
-        PhoneNumber = payload.PhoneNumber,
-        Content = payload.Content
-    }, cancellationToken);
+    payload.DraftOpinionId = id;
+    var result = await store.AddFeedbackAsync(payload, cancellationToken);
     return Results.Json(new { success = true, feedback = result });
 });
 
 app.MapDelete("/api/gop-y/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
     await store.DeleteFeedbackAsync(id, cancellationToken);
-    return Results.Json(new { success = true });
-}).RequireAuthorization("AdminOnly");
-
-app.MapGet("/api/faq", async (IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(await store.GetFaqsAsync(cancellationToken)));
-
-app.MapPost("/api/faq", async (FaqRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(new { success = true, faq = await store.SaveFaqAsync(null, new FaqDto { Question = payload.Question, Answer = payload.Answer, Order = payload.Order }, cancellationToken) }))
-    .RequireAuthorization("AdminOnly");
-
-app.MapPut("/api/faq/{id:int}", async (int id, FaqRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(new { success = true, faq = await store.SaveFaqAsync(id, new FaqDto { Question = payload.Question, Answer = payload.Answer, Order = payload.Order }, cancellationToken) }))
-    .RequireAuthorization("AdminOnly");
-
-app.MapDelete("/api/faq/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
-{
-    await store.DeleteFaqAsync(id, cancellationToken);
-    return Results.Json(new { success = true });
-}).RequireAuthorization("AdminOnly");
-
-app.MapGet("/api/cau-hoi-nguoi-dan", async (IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(await store.GetUserQuestionsAsync(true, cancellationToken)));
-
-app.MapGet("/api/admin/cau-hoi-nguoi-dan", async (IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(await store.GetUserQuestionsAsync(false, cancellationToken)))
-    .RequireAuthorization("AdminOnly");
-
-app.MapPost("/api/cau-hoi-nguoi-dan", async (UserQuestionRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
-{
-    if (string.IsNullOrWhiteSpace(payload.SenderName) || string.IsNullOrWhiteSpace(payload.SenderEmail) || string.IsNullOrWhiteSpace(payload.Content))
-        return Results.BadRequest(new { success = false, message = "Vui lòng nhập họ tên, email và nội dung." });
-    var question = new UserQuestionDto
-    {
-        Topic = payload.Topic, Title = payload.Title, SenderName = payload.SenderName,
-        SenderEmail = payload.SenderEmail, SenderPhone = payload.SenderPhone,
-        Address = payload.Address, Content = payload.Content, Status = "pending", IsPublic = false
-    };
-    return Results.Json(new { success = true, question = await store.AddUserQuestionAsync(question, cancellationToken) });
-});
-
-app.MapPut("/api/admin/cau-hoi-nguoi-dan/{id:int}", async (int id, UserQuestionReplyRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
-    Results.Json(new { success = true, question = await store.UpdateUserQuestionAsync(id, new UserQuestionDto { Answer = payload.Answer, IsPublic = payload.IsPublic, Status = "answered" }, cancellationToken) }))
-    .RequireAuthorization("AdminOnly");
-
-app.MapDelete("/api/admin/cau-hoi-nguoi-dan/{id:int}", async (int id, IPortalDataStore store, CancellationToken cancellationToken) =>
-{
-    await store.DeleteUserQuestionAsync(id, cancellationToken);
     return Results.Json(new { success = true });
 }).RequireAuthorization("AdminOnly");
 
@@ -620,17 +513,15 @@ app.MapGet("/api/nguoi-dung", async (IPortalDataStore store, CancellationToken c
     return Results.Json(await store.GetUsersAsync(cancellationToken));
 }).RequireAuthorization("AdminOnly");
 
-app.MapGet("/api/nguoi-dung/{username}", async (string username, IPortalDataStore store, ClaimsPrincipal principal, CancellationToken cancellationToken) =>
+app.MapGet("/api/nguoi-dung/{username}", async (string username, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    if (!principal.IsInRole("Admin") && !string.Equals(principal.Identity?.Name, username, StringComparison.OrdinalIgnoreCase))
-        return Results.Forbid();
     var user = await store.GetUserAsync(username, cancellationToken);
     return user is null
         ? (IResult)Results.NotFound(new { success = false, message = "Không tìm thấy người dùng." })
         : Results.Json(new { success = true, user });
-}).RequireAuthorization();
+});
 
-app.MapPut("/api/nguoi-dung/{username}", async (string username, UpdateProfileRequestDto payload, IPortalDataStore store, ClaimsPrincipal user, CancellationToken cancellationToken) =>
+app.MapPut("/api/nguoi-dung/{username}", async (string username, UserDto payload, IPortalDataStore store, ClaimsPrincipal user, CancellationToken cancellationToken) =>
 {
     var currentUsername = user.Identity?.Name;
     var isAdmin = user.IsInRole("Admin");
@@ -639,32 +530,21 @@ app.MapPut("/api/nguoi-dung/{username}", async (string username, UpdateProfileRe
         return Results.Forbid();
     }
 
-    var result = await store.UpdateUserAsync(username, new UserDto
-    {
-        Password = payload.Password, FullName = payload.FullName, Email = payload.Email,
-        DateOfBirth = payload.DateOfBirth, AvatarUrl = payload.AvatarUrl
-    }, cancellationToken);
+    var result = await store.UpdateUserAsync(username, payload, cancellationToken);
     return result.Success
         ? (IResult)Results.Json(new { success = true, message = result.Message, user = result.User })
         : Results.NotFound(new { success = false, message = result.Message });
 }).RequireAuthorization();
 
-app.MapPost("/api/register", async (RegisterRequestDto payload, IPortalDataStore store, AuthTokenService tokenService, CancellationToken cancellationToken) =>
+app.MapPost("/api/register", async (UserDto payload, IPortalDataStore store, AuthTokenService tokenService, CancellationToken cancellationToken) =>
 {
-    if (string.IsNullOrWhiteSpace(payload.Username) || string.IsNullOrWhiteSpace(payload.Password))
-        return Results.BadRequest(new { success = false, message = "Vui lòng nhập tên đăng nhập và mật khẩu." });
-    var result = await store.RegisterAsync(new UserDto
-    {
-        Username = payload.Username, Password = payload.Password, FullName = payload.FullName,
-        Email = payload.Email, DateOfBirth = payload.DateOfBirth, AvatarUrl = payload.AvatarUrl,
-        Role = "User", IsActive = true
-    }, cancellationToken);
+    var result = await store.RegisterAsync(payload, cancellationToken);
     return result.Success
         ? (IResult)Results.Json(tokenService.CreateAuthResponse(result.User!, result.Message))
         : Results.BadRequest(new { success = false, message = result.Message });
 });
 
-app.MapPost("/api/login", async (LoginRequestDto payload, IPortalDataStore store, AuthTokenService tokenService, CancellationToken cancellationToken) =>
+app.MapPost("/api/login", async (UserDto payload, IPortalDataStore store, AuthTokenService tokenService, CancellationToken cancellationToken) =>
 {
     if (string.IsNullOrWhiteSpace(payload.Username) || string.IsNullOrWhiteSpace(payload.Password))
     {
@@ -683,16 +563,11 @@ app.MapGet("/api/binh-luan", async (string pageId, IPortalDataStore store, Cance
     return Results.Json(await store.GetCommentsAsync(pageId, cancellationToken), pascalCaseJson);
 });
 
-app.MapPost("/api/binh-luan", async (CommentRequestDto payload, IPortalDataStore store, ClaimsPrincipal principal, CancellationToken cancellationToken) =>
+app.MapPost("/api/binh-luan", async (CommentDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var comment = await store.AddCommentAsync(new CommentDto
-    {
-        PageId = payload.PageId,
-        Content = payload.Content,
-        Username = principal.Identity?.Name
-    }, cancellationToken);
+    var comment = await store.AddCommentAsync(payload, cancellationToken);
     return Results.Json(new { success = true, message = "Đã gửi bình luận.", comment });
-}).RequireAuthorization();
+});
 
 app.MapPost("/api/binh-luan/{id}/like", async (string id, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
@@ -700,7 +575,7 @@ app.MapPost("/api/binh-luan/{id}/like", async (string id, IPortalDataStore store
     return likes is null
         ? (IResult)Results.NotFound(new { success = false, message = "Không tìm thấy bình luận." })
         : Results.Json(new { success = true, likes });
-}).RequireAuthorization();
+});
 
 app.MapPost("/api/binh-luan/{id}/dislike", async (string id, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
@@ -708,19 +583,27 @@ app.MapPost("/api/binh-luan/{id}/dislike", async (string id, IPortalDataStore st
     return dislikes is null
         ? (IResult)Results.NotFound(new { success = false, message = "Không tìm thấy bình luận." })
         : Results.Json(new { success = true, dislikes });
-}).RequireAuthorization();
+});
 
-app.MapPost("/api/admin/nguoi-dung", async (AdminUserRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapDelete("/api/binh-luan/{id}", async (string id, [Microsoft.AspNetCore.Mvc.FromQuery] string username, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.AdminSaveUserAsync(null, ToUserDto(payload), cancellationToken);
+    var result = await store.DeleteCommentAsync(id, username ?? string.Empty, cancellationToken);
+    return result.Success
+        ? (IResult)Results.Json(new { success = true, message = result.Message })
+        : Results.BadRequest(new { success = false, message = result.Message });
+});
+
+app.MapPost("/api/admin/nguoi-dung", async (UserDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+{
+    var result = await store.AdminSaveUserAsync(null, payload, cancellationToken);
     return result.Success
         ? (IResult)Results.Json(new { success = true, message = result.Message })
         : Results.BadRequest(new { success = false, message = result.Message });
 }).RequireAuthorization("AdminOnly");
 
-app.MapPut("/api/admin/nguoi-dung/{username}", async (string username, AdminUserRequestDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
+app.MapPut("/api/admin/nguoi-dung/{username}", async (string username, UserDto payload, IPortalDataStore store, CancellationToken cancellationToken) =>
 {
-    var result = await store.AdminSaveUserAsync(username, ToUserDto(payload), cancellationToken);
+    var result = await store.AdminSaveUserAsync(username, payload, cancellationToken);
     return result.Success
         ? (IResult)Results.Json(new { success = true, message = result.Message })
         : Results.NotFound(new { success = false, message = result.Message });
@@ -784,7 +667,7 @@ static void MapFrontendRoutes(WebApplication app, string frontendRoot)
     foreach (var route in routes)
     {
         var localRoute = route;
-        app.MapGet(localRoute.Url, () => ServeFrontendPage(frontendRoot, localRoute.FilePath)).ExcludeFromDescription();
+        app.MapGet(localRoute.Url, () => ServeFrontendPage(frontendRoot, localRoute.FilePath));
     }
 
     app.MapGet("/api/site-map", () => Results.Json(routes.Select(route => new
@@ -846,64 +729,10 @@ static IReadOnlyList<FrontendRouteInfo> GetFrontendRoutes()
         new("/chuyen-muc-khac/trao-doi-kinh-nghiem", "user/chuyen-muc-khac/trao-doi-kinh-nghiem.html", "user", "Trao đổi kinh nghiệm"),
         new("/chuyen-muc-khac/tuong-tac-cong-dan", "user/chuyen-muc-khac/tuong-tac-cong-dan.html", "user", "Tương tác công dân"),
 
-        new("/giai-phap/giai-phap-an-toan-mang", "user/giai-phap/giai-phap-an-toan-mang.html", "user", "Giải pháp An toàn mạng"),
-        new("/giai-phap/giai-phap-an-toan-thong-tin", "user/giai-phap/giai-phap-an-toan-thong-tin.html", "user", "Giải pháp An toàn thông tin")
+        new("/giai-phap/giai-phap-an-toan-mang", "user/tin-tuc/giai-phap-an-toan-mang.html", "user", "Giải pháp An toàn mạng"),
+        new("/giai-phap/giai-phap-an-toan-thong-tin", "user/tin-tuc/giai-phap-an-toan-thong-tin.html", "user", "Giải pháp An toàn thông tin")
     ];
 }
-
-static string GetSwaggerTag(string? relativePath)
-{
-    var path = (relativePath ?? string.Empty).Split('?', 2)[0].Trim('/').ToLowerInvariant();
-    if (path is "api" or "api/health" or "api/site-map") return "00 - Hệ thống";
-    if (path.StartsWith("api/login") || path.StartsWith("api/register") || path.StartsWith("api/auth/")) return "01 - Xác thực";
-    if (path.StartsWith("api/trang-chu") || path.StartsWith("api/cau-hinh")) return "02 - Trang chủ & cấu hình";
-    if (path.StartsWith("api/van-ban") || path.StartsWith("api/loai-van-ban") || path.StartsWith("api/thong-bao-chung")) return "05 - Văn bản & thông báo";
-    if (path.StartsWith("api/y-kien-du-thao") || path.StartsWith("api/gop-y")) return "06 - Dự thảo & góp ý";
-    if (path.StartsWith("api/faq") || path.Contains("cau-hoi-nguoi-dan")) return "07 - Hỏi đáp";
-    if (path.StartsWith("api/binh-luan")) return "08 - Bình luận";
-    if (path.StartsWith("api/nguoi-dung") || path.StartsWith("api/admin/nguoi-dung")) return "09 - Người dùng";
-    if (path.StartsWith("api/upload") || path.StartsWith("api/download")) return "10 - Tệp tin";
-    if (path.StartsWith("api/text-to-speech")) return "11 - Chuyển văn bản thành giọng nói";
-    if (path.StartsWith("api/tim-kiem")) return "12 - Tìm kiếm";
-    if (path.StartsWith("api/admin/migrate-json")) return "13 - Migration";
-
-    var newsPaths = new[] { "tin-tuc", "news", "thong-bao", "tin-hoat-dong", "cds-doi-moi-sang-tao", "cap-nhat-bao-lu", "giai-phap-an-toan-mang", "giai-phap-an-toan-thong-tin", "chi-dao-dieu-hanh", "cong-tac-xay-dung-dang", "tuong-tac-cong-dan", "trao-doi-kinh-nghiem", "tieu-chuan-chat-luong" };
-    if (newsPaths.Any(value => path == $"api/{value}")) return "04 - Tin tức & chuyên mục";
-    return "03 - Trang nội dung";
-}
-
-static DocumentDto ToDocumentDto(DocumentRequestDto payload) => new()
-{
-    TypeCode = payload.TypeCode,
-    DocumentNumber = payload.DocumentNumber,
-    PublishedAt = payload.PublishedAt,
-    Title = payload.Title,
-    FileUrl = payload.FileUrl,
-    OriginalFileName = payload.OriginalFileName,
-    IssuingAuthority = payload.IssuingAuthority
-};
-
-static DraftOpinionDto ToDraftOpinionDto(DraftOpinionRequestDto payload) => new()
-{
-    DocumentNumber = payload.DocumentNumber,
-    Title = payload.Title,
-    FileUrl = payload.FileUrl,
-    OriginalFileName = payload.OriginalFileName,
-    EndDate = payload.EndDate,
-    Category = payload.Category
-};
-
-static UserDto ToUserDto(AdminUserRequestDto payload) => new()
-{
-    Username = payload.Username,
-    Password = payload.Password,
-    Role = payload.Role,
-    FullName = payload.FullName,
-    Email = payload.Email,
-    DateOfBirth = payload.DateOfBirth,
-    AvatarUrl = payload.AvatarUrl,
-    IsActive = payload.IsActive
-};
 
 static IReadOnlyList<NewsCategoryInfo> GetNewsCategories()
 {
@@ -919,7 +748,8 @@ static IReadOnlyList<NewsCategoryInfo> GetNewsCategories()
         new() { Slug = "tieu-chuan-chat-luong", Title = "Tiêu chuẩn - Chất lượng" },
         new() { Slug = "tin-hoat-dong", Title = "Tin hoạt động" },
         new() { Slug = "trao-doi-kinh-nghiem", Title = "Trao đổi kinh nghiệm" },
-        new() { Slug = "tuong-tac-cong-dan", Title = "Tương tác công dân" }
+        new() { Slug = "tuong-tac-cong-dan", Title = "Tương tác công dân" },
+        new() { Slug = "tin-tuc-da-phuong-tien", Title = "Tin tức đa phương tiện" }
     ];
 }
 

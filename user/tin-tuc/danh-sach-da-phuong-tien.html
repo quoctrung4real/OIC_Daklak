@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đa phương tiện - DakLakIOC</title>
+    <meta name="description" content="Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk - DakLakIOC">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600;1,700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="../../shared/giao-dien.css">
+</head>
+
+<body data-page-id="danh-sach-da-phuong-tien" data-nav="tin-tuc">
+    
+    <!-- ===== BREADCRUMB ===== -->
+    <div style="border-bottom: 1px solid #e2e8f0; background: #fff;">
+        <div class="container" style="display: flex;">
+            <div style="background: #f1f5f9; padding: 12px 30px 12px 20px; font-size: 14px; color: #475569; display: flex; align-items: center; gap: 10px; clip-path: polygon(0 0, 100% 0, 95% 100%, 0% 100%); font-weight: 500;">
+                <i class="fa-solid fa-house" style="color: #64748b;"></i>
+                <span style="color: #64748b;">Tin Tức</span>
+                <i class="fa-solid fa-caret-right" style="font-size: 12px; color: #94a3b8;"></i>
+                <span style="color: #64748b;">Đa phương tiện</span>
+                <i class="fa-solid fa-caret-right" style="font-size: 12px; color: #94a3b8;"></i>
+                <span id="breadcrumb-type-text" style="color: #475569; text-transform: capitalize;">Video</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ARTICLE CONTENT ===== -->
+    <section class="article-section" style="padding: 50px 0; background: #f8fafc; min-height: 500px;">
+        <div class="container">
+            <div id="dynamic-news-content">
+                Đang tải dữ liệu...
+            </div>
+            <div id="pagination-container" class="pagination" style="margin-top: 30px;"></div>
+        </div>
+    </section>
+
+    <script>window.BASE_URL = "../../";</script>
+    <script src="../../shared/components.js"></script>
+    <script src="../../user/tin-tuc/danh-sach-da-phuong-tien.js"></script>
+    <script src="../../auth/xac-thuc.js"></script>
+</body>
+
+</html>

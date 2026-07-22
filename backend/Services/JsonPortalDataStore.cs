@@ -228,6 +228,25 @@ public sealed class JsonPortalDataStore : IPortalDataStore
         return isLike ? comment.Likes : comment.Dislikes;
     }
 
+    public async Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken)
+    {
+        var comments = await ReadCommentsAsync(cancellationToken);
+        var comment = comments.FirstOrDefault(c => string.Equals(c.Id, id, StringComparison.OrdinalIgnoreCase));
+        if (comment is null)
+        {
+            return (false, "Không tìm thấy bình luận.");
+        }
+
+        if (!string.Equals(comment.Username, username, StringComparison.OrdinalIgnoreCase))
+        {
+            return (false, "Bạn không có quyền xoá bình luận này.");
+        }
+
+        comments.Remove(comment);
+        await WriteFileAsync("danh-sach-binh-luan.json", JsonSerializer.Serialize(comments, _jsonOptions), cancellationToken);
+        return (true, "Đã xoá bình luận.");
+    }
+
     public Task<List<AnnouncementDto>> GetAnnouncementsAsync(int take, CancellationToken cancellationToken)
     {
         return Task.FromResult(new List<AnnouncementDto>());
@@ -235,7 +254,17 @@ public sealed class JsonPortalDataStore : IPortalDataStore
 
     public Task<List<DocumentTypeDto>> GetDocumentTypesAsync(CancellationToken cancellationToken)
     {
-        return Task.FromResult(new List<DocumentTypeDto>());
+        var types = new List<DocumentTypeDto>
+        {
+            new DocumentTypeDto { Id = 1, Code = "cong-van", Name = "Công văn", DisplayOrder = 1 },
+            new DocumentTypeDto { Id = 2, Code = "bao-cao", Name = "Báo cáo", DisplayOrder = 2 },
+            new DocumentTypeDto { Id = 3, Code = "ke-hoach", Name = "Kế hoạch", DisplayOrder = 3 },
+            new DocumentTypeDto { Id = 4, Code = "quyet-dinh", Name = "Quyết định", DisplayOrder = 4 },
+            new DocumentTypeDto { Id = 5, Code = "huong-dan", Name = "Hướng dẫn", DisplayOrder = 5 },
+            new DocumentTypeDto { Id = 6, Code = "chuong-trinh", Name = "Chương trình", DisplayOrder = 6 },
+            new DocumentTypeDto { Id = 7, Code = "tap-huan", Name = "Tập huấn", DisplayOrder = 7 }
+        };
+        return Task.FromResult(types);
     }
 
     private async Task<List<DocumentDto>> ReadDocumentsAsync(CancellationToken cancellationToken)

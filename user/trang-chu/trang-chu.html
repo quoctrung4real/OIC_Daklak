@@ -607,46 +607,10 @@
                     <span class="section-label light">Truyền thông</span>
                     <h2 class="section-title light">Đa phương tiện</h2>
                 </div>
-                <div class="media-types">
-                    <a href="#" class="media-type">
-                        <span class="media-icon video-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#DA251D" />
-                                <path
-                                    d="M21 15.88V16.12C21 16.23 20.97 16.33 20.92 16.43C20.86 16.52 20.79 16.6 20.69 16.66L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z"
-                                    fill="white" />
-                            </svg>
-                        </span>
-                        <span>Video</span>
-                    </a>
-                    <a href="#" class="media-type">
-                        <span class="media-icon photo-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#0FA246" />
-                                <rect x="9" y="10" width="14" height="12" rx="2" stroke="white" stroke-width="1.5" />
-                                <circle cx="13" cy="14" r="1.5" fill="white" />
-                                <path d="M9 19 L14 15 L17 18 L20 16 L23 19" stroke="white" stroke-width="1.5"
-                                    fill="none" />
-                            </svg>
-                        </span>
-                        <span>Hình ảnh</span>
-                    </a>
-                    <a href="#" class="media-type">
-                        <span class="media-icon info-icon">
-                            <svg width="28" height="28" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#EAAA08" />
-                                <rect x="10" y="8" width="5" height="16" rx="2" fill="white" opacity="0.8" />
-                                <rect x="17" y="12" width="5" height="12" rx="2" fill="white" opacity="0.6" />
-                                <rect x="24" y="16" width="5" height="8" rx="2" fill="white" opacity="0.4" />
-                            </svg>
-                        </span>
-                        <span>Infographic</span>
-                    </a>
+                <div class="media-types" id="multimedia-tabs-container">
+                    <!-- Tabs will be rendered here by JS -->
                 </div>
-                <a href="#" class="show-more-btn light">
+                <a href="#" class="show-more-btn light" id="multimedia-show-more-btn">
                     <span>Xem thêm</span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none">
                         <path
@@ -658,44 +622,8 @@
                     </svg>
                 </a>
             </div>
-            <div class="multimedia-content">
-                <div class="video-featured">
-                    <div class="video-thumbnail">
-                        <svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <linearGradient id="videoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#1a5276;stop-opacity:1" />
-                                    <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
-                                </linearGradient>
-                            </defs>
-                            <rect width="640" height="360" fill="url(#videoGrad)" />
-                            <!-- Bridge silhouette -->
-                            <path d="M0 280 Q160 220 320 280 Q480 220 640 280 L640 360 L0 360Z" fill="#1a4d8f"
-                                opacity="0.5" />
-                            <!-- Mountains -->
-                            <path d="M400 180 L500 280 L300 280Z" fill="#2c6fa0" opacity="0.3" />
-                            <path d="M500 200 L600 280 L400 280Z" fill="#2c6fa0" opacity="0.25" />
-                            <!-- Cloud -->
-                            <ellipse cx="320" cy="140" rx="80" ry="50" fill="white" opacity="0.15" />
-                            <text x="320" y="130" text-anchor="middle" fill="white" font-size="36" font-weight="800"
-                                font-family="Inter">Đăk Lăk Số</text>
-                            <text x="320" y="175" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="14"
-                                font-weight="600" font-family="Inter" letter-spacing="3">DỊCH VỤ ĐÔ THỊ THÔNG
-                                MINH</text>
-                            <text x="320" y="200" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="12"
-                                font-family="Inter">TỈNH ĐĂK LĂK</text>
-                        </svg>
-                        <div class="play-button">
-                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <rect width="32" height="32" rx="4" fill="#DA251D" />
-                                <path
-                                    d="M21 15.88V16.12L13.23 21C12.78 21.27 12.55 21.27 12.35 21.15L12.14 21.03C12.05 20.98 11.97 20.9 11.92 20.81C11.87 20.72 11.84 20.61 11.83 20.51V11.49C11.83 11.38 11.86 11.28 11.92 11.18C11.97 11.09 12.05 11.01 12.14 10.95L12.35 10.83C12.55 10.72 12.78 10.72 13.37 11.06L20.69 15.34C20.79 15.4 20.86 15.48 20.92 15.57C20.97 15.67 21 15.77 21 15.88Z"
-                                    fill="white" />
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="video-title">Bản tin video an toàn thông tin số 165</p>
+            <div class="multimedia-content" id="multimedia-content-container">
+                <!-- Content will be rendered here by JS -->
                 </div>
             </div>
         </div>
@@ -712,7 +640,7 @@
                             <span class="section-label">Danh sách</span>
                             <h2 class="section-title" style="margin-bottom: 0;">Thông báo</h2>
                         </div>
-                        <a href="#" class="show-more-link">
+                        <a href="../tin-tuc/thong-bao.html" class="show-more-link">
                             <span>Xem thêm</span>
                             <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                 xmlns="http://www.w3.org/2000/svg">
@@ -722,22 +650,8 @@
                             </svg>
                         </a>
                     </div>
-                    <ul class="announcement-list">
-                        <li>
-                            <a href="#">Kế hoạch triển khai thực hiện Kết luận 18-KL/TW, Kế hoạch 57-KH/TU, Kế...</a>
-                        </li>
-                        <li>
-                            <a href="#">Thông báo mời quý tổ chức, doanh nghiệp quan tâm báo giá Dịch vụ Đán...</a>
-                        </li>
-                        <li>
-                            <a href="#">Công bố công khai dự toán ngân sách nhà nước của Trung tâm Giám sát, điề...</a>
-                        </li>
-                        <li>
-                            <a href="#">Quyết định về việc công bố công khai dự toán ngân sách nhà nước năm 202...</a>
-                        </li>
-                        <li>
-                            <a href="#">Công bố công khai dự toán ngân sách</a>
-                        </li>
+                    <ul class="announcement-list" id="home-thong-bao-list">
+                        <li style="text-align: center; color: #666; font-style: italic; border: none;">Đang tải dữ liệu...</li>
                     </ul>
                 </div>
                 <div class="legal-documents">
@@ -747,7 +661,7 @@
                                 <span class="section-label">Hệ thống</span>
                                 <h2 class="section-title">Văn bản</h2>
                             </div>
-                            <a href="#" class="show-more-link">
+                            <a href="../van-ban/van-ban.html" class="show-more-link">
                                 <span>Xem thêm</span>
                                 <svg fill="none" height="9" viewBox="0 0 17 9" width="17"
                                     xmlns="http://www.w3.org/2000/svg">
@@ -758,159 +672,13 @@
                                 </svg>
                             </a>
                         </div>
-                        <div class="document-tabs" style="overflow-x: auto; padding-bottom: 8px;">
-                            <button class="doc-tab active" data-tab="0">Công văn</button>
-                            <button class="doc-tab" data-tab="1">Báo cáo</button>
-                            <button class="doc-tab" data-tab="2">Kế hoạch</button>
-                            <button class="doc-tab" data-tab="3">Quyết định</button>
-                            <button class="doc-tab" data-tab="4">Hướng dẫn</button>
-                            <button class="doc-tab" data-tab="5">Chương trình</button>
-                            <button class="doc-tab" data-tab="6">Tập huấn</button>
+                        <div class="document-tabs" id="home-document-tabs" style="overflow-x: auto; padding-bottom: 8px;">
+                            <!-- Tabs rendered dynamically -->
+                            <div style="color: #666; font-style: italic; padding: 10px;">Đang tải dữ liệu...</div>
                         </div>
                     </div>
-                    <div class="documents-table" id="docTab0">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">29/CT-UBND</p>
-                                <p class="doc-date">27/12/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>CHỈ THỊ Về đẩy mạnh cải cách hành chính gắn với chính quyền số, dịch vụ đô thị thông
-                                    minh trên địa bàn tỉnh</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">14-NQ/TU</p>
-                                <p class="doc-date">08/12/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>HỘI NGHỊ LẦN THỨ SÁU BAN CHẤP HÀNH ĐẢNG BỘ TỈNH KHOÁ XVI về nhiệm vụ phát triển kinh
-                                    tế - xã hội năm 2022</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">3128/QĐ-UBND</p>
-                                <p class="doc-date">30/11/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Kế hoạch triển khai Chương trình chuyển đổi số tỉnh Đắk Lắk giai đoạn 2021-2025, định
-                                    hướng đến năm 2030</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab1">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lăk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab2">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lắk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab3">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lăk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab4">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lăk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab5">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lăk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="documents-table hidden" id="docTab6">
-                        <div class="table-header">
-                            <div class="table-col-id">SỐ KÝ HIỆU/NGÀY BAN HÀNH</div>
-                            <div class="table-col-content">NỘI DUNG TRÍCH YẾU</div>
-                        </div>
-                        <div class="table-row">
-                            <div class="table-col-id">
-                                <p class="doc-number">62/2021/QĐ-UBND</p>
-                                <p class="doc-date">04/10/2021</p>
-                            </div>
-                            <div class="table-col-content">
-                                <p>Ban hành Quy định Quản lý, vận hành và tích hợp ứng dụng Đăk Lăk Số</p>
-                                <a href="#" class="download-link"><i class="fa-solid fa-arrow-down"></i> Tải tài
-                                    liệu</a>
-                            </div>
-                        </div>
+                    <div id="home-documents-content">
+                        <!-- Tables rendered dynamically -->
                     </div>
                 </div>
             </div>
@@ -920,57 +688,8 @@
     <!-- ===== EXTERNAL LINKS ===== -->
     <section class="external-links-section">
         <div class="container">
-            <div class="external-links-grid">
-                <a href="#" class="external-link-card">
-                    <div class="ext-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                            <circle cx="24" cy="24" r="18" fill="#c0392b" opacity="0.15" />
-                            <text x="24" y="28" text-anchor="middle" fill="#c0392b" font-size="10" font-weight="700"
-                                font-family="Inter">BKH</text>
-                        </svg>
-                    </div>
-                    <span>Bộ Khoa học và Công Nghệ</span>
-                </a>
-                <a href="#" class="external-link-card">
-                    <div class="ext-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                            <circle cx="24" cy="24" r="18" fill="#c0392b" opacity="0.15" />
-                            <text x="24" y="28" text-anchor="middle" fill="#c0392b" font-size="8" font-weight="700"
-                                font-family="Inter">CTTĐT</text>
-                        </svg>
-                    </div>
-                    <span>Cổng thông tin điện tử tỉnh Đăk Lăk</span>
-                </a>
-                <a href="#" class="external-link-card">
-                    <div class="ext-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                            <circle cx="24" cy="24" r="18" fill="#0a59ab" opacity="0.15" />
-                            <text x="24" y="28" text-anchor="middle" fill="#0a59ab" font-size="8" font-weight="700"
-                                font-family="Inter">SKHCN</text>
-                        </svg>
-                    </div>
-                    <span>Sở Khoa Học và Công Nghệ</span>
-                </a>
-                <a href="#" class="external-link-card">
-                    <div class="ext-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                            <circle cx="24" cy="24" r="18" fill="#0a59ab" opacity="0.15" />
-                            <text x="24" y="28" text-anchor="middle" fill="#0a59ab" font-size="8" font-weight="700"
-                                font-family="Inter">CADL</text>
-                        </svg>
-                    </div>
-                    <span>Công an tỉnh Đắk Lắk</span>
-                </a>
-                <a href="#" class="external-link-card">
-                    <div class="ext-icon">
-                        <svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                            <circle cx="24" cy="24" r="18" fill="#0a59ab" opacity="0.15" />
-                            <text x="24" y="28" text-anchor="middle" fill="#0a59ab" font-size="8" font-weight="700"
-                                font-family="Inter">STIC</text>
-                        </svg>
-                    </div>
-                    <span>Trung tâm Khoa học, Công nghệ và Đổi mới sáng tạo tỉnh Đăk Lăk</span>
-                </a>
+            <div class="external-links-grid" id="external-links-grid">
+                <!-- Rendered dynamically by JS -->
             </div>
         </div>
     </section>
