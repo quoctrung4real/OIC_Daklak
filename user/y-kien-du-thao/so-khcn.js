@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td class="text-center">${index + 1}</td>
                     <td>${draft.documentNumber || ''}</td>
                     <td class="text-center">${publishDate}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                 `;
                 tbody.appendChild(tr);
             });

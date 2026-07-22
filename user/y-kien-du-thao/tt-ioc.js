@@ -41,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td>${draft.documentNumber || ''}</td>
                     <td class="text-center">${publishDate}</td>
                     <td class="text-center">${draft.category || ''}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                 `;
                 tbody.appendChild(tr);
             });

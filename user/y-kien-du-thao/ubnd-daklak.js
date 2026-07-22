@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tr.innerHTML = `
                     <td class="text-center">${index + 1}</td>
                     <td>${draft.documentNumber || ''}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                     <td class="text-center">${fileHtml}</td>
                     <td class="text-center">${draft.endDate || ''}</td>
                 `;

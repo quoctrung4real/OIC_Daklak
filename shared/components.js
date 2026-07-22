@@ -118,6 +118,7 @@ const commonComponents = {
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Hướng dẫn">Hướng dẫn</a></li>
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Quyết định">Quyết định</a></li>
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Tập huấn">Tập huấn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Thông báo">Thông báo</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/ubnd-daklak.html">Văn bản dự thảo UBND tỉnh Đắk Lắk</a></li>
@@ -374,10 +375,27 @@ const commonComponents = {
     // 1. Inject Header at the beginning of body
     document.body.insertAdjacentHTML('afterbegin', commonComponents.header);
     
-    // 2. Inject Footer & Scroll Top at the end of body
+    // 2. Inject Footer, Scroll Top & External Chatbot at the end of body
     document.body.insertAdjacentHTML('beforeend', '<div id="footer-placeholder"></div>');
     document.getElementById('footer-placeholder').outerHTML = commonComponents.renderFooter({}); // default first
     document.body.insertAdjacentHTML('beforeend', commonComponents.scrollTop);
+
+    // 2b. Inject external Đắk Lắk chatbot script
+    (function () {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, initial-scale=1";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        var a = document.createElement("script");
+        a.async = true;
+        a.type = "text/javascript";
+        a.id = "platform-script";
+        a.setAttribute("data-bid", "6a34f1dd0df915cfef0c3567");
+        a.setAttribute("data-appName", "website");
+        a.src = "https://chatbot.daklak.gov.vn/js/apps/chatbox/chatbox.botplatform.js";
+        var b = document.getElementsByTagName("script")[0];
+        b.parentNode.insertBefore(a, b);
+    })();
     
     // 3. Inject Comments Section if placeholder exists
     const commentsPlaceholder = document.getElementById('common-comments');
@@ -815,4 +833,55 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // ===== CHATBOT POSITION OBSERVER =====
+    // Watch for the external Đắk Lắk chatbot and reposition scroll-to-top button
+    (function adjustScrollTopForChatbot() {
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        if (!scrollTopBtn) return;
+
+        function repositionScrollTop() {
+            // Find ALL fixed positioned elements near bottom-right that we didn't create
+            // The external chatbot always renders as a fixed element near the bottom-right
+            let maxBottomUsed = 0;
+            
+            document.querySelectorAll('iframe, div').forEach(el => {
+                if (el === scrollTopBtn || el.closest('.scroll-top')) return;
+                
+                const style = getComputedStyle(el);
+                if (style.position !== 'fixed') return;
+                
+                const rect = el.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) return;
+                
+                // Only consider elements on the right side of the screen  
+                if (rect.right < window.innerWidth * 0.5) return;
+                
+                // Only consider elements near the bottom
+                if (rect.top < window.innerHeight * 0.3) return;
+                
+                // Calculate how much space this element takes from the bottom
+                const spaceFromBottom = window.innerHeight - rect.top;
+                if (spaceFromBottom > maxBottomUsed) {
+                    maxBottomUsed = spaceFromBottom;
+                }
+            });
+
+            if (maxBottomUsed > 0) {
+                scrollTopBtn.style.bottom = (maxBottomUsed + 15) + 'px';
+            } else {
+                scrollTopBtn.style.bottom = '30px';
+            }
+        }
+
+        // Run periodically since the external chatbot loads asynchronously
+        setInterval(repositionScrollTop, 800);
+        
+        // Also observe DOM changes for initial chatbot load
+        const observer = new MutationObserver(() => {
+            setTimeout(repositionScrollTop, 300);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+    
 });
