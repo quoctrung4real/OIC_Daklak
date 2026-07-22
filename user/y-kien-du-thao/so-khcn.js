@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             drafts.forEach((draft, index) => {
                 const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', (e) => {
+                    if(e.target.closest('a')) return;
+                    window.location.href = `chi-tiet.html?id=${draft.id}`;
+                });
                 
                 // If there's no actual publish date, use endDate or createdAt if available, or just empty
                 const publishDate = draft.createdAt ? new Date(draft.createdAt).toLocaleDateString('vi-VN') : (draft.endDate || '');
@@ -24,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <td class="text-center">${index + 1}</td>
                     <td>${draft.documentNumber || ''}</td>
                     <td class="text-center">${publishDate}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                 `;
                 tbody.appendChild(tr);
             });

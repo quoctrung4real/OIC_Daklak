@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk</title>
+    <title>Kết quả tìm kiếm - DakLakIOC</title>
     <meta name="description" content="Trung tâm Giám sát, Điều hành đô thị thông minh tỉnh Đăk Lăk - DakLakIOC">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="../../shared/giao-dien.css?v=7">
 </head>
 
-<body>
+<body data-page-id="tim-kiem">
     
 
         <!-- ===== BREADCRUMB ===== -->
@@ -25,20 +25,22 @@
                 <i class="fa-solid fa-house" style="color: #64748b;"></i>
                 <span>Trang chủ</span>
                 <i class="fa-solid fa-caret-right" style="font-size: 12px; color: #94a3b8;"></i>
-                <span>Giới thiệu</span>
-                <i class="fa-solid fa-caret-right" style="font-size: 12px; color: #94a3b8;"></i>
-                <span style="color: #475569;">Đầu mối hỗ trợ</span>
+                <span style="color: #475569;">Tìm kiếm</span>
             </div>
         </div>
     </div>
 
-    <!-- ===== ARTICLE CONTENT ===== -->
+    <!-- ===== SEARCH RESULTS CONTENT ===== -->
     <section class="article-section" style="padding: 50px 0; background: #fff;">
         <div class="container" style="max-width: 900px; margin: 0 auto; line-height: 1.8;">
-            <h1 id="dynamic-support-title" style="font-size: 28px; color: #0a59ab; margin-bottom: 30px; text-transform: uppercase; font-weight: bold;"></h1>
-            <div id="dynamic-support-content" style="font-size: 16px; color: #333;">
-                Đang tải dữ liệu...
+            <h1 style="font-size: 28px; color: #0a59ab; margin-bottom: 30px; font-weight: bold;">Kết quả tìm kiếm cho: <span id="search-keyword"></span></h1>
+            
+            <div id="search-results-container" style="font-size: 16px; color: #333;">
+                Đang tìm kiếm...
             </div>
+            
+            <!-- Phân trang (tuỳ chọn) -->
+            <div id="pagination-container" style="margin-top: 30px; text-align: center;"></div>
         </div>
     </section>
 
@@ -48,11 +50,8 @@
 
     <script>window.BASE_URL = "../../";</script>
     <script src="../../shared/components.js?v=13"></script>
-    <script src="../../user/trang-chu/trang-chu.js"></script>
-
-
-
-<script src="../../auth/xac-thuc.js"></script>
+    <script src="tim-kiem.js"></script>
+    <script src="../../auth/xac-thuc.js"></script>
 </body>
 
 </html>

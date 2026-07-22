@@ -370,40 +370,39 @@ async function loadConfig() {
 
         // Tech Solutions logic
         if (config.techSolutionsItems && Array.isArray(config.techSolutionsItems)) {
-            const cards = document.querySelectorAll('.solution-card');
-            const font = config.techSolutionsFont;
-            const color = config.techSolutionsColor;
-
-            config.techSolutionsItems.forEach((item, index) => {
-                if(cards[index]) {
-                    const card = cards[index];
-                    const h3 = card.querySelector('h3');
-                    const p = card.querySelector('p');
-                    const a = card.querySelector('a.solution-link');
-                    const imgContainer = card.querySelector('.solution-image');
+            const grid = document.querySelector('.solutions-grid');
+            if (grid) {
+                const font = config.techSolutionsFont;
+                const color = config.techSolutionsColor;
+                
+                let html = '';
+                config.techSolutionsItems.forEach(item => {
+                    const titleStyle = (font ? `font-family: ${font}; ` : '') + (color ? `color: ${color};` : '');
+                    const pStyle = font ? `font-family: ${font};` : '';
+                    const aStyle = color ? `color: ${color};` : '';
                     
-                    if (h3) {
-                        h3.innerText = item.title;
-                        if (font) h3.style.fontFamily = font;
-                        if (color) h3.style.color = color;
-                    }
-                    if (p) {
-                        p.innerText = item.desc;
-                        if (font) p.style.fontFamily = font;
-                    }
-                    if (a) {
-                        a.href = item.link;
-                        if (color) {
-                            a.style.color = color;
-                            const svgPath = a.querySelector('svg path');
-                            if (svgPath) svgPath.setAttribute('stroke', color);
-                        }
-                    }
-                    if (imgContainer && item.image) {
-                        imgContainer.innerHTML = `<img src="${item.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`;
-                    }
-                }
-            });
+                    const imgHtml = item.image ? `<img src="${item.image}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">` : `<svg viewBox="0 0 200 160" xmlns="http://www.w3.org/2000/svg"><rect x="60" y="20" width="80" height="100" rx="8" fill="#d4e5f7" /><rect x="70" y="30" width="60" height="40" rx="4" fill="#a8c4db" /><circle cx="100" cy="100" r="8" fill="#8fb3ce" /></svg>`;
+
+                    html += `
+                        <div class="solution-card">
+                            <div class="solution-content">
+                                <h3 style="${titleStyle}">${escapeHtml(item.title)}</h3>
+                                <p style="${pStyle}">${escapeHtml(item.desc)}</p>
+                                <a href="${item.link}" class="solution-link" style="${aStyle}">
+                                    <span>Xem thêm</span>
+                                    <svg fill="none" height="16" viewBox="0 0 16 16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M11.3333 5.33325L14 7.99992M14 7.99992L11.3333 10.6666M14 7.99992H2" stroke="${color || '#0A59AB'}" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" />
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="solution-image">
+                                ${imgHtml}
+                            </div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html;
+            }
         }
         
         // Sidebar Banners (Quản lý sidebar tin tức)
@@ -571,7 +570,7 @@ async function loadDynamicNews() {
                     const featured = featuredPosts[0];
                     if (featuredContainer && featured) {
                         let imageHtml = featured.imageUrl 
-                            ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                            ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.onerror=null; this.outerHTML='<svg viewBox=\\'0 0 400 240\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect width=\\'400\\' height=\\'240\\' fill=\\'#e8f0f8\\' /><text x=\\'200\\' y=\\'120\\' text-anchor=\\'middle\\' fill=\\'#6b7280\\'>Ảnh minh họa</text></svg>';">`
                             : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
                             
                         featuredContainer.innerHTML = `
@@ -603,6 +602,10 @@ async function loadDynamicNews() {
                         });
                         ul.innerHTML = html;
                     }
+                } else {
+                    if (featuredContainer) {
+                        featuredContainer.innerHTML = '<div style="padding: 30px 20px; text-align: center; color: var(--text-muted); font-style: italic; background: var(--bg-light); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">Chưa có tin tức nào</div>';
+                    }
                 }
             } catch (e) {
                 console.error("Lỗi lấy tin nổi bật:", e);
@@ -625,7 +628,7 @@ async function loadDynamicNews() {
                 const featured = data.posts[0];
                 if (featuredContainer && featured) {
                     let imageHtml = featured.imageUrl 
-                        ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;">`
+                        ? `<img src="${featured.imageUrl.match(/^(http|data:)/) ? featured.imageUrl : 'http://localhost:5100' + featured.imageUrl}" alt="${featured.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" onerror="this.onerror=null; this.outerHTML='<svg viewBox=\\'0 0 400 240\\' xmlns=\\'http://www.w3.org/2000/svg\\'><rect width=\\'400\\' height=\\'240\\' fill=\\'#e8f0f8\\' /><text x=\\'200\\' y=\\'120\\' text-anchor=\\'middle\\' fill=\\'#6b7280\\'>Ảnh minh họa</text></svg>';">`
                         : `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="240" fill="#e8f0f8" /><text x="200" y="120" text-anchor="middle" fill="#6b7280">Ảnh minh họa</text></svg>`;
                         
                     featuredContainer.innerHTML = `
@@ -657,6 +660,10 @@ async function loadDynamicNews() {
                     });
                     ul.innerHTML = html;
                 }
+            } else {
+                if (featuredContainer) {
+                    featuredContainer.innerHTML = '<div style="padding: 30px 20px; text-align: center; color: var(--text-muted); font-style: italic; background: var(--bg-light); border-radius: var(--radius-md); border: 1px dashed var(--border-light);">Chưa có tin tức nào</div>';
+                }
             }
         };
 
@@ -677,7 +684,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     loadDynamicNews();
     loadHomePageGovData();
-    setupSearchForm();
     loadAboutContent();
     loadSupportContent();
     loadHistoryContent();
@@ -783,37 +789,6 @@ function renderDocumentTable(table, documents) {
     `;
 }
 
-function setupSearchForm() {
-    const form = searchForm?.querySelector('form');
-    const input = form?.querySelector('input');
-    if (!form || !input) return;
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const keyword = input.value.trim();
-        if (!keyword) return;
-
-        const panel = ensureSearchResultPanel();
-        panel.innerHTML = '<div style="padding: 12px 14px; color: #64748b;">Đang tìm kiếm...</div>';
-
-        try {
-            const response = await fetch(`${API_BASE}/tim-kiem?q=${encodeURIComponent(keyword)}&take=8`);
-            const payload = await response.json();
-            const results = payload.results || [];
-
-            panel.innerHTML = results.length === 0
-                ? '<div style="padding: 12px 14px; color: #64748b;">Không tìm thấy kết quả phù hợp.</div>'
-                : results.map(item => `
-                    <a href="${escapeAttribute(resolveFrontendUrl(item.url || '#'))}" style="display: block; padding: 12px 14px; border-bottom: 1px solid #e2e8f0; color: #0f172a; text-decoration: none;">
-                        <strong style="display: block; font-size: 14px; margin-bottom: 4px;">${escapeHtml(item.title || '')}</strong>
-                        <span style="display: block; font-size: 12px; color: #64748b;">${escapeHtml(item.type || '')}</span>
-                    </a>
-                `).join('');
-        } catch (e) {
-            panel.innerHTML = '<div style="padding: 12px 14px; color: #dc2626;">Không kết nối được backend tìm kiếm.</div>';
-        }
-    });
-}
 
 function ensureSearchResultPanel() {
     let panel = document.getElementById('searchResultPanel');
@@ -1596,8 +1571,8 @@ function renderMultimediaContent() {
     }
 
     let html = `
-        <div style="display: flex; gap: 24px; width: 100%;">
-            <a href="${mainItem.url}" target="_blank" style="text-decoration: none; display: block; flex: 1; position: relative; border-radius: 8px; overflow: hidden; background: #000; aspect-ratio: 16/9;">
+        <div class="multimedia-layout-wrapper">
+            <a href="${mainItem.url}" target="_blank" class="multimedia-main-item">
                 <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                     ${(mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)) ? 
                         `<img src="${mainItem.thumbnail || getYoutubeThumbnailUrl(mainItem.videoUrl || mainItem.url)}" alt="${mainItem.title}" style="width: 100%; height: 100%; object-fit: cover;">` : 
@@ -1617,7 +1592,7 @@ function renderMultimediaContent() {
                 </div>` : ''}
             </a>
             
-            <div class="multimedia-sub-list" style="width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 16px;">
+            <div class="multimedia-sub-list">
                 ${subItems.slice(0, 5).map(item => `
                     <a href="${item.url}" target="_blank" class="multimedia-sub-item" style="text-decoration: none; display: flex; gap: 15px; align-items: stretch; background: rgba(0,0,0,0.1); border-radius: 8px; padding: 10px; transition: background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.2)'" onmouseout="this.style.background='rgba(0,0,0,0.1)'">
                         <div style="width: 140px; height: 85px; flex-shrink: 0; border-radius: 6px; overflow: hidden; position: relative; background: #000;">

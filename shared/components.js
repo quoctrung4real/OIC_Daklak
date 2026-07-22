@@ -21,16 +21,20 @@ const commonComponents = {
                             </svg>
                         </div>
                         <div class="logo-text">
-                            <h1 class="logo-title" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
-                            <p class="logo-subtitle" style="font-size: 16px; font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
+                            <h1 class="logo-title" style="font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
+                            <p class="logo-subtitle" style="font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
                         </div>
                     </a>
                 </div>
             </div>
-        </div>
         <div class="nav-wrapper">
             <div class="container">
                 <nav class="main-nav">
+                    <!-- Mobile menu button moved inside menubar -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    
                     <a href="#" class="nav-small-logo">
                         <svg viewBox="0 0 60 60" width="50" height="50">
                             <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(255,255,255,0.6)"
@@ -114,6 +118,7 @@ const commonComponents = {
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Hướng dẫn">Hướng dẫn</a></li>
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Quyết định">Quyết định</a></li>
                                         <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Tập huấn">Tập huấn</a></li>
+                                        <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/tt-ioc.html?category=Thông báo">Thông báo</a></li>
                                     </ul>
                                 </li>
                                 <li><a href="${window.BASE_URL || ''}user/y-kien-du-thao/ubnd-daklak.html">Văn bản dự thảo UBND tỉnh Đắk Lắk</a></li>
@@ -140,12 +145,12 @@ const commonComponents = {
                             </svg>
                         </button>
                         <div class="search-form" id="searchForm">
-                            <form>
-                                <input type="text" placeholder="Nhập tìm kiếm..." required
+                            <form action="${window.BASE_URL || '../../'}user/tim-kiem/tim-kiem.html" method="GET">
+                                <input type="text" name="q" placeholder="Nhập tìm kiếm..." required
                                     oninvalid="this.setCustomValidity('Vui lòng nhập từ khóa tìm kiếm')"
-                                    oninput="this.setCustomValidity('')">
+                                    oninput="this.setCustomValidity('')" autocomplete="off">
                                 <button type="submit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
                                         <circle cx="11" cy="11" r="8" />
@@ -161,12 +166,13 @@ const commonComponents = {
                                     </svg>
                                 </button>
                             </form>
+                            <div class="live-search-results" id="liveSearchResults"></div>
                         </div>
                     </div>
                     <div class="lang-switcher" id="langSwitcher" style="margin-left: 15px; position: relative;">
                         <button id="langBtn" title="Chuyển đổi ngôn ngữ" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-globe" style="font-size: 16px;"></i>
-                            <span id="currentLangText">VI</span>
+                            <span id="currentLangText" class="hide-on-mobile">VI</span>
                             <i class="fa-solid fa-caret-down" style="font-size: 10px; opacity: 0.7;"></i>
                         </button>
                         <div id="langDropdown" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden; min-width: 170px; z-index: 9999; border: 1px solid #e2e8f0;">
@@ -182,7 +188,7 @@ const commonComponents = {
                     <div id="google_translate_element" style="display: none;"></div>
                     <div class="user-dropdown-container" id="userDropdownContainer" style="margin-left: 20px; margin-right: 0;">
                         <button class="user-btn" id="userBtn" title="Tài khoản" style="display: flex; align-items: center;">
-                            <i class="fa-solid fa-user"></i> <span id="userBtnText" style="font-family: 'Inter', sans-serif; font-size: 14px; margin-left: 8px; font-weight: 500;">Đăng nhập</span>
+                            <i class="fa-solid fa-user"></i> <span id="userBtnText" class="hide-on-mobile" style="font-family: 'Inter', sans-serif; font-size: 14px; margin-left: 8px; font-weight: 500;">Đăng nhập</span>
                         </button>
                         <ul class="user-dropdown-menu" id="userDropdownMenu">
                             <li class="user-info-item">Xin chào, <b id="displayUsername">Guest</b></li>
@@ -195,10 +201,6 @@ const commonComponents = {
                 </nav>
             </div>
         </div>
-        <!-- Mobile menu button -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-            <i class="fa-solid fa-bars"></i>
-        </button>
     </header>`,
 
     renderFooter: (config = {}) => {
@@ -373,10 +375,27 @@ const commonComponents = {
     // 1. Inject Header at the beginning of body
     document.body.insertAdjacentHTML('afterbegin', commonComponents.header);
     
-    // 2. Inject Footer & Scroll Top at the end of body
+    // 2. Inject Footer, Scroll Top & External Chatbot at the end of body
     document.body.insertAdjacentHTML('beforeend', '<div id="footer-placeholder"></div>');
     document.getElementById('footer-placeholder').outerHTML = commonComponents.renderFooter({}); // default first
     document.body.insertAdjacentHTML('beforeend', commonComponents.scrollTop);
+
+    // 2b. Inject external Đắk Lắk chatbot script
+    (function () {
+        var meta = document.createElement("meta");
+        meta.name = "viewport";
+        meta.content = "width=device-width, initial-scale=1";
+        document.getElementsByTagName("head")[0].appendChild(meta);
+        var a = document.createElement("script");
+        a.async = true;
+        a.type = "text/javascript";
+        a.id = "platform-script";
+        a.setAttribute("data-bid", "6a34f1dd0df915cfef0c3567");
+        a.setAttribute("data-appName", "website");
+        a.src = "https://chatbot.daklak.gov.vn/js/apps/chatbox/chatbox.botplatform.js";
+        var b = document.getElementsByTagName("script")[0];
+        b.parentNode.insertBefore(a, b);
+    })();
     
     // 3. Inject Comments Section if placeholder exists
     const commentsPlaceholder = document.getElementById('common-comments');
@@ -435,20 +454,116 @@ const commonComponents = {
             const input = searchForm.querySelector('input');
             if (input) setTimeout(() => input.focus(), 50);
         });
+
     
+        const searchInput = searchForm.querySelector('input');
+        const submitBtn = searchForm.querySelector('button[type="submit"]');
+        const liveResultsBox = searchForm.querySelector('#liveSearchResults');
+
+        const executeSearch = (e) => {
+            if (e) e.preventDefault();
+            const inputVal = searchInput.value.trim();
+            if (inputVal) {
+                const baseUrl = window.BASE_URL || '../../';
+                window.location.href = `${baseUrl}user/tim-kiem/tim-kiem.html?q=${encodeURIComponent(inputVal)}`;
+            } else {
+                searchInput.focus();
+            }
+        };
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', executeSearch);
+        }
+        
+        let searchTimeout;
+        if (searchInput) {
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeSearch(e);
+                }
+            });
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (!query) {
+                    liveResultsBox.classList.remove('active');
+                    return;
+                }
+                
+                liveResultsBox.classList.add('active');
+                liveResultsBox.innerHTML = '<div class="ls-loading"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
+                
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`http://localhost:5100/api/tim-kiem?q=${encodeURIComponent(query)}`);
+                        if (!response.ok) throw new Error('Network error');
+                        const data = await response.json();
+                        
+                        if (data.success && data.results && data.results.length > 0) {
+                            const topResults = data.results.slice(0, 5);
+                            let html = '<div class="ls-header">Kết quả tìm kiếm</div>';
+                            
+                            const baseUrl = window.BASE_URL || '../../';
+                            
+                            topResults.forEach(item => {
+                                let link = '#';
+                                if (item.type === 'Văn bản') {
+                                    link = `${baseUrl}user/van-ban/chi-tiet-van-ban.html?id=${item.id}`;
+                                } else if (item.type === 'Ý kiến dự thảo') {
+                                    link = `${baseUrl}user/y-kien-du-thao/chi-tiet-y-kien.html?id=${item.id}`;
+                                } else if (item.type === 'Thông báo' || item.type === 'Tin tức') {
+                                    link = `${baseUrl}user/tin-tuc/chi-tiet-tin-tuc.html?id=${item.id}`;
+                                }
+                                
+                                html += `
+                                    <a href="${link}" class="ls-item">
+                                        <span class="ls-item-type">${item.type}</span>
+                                        <span class="ls-item-title">${item.title}</span>
+                                    </a>
+                                `;
+                            });
+                            
+                            html += `<a href="${baseUrl}user/tim-kiem/tim-kiem.html?q=${encodeURIComponent(query)}" class="ls-view-all">Xem tất cả kết quả &rarr;</a>`;
+                            liveResultsBox.innerHTML = html;
+                        } else {
+                            liveResultsBox.innerHTML = '<div class="ls-empty">Không tìm thấy kết quả phù hợp</div>';
+                        }
+                    } catch (err) {
+                        console.error('Lỗi tìm kiếm live:', err);
+                        liveResultsBox.innerHTML = '<div class="ls-empty">Có lỗi xảy ra khi tìm kiếm</div>';
+                    }
+                }, 400);
+            });
+        }
+        
+        const formEl = searchForm.querySelector('form');
+        if (formEl) {
+            formEl.addEventListener('submit', executeSearch);
+        }
+
         // Đóng khi click ra ngoài
         document.addEventListener('click', (e) => {
+            if (liveResultsBox && liveResultsBox.classList.contains('active')) {
+                if (!searchForm.contains(e.target)) {
+                    liveResultsBox.classList.remove('active');
+                }
+            }
             if (searchForm.classList.contains('active')) {
                 if (!searchForm.contains(e.target) && !searchBtn.contains(e.target)) {
                     searchForm.classList.remove('active');
                     if (navList) navList.classList.remove('search-active');
+                    if (liveResultsBox) liveResultsBox.classList.remove('active');
                 }
             }
         });
     }
     
     if (closeSearch && searchForm) {
-        closeSearch.addEventListener('click', () => {
+        closeSearch.addEventListener('click', (e) => {
+            e.stopPropagation();
             searchForm.classList.remove('active');
             if (navList) navList.classList.remove('search-active');
         });
@@ -718,4 +833,55 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    
+    // ===== CHATBOT POSITION OBSERVER =====
+    // Watch for the external Đắk Lắk chatbot and reposition scroll-to-top button
+    (function adjustScrollTopForChatbot() {
+        const scrollTopBtn = document.getElementById('scrollTopBtn');
+        if (!scrollTopBtn) return;
+
+        function repositionScrollTop() {
+            // Find ALL fixed positioned elements near bottom-right that we didn't create
+            // The external chatbot always renders as a fixed element near the bottom-right
+            let maxBottomUsed = 0;
+            
+            document.querySelectorAll('iframe, div').forEach(el => {
+                if (el === scrollTopBtn || el.closest('.scroll-top')) return;
+                
+                const style = getComputedStyle(el);
+                if (style.position !== 'fixed') return;
+                
+                const rect = el.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) return;
+                
+                // Only consider elements on the right side of the screen  
+                if (rect.right < window.innerWidth * 0.5) return;
+                
+                // Only consider elements near the bottom
+                if (rect.top < window.innerHeight * 0.3) return;
+                
+                // Calculate how much space this element takes from the bottom
+                const spaceFromBottom = window.innerHeight - rect.top;
+                if (spaceFromBottom > maxBottomUsed) {
+                    maxBottomUsed = spaceFromBottom;
+                }
+            });
+
+            if (maxBottomUsed > 0) {
+                scrollTopBtn.style.bottom = (maxBottomUsed + 15) + 'px';
+            } else {
+                scrollTopBtn.style.bottom = '30px';
+            }
+        }
+
+        // Run periodically since the external chatbot loads asynchronously
+        setInterval(repositionScrollTop, 800);
+        
+        // Also observe DOM changes for initial chatbot load
+        const observer = new MutationObserver(() => {
+            setTimeout(repositionScrollTop, 300);
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    })();
+    
 });
