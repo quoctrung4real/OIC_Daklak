@@ -1,7 +1,5 @@
 (() => {
     const API_BASE = 'http://localhost:5100/api';
-    const BACKEND_ORIGIN = 'http://localhost:5100';
-
     let currentDocument = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -97,11 +95,20 @@
                 }
 
                 if (audio) {
-                    audio.src = result.audioUrl.startsWith('http')
-                        ? result.audioUrl
-                        : `${BACKEND_ORIGIN}${result.audioUrl}`;
+                    audio.pause();
+                    audio.muted = false;
+                    audio.volume = 1;
+                    audio.currentTime = 0;
+                    audio.src = new URL(result.audioUrl, window.location.origin).href;
                     audio.style.display = 'block';
-                    await audio.play();
+                    audio.load();
+                    try {
+                        await audio.play();
+                    } catch (playError) {
+                        if (status) status.textContent = 'Audio đã sẵn sàng. Vui lòng nhấn Play trên thanh audio.';
+                        console.warn('Browser blocked audio autoplay:', playError);
+                        return;
+                    }
                 }
 
                 if (status) {
