@@ -147,9 +147,9 @@ const commonComponents = {
                             <form action="${window.BASE_URL || '../../'}user/tim-kiem/tim-kiem.html" method="GET">
                                 <input type="text" name="q" placeholder="Nhập tìm kiếm..." required
                                     oninvalid="this.setCustomValidity('Vui lòng nhập từ khóa tìm kiếm')"
-                                    oninput="this.setCustomValidity('')">
+                                    oninput="this.setCustomValidity('')" autocomplete="off">
                                 <button type="submit">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                    <svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
                                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                         stroke-linejoin="round">
                                         <circle cx="11" cy="11" r="8" />
@@ -165,6 +165,7 @@ const commonComponents = {
                                     </svg>
                                 </button>
                             </form>
+                            <div class="live-search-results" id="liveSearchResults"></div>
                         </div>
                     </div>
                     <div class="lang-switcher" id="langSwitcher" style="margin-left: 15px; position: relative;">
@@ -437,21 +438,106 @@ const commonComponents = {
         });
 
     
-        searchForm.querySelector('form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const inputVal = searchForm.querySelector('input').value.trim();
+        const searchInput = searchForm.querySelector('input');
+        const submitBtn = searchForm.querySelector('button[type="submit"]');
+        const liveResultsBox = searchForm.querySelector('#liveSearchResults');
+
+        const executeSearch = (e) => {
+            if (e) e.preventDefault();
+            const inputVal = searchInput.value.trim();
             if (inputVal) {
                 const baseUrl = window.BASE_URL || '../../';
                 window.location.href = `${baseUrl}user/tim-kiem/tim-kiem.html?q=${encodeURIComponent(inputVal)}`;
+            } else {
+                searchInput.focus();
             }
-        });
+        };
+
+        if (submitBtn) {
+            submitBtn.addEventListener('click', executeSearch);
+        }
+        
+        let searchTimeout;
+        if (searchInput) {
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    executeSearch(e);
+                }
+            });
+            
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (!query) {
+                    liveResultsBox.classList.remove('active');
+                    return;
+                }
+                
+                liveResultsBox.classList.add('active');
+                liveResultsBox.innerHTML = '<div class="ls-loading"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
+                
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`http://localhost:5100/api/tim-kiem?q=${encodeURIComponent(query)}`);
+                        if (!response.ok) throw new Error('Network error');
+                        const data = await response.json();
+                        
+                        if (data.success && data.results && data.results.length > 0) {
+                            const topResults = data.results.slice(0, 5);
+                            let html = '<div class="ls-header">Kết quả tìm kiếm</div>';
+                            
+                            const baseUrl = window.BASE_URL || '../../';
+                            
+                            topResults.forEach(item => {
+                                let link = '#';
+                                if (item.type === 'Văn bản') {
+                                    link = `${baseUrl}user/van-ban/chi-tiet-van-ban.html?id=${item.id}`;
+                                } else if (item.type === 'Ý kiến dự thảo') {
+                                    link = `${baseUrl}user/y-kien-du-thao/chi-tiet-y-kien.html?id=${item.id}`;
+                                } else if (item.type === 'Thông báo' || item.type === 'Tin tức') {
+                                    link = `${baseUrl}user/tin-tuc/chi-tiet-tin-tuc.html?id=${item.id}`;
+                                }
+                                
+                                html += `
+                                    <a href="${link}" class="ls-item">
+                                        <span class="ls-item-type">${item.type}</span>
+                                        <span class="ls-item-title">${item.title}</span>
+                                    </a>
+                                `;
+                            });
+                            
+                            html += `<a href="${baseUrl}user/tim-kiem/tim-kiem.html?q=${encodeURIComponent(query)}" class="ls-view-all">Xem tất cả kết quả &rarr;</a>`;
+                            liveResultsBox.innerHTML = html;
+                        } else {
+                            liveResultsBox.innerHTML = '<div class="ls-empty">Không tìm thấy kết quả phù hợp</div>';
+                        }
+                    } catch (err) {
+                        console.error('Lỗi tìm kiếm live:', err);
+                        liveResultsBox.innerHTML = '<div class="ls-empty">Có lỗi xảy ra khi tìm kiếm</div>';
+                    }
+                }, 400);
+            });
+        }
+        
+        const formEl = searchForm.querySelector('form');
+        if (formEl) {
+            formEl.addEventListener('submit', executeSearch);
+        }
 
         // Đóng khi click ra ngoài
         document.addEventListener('click', (e) => {
+            if (liveResultsBox && liveResultsBox.classList.contains('active')) {
+                if (!searchForm.contains(e.target)) {
+                    liveResultsBox.classList.remove('active');
+                }
+            }
             if (searchForm.classList.contains('active')) {
                 if (!searchForm.contains(e.target) && !searchBtn.contains(e.target)) {
                     searchForm.classList.remove('active');
                     if (navList) navList.classList.remove('search-active');
+                    if (liveResultsBox) liveResultsBox.classList.remove('active');
                 }
             }
         });
