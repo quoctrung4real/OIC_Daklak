@@ -684,7 +684,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadConfig();
     loadDynamicNews();
     loadHomePageGovData();
-    setupSearchForm();
     loadAboutContent();
     loadSupportContent();
     loadHistoryContent();
@@ -790,37 +789,6 @@ function renderDocumentTable(table, documents) {
     `;
 }
 
-function setupSearchForm() {
-    const form = searchForm?.querySelector('form');
-    const input = form?.querySelector('input');
-    if (!form || !input) return;
-
-    form.addEventListener('submit', async (event) => {
-        event.preventDefault();
-        const keyword = input.value.trim();
-        if (!keyword) return;
-
-        const panel = ensureSearchResultPanel();
-        panel.innerHTML = '<div style="padding: 12px 14px; color: #64748b;">Đang tìm kiếm...</div>';
-
-        try {
-            const response = await fetch(`${API_BASE}/tim-kiem?q=${encodeURIComponent(keyword)}&take=8`);
-            const payload = await response.json();
-            const results = payload.results || [];
-
-            panel.innerHTML = results.length === 0
-                ? '<div style="padding: 12px 14px; color: #64748b;">Không tìm thấy kết quả phù hợp.</div>'
-                : results.map(item => `
-                    <a href="${escapeAttribute(resolveFrontendUrl(item.url || '#'))}" style="display: block; padding: 12px 14px; border-bottom: 1px solid #e2e8f0; color: #0f172a; text-decoration: none;">
-                        <strong style="display: block; font-size: 14px; margin-bottom: 4px;">${escapeHtml(item.title || '')}</strong>
-                        <span style="display: block; font-size: 12px; color: #64748b;">${escapeHtml(item.type || '')}</span>
-                    </a>
-                `).join('');
-        } catch (e) {
-            panel.innerHTML = '<div style="padding: 12px 14px; color: #dc2626;">Không kết nối được backend tìm kiếm.</div>';
-        }
-    });
-}
 
 function ensureSearchResultPanel() {
     let panel = document.getElementById('searchResultPanel');

@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             drafts.forEach((draft, index) => {
                 const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', (e) => {
+                    if(e.target.closest('a')) return;
+                    window.location.href = `chi-tiet.html?id=${draft.id}`;
+                });
                 
                 let fileHtml = '';
                 if (draft.fileUrl) {

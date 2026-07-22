@@ -284,7 +284,8 @@ function renderFeedbacks(draftId = '') {
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.content || ''}</td>
             <td style="padding: 12px; border-bottom: 1px solid #e2e8f0;">${item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : ''}</td>
             <td class="sys-action-cell" style="border-bottom: 1px solid #e2e8f0;">
-                <button class="sys-btn-delete" onclick="deleteFeedback(${item.id})"><i class="fa-solid fa-trash"></i></button>
+                <button onclick="viewFeedback(${item.id})" title="Xem chi tiết" style="margin-right: 5px; background: #3b82f6; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer;"><i class="fa-solid fa-eye"></i></button>
+                <button class="sys-btn-delete" onclick="deleteFeedback(${item.id})" title="Xóa"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
@@ -330,4 +331,24 @@ function deleteFeedback(id) {
             showAlert('Lỗi hệ thống', 'error');
         }
     });
+}
+
+function viewFeedback(id) {
+    const feedback = currentFeedbacks.find(f => f.id === id);
+    if (!feedback) return;
+    
+    const draftTitle = currentDraftOpinions.find(d => d.id === feedback.draftOpinionId)?.title || `Dự thảo #${feedback.draftOpinionId}`;
+    
+    document.getElementById('vf-name').textContent = feedback.fullName || 'Không rõ';
+    document.getElementById('vf-email').textContent = feedback.email || 'Không có';
+    document.getElementById('vf-phone').textContent = feedback.phoneNumber || 'Không có';
+    document.getElementById('vf-draft').textContent = draftTitle;
+    document.getElementById('vf-date').textContent = feedback.createdAt ? new Date(feedback.createdAt).toLocaleDateString('vi-VN') : '';
+    document.getElementById('vf-content').textContent = feedback.content || 'Không có nội dung';
+    
+    document.getElementById('viewFeedbackModal').style.display = 'flex';
+}
+
+function closeViewFeedbackModal() {
+    document.getElementById('viewFeedbackModal').style.display = 'none';
 }

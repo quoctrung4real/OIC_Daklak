@@ -379,10 +379,10 @@
                     <i class="fa-solid fa-chevron-down drop-icon"></i>
                 </div>
                 <ul class="sub-menu">
+                    <li><a href="#" class="tab-link" data-target="feedbacks-tab"><i class="fa-solid fa-list-check icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Lấy ý kiến người dân</span></a></li>
+                    <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="Sở KHCN"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo Sở KHCN</span></a></li>
                     <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="TT_IOC"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo TT IOC</span></a></li>
                     <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="UBND tỉnh Đắk Lắk"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo UBND tỉnh</span></a></li>
-                    <li><a href="#" class="tab-link draft-category-link" data-target="draft-opinions-tab" data-category="Sở KHCN"><i class="fa-solid fa-file-signature icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Dự thảo Sở KHCN</span></a></li>
-                    <li><a href="#" class="tab-link" data-target="feedbacks-tab"><i class="fa-solid fa-list-check icon-main" style="margin-left: 10px; font-size: 1rem;"></i> <span class="sidebar-text" style="font-size: 14px;">Lấy ý kiến người dân</span></a></li>
                 </ul>
             </li>
             <li><a href="#" class="tab-link" data-target="lich-cong-tac-link-tab"><i class="fa-solid fa-calendar-days icon-main"></i> <span class="sidebar-text">Lịch công tác</span></a></li>
@@ -2239,8 +2239,45 @@
             </div>
         </div>
 
-
-            
+    <div id="viewFeedbackModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div style="background: white; width: 600px; max-width: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; max-height: 90vh;">
+            <div style="padding: 15px 20px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc;">
+                <h3 style="margin: 0; color: #1e293b; font-size: 18px;"><i class="fa-solid fa-eye"></i> Chi tiết góp ý</h3>
+                <button type="button" onclick="closeViewFeedbackModal()" style="background: none; border: none; font-size: 20px; color: #64748b; cursor: pointer;">&times;</button>
+            </div>
+            <div style="padding: 20px; overflow-y: auto; flex: 1;">
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Người góp ý</strong>
+                    <div id="vf-name" style="margin-top: 5px; font-size: 15px; color: #0f172a;"></div>
+                </div>
+                <div style="margin-bottom: 15px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Email</strong>
+                        <div id="vf-email" style="margin-top: 5px; font-size: 15px; color: #0f172a;"></div>
+                    </div>
+                    <div>
+                        <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Số điện thoại</strong>
+                        <div id="vf-phone" style="margin-top: 5px; font-size: 15px; color: #0f172a;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Dự thảo</strong>
+                    <div id="vf-draft" style="margin-top: 5px; font-size: 15px; color: #0f172a; font-weight: 500;"></div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Ngày gửi</strong>
+                    <div id="vf-date" style="margin-top: 5px; font-size: 15px; color: #0f172a;"></div>
+                </div>
+                <div style="margin-bottom: 0;">
+                    <strong style="color: #64748b; font-size: 13px; text-transform: uppercase;">Nội dung</strong>
+                    <div id="vf-content" style="margin-top: 5px; font-size: 15px; color: #0f172a; background: #f1f5f9; padding: 15px; border-radius: 6px; white-space: pre-wrap; line-height: 1.5;"></div>
+                </div>
+            </div>
+            <div style="padding: 15px 20px; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end;">
+                <button type="button" class="btn btn-secondary" onclick="closeViewFeedbackModal()">Đóng</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>

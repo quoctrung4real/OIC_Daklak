@@ -338,33 +338,108 @@ public sealed class JsonPortalDataStore : IPortalDataStore
             return [];
         }
 
-        var normalizedKeyword = keyword.Trim();
+        var normalizedKeyword = keyword.Trim().ToLowerInvariant();
         var results = new List<SearchResultDto>();
 
-        foreach (var fileName in Directory.EnumerateFiles(_dataDir, "*.json"))
+        string StripHtml(string? input)
         {
-            var slug = Path.GetFileNameWithoutExtension(fileName);
-            var json = await File.ReadAllTextAsync(fileName, cancellationToken);
-            if (!json.Contains(normalizedKeyword, StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
+            if (string.IsNullOrEmpty(input)) return "";
+            return System.Text.RegularExpressions.Regex.Replace(input, "<.*?>", string.Empty);
+        }
 
-            results.Add(new SearchResultDto
+        // 1. Search Main News (tin-tuc-da-phuong-tien)
+        var mainNews = await GetMainNewsAsync(cancellationToken);
+        foreach (var news in mainNews)
+        {
+            if ((news.Title?.ToLowerInvariant().Contains(normalizedKeyword) == true) || 
+                (news.Content?.ToLowerInvariant().Contains(normalizedKeyword) == true))
             {
-                Type = "json",
-                Title = slug,
-                Summary = "Kết quả tìm thấy trong dữ liệu JSON.",
-                Url = "#"
-            });
-
-            if (results.Count >= take)
-            {
-                break;
+                var cleanContent = StripHtml(news.Content);
+                var summary = cleanContent.Length > 200 ? cleanContent.Substring(0, 200) + "..." : cleanContent;
+                results.Add(new SearchResultDto
+                {
+                    Type = "Tin tức đa phương tiện",
+                    Title = news.Title ?? "",
+                    Summary = summary,
+                    Url = $"user/tin-tuc/chi-tiet-tin-tuc.html?id={news.Id}",
+                    PublishedAt = news.CreatedAt
+                });
             }
         }
 
-        return results;
+        // 2. Search Documents (van-ban)
+        var documents = await GetDocumentsAsync(null, 1000, cancellationToken);
+        foreach (var doc in documents)
+        {
+            if ((doc.Title?.ToLowerInvariant().Contains(normalizedKeyword) == true) || 
+                (doc.DocumentNumber?.ToLowerInvariant().Contains(normalizedKeyword) == true) ||
+                (doc.IssuingAuthority?.ToLowerInvariant().Contains(normalizedKeyword) == true))
+            {
+                results.Add(new SearchResultDto
+                {
+                    Type = "Văn bản",
+                    Title = doc.Title ?? "",
+                    Summary = $"Số hiệu: {doc.DocumentNumber} - Cơ quan ban hành: {doc.IssuingAuthority}",
+                    Url = $"user/van-ban/chi-tiet-van-ban.html?id={doc.Id}",
+                    PublishedAt = doc.PublishedAt
+                });
+            }
+        }
+
+        // 3. Search Draft Opinions (y-kien-du-thao)
+        var drafts = await GetDraftOpinionsAsync(cancellationToken);
+        foreach (var draft in drafts)
+        {
+            if ((draft.Title?.ToLowerInvariant().Contains(normalizedKeyword) == true))
+            {
+                results.Add(new SearchResultDto
+                {
+                    Type = "Lấy ý kiến",
+                    Title = draft.Title ?? "",
+                    Summary = $"Số hiệu: {draft.DocumentNumber}",
+                    Url = $"user/y-kien-du-thao/chi-tiet.html?id={draft.Id}",
+                    PublishedAt = draft.CreatedAt
+                });
+            }
+        }
+
+        // 4. Other News Categories
+        string[] newsCategories = { "thong-bao", "tin-hoat-dong", "chi-dao-dieu-hanh" };
+        var categoryTitles = new Dictionary<string, string> {
+            { "thong-bao", "Thông báo" },
+            { "tin-hoat-dong", "Tin hoạt động" },
+            { "chi-dao-dieu-hanh", "Chỉ đạo điều hành" }
+        };
+
+        foreach (var cat in newsCategories)
+        {
+            var page = await GetNewsCategoryAsync(new NewsCategoryInfo { Slug = cat, Title = categoryTitles[cat] }, cancellationToken);
+            if (page?.Posts != null)
+            {
+                foreach (var post in page.Posts)
+                {
+                    if ((post.Title?.ToLowerInvariant().Contains(normalizedKeyword) == true) || 
+                        (post.Content?.ToLowerInvariant().Contains(normalizedKeyword) == true))
+                    {
+                        var cleanContent = StripHtml(post.Content);
+                        var summary = cleanContent.Length > 200 ? cleanContent.Substring(0, 200) + "..." : cleanContent;
+                        results.Add(new SearchResultDto
+                        {
+                            Type = page.Title ?? "Tin tức",
+                            Title = post.Title ?? "",
+                            Summary = summary,
+                            Url = $"user/tin-tuc/chi-tiet-tin-tuc.html?id={post.Id}",
+                            PublishedAt = post.CreatedAt
+                        });
+                    }
+                }
+            }
+        }
+
+        return results
+            .OrderByDescending(r => r.PublishedAt)
+            .Take(take)
+            .ToList();
     }
 
     public async Task<HomePageDto> GetHomePageAsync(CancellationToken cancellationToken)

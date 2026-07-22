@@ -144,8 +144,8 @@ const commonComponents = {
                             </svg>
                         </button>
                         <div class="search-form" id="searchForm">
-                            <form>
-                                <input type="text" placeholder="Nhập tìm kiếm..." required
+                            <form action="${window.BASE_URL || '../../'}user/tim-kiem/tim-kiem.html" method="GET">
+                                <input type="text" name="q" placeholder="Nhập tìm kiếm..." required
                                     oninvalid="this.setCustomValidity('Vui lòng nhập từ khóa tìm kiếm')"
                                     oninput="this.setCustomValidity('')">
                                 <button type="submit">
@@ -435,7 +435,17 @@ const commonComponents = {
             const input = searchForm.querySelector('input');
             if (input) setTimeout(() => input.focus(), 50);
         });
+
     
+        searchForm.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const inputVal = searchForm.querySelector('input').value.trim();
+            if (inputVal) {
+                const baseUrl = window.BASE_URL || '../../';
+                window.location.href = `${baseUrl}user/tim-kiem/tim-kiem.html?q=${encodeURIComponent(inputVal)}`;
+            }
+        });
+
         // Đóng khi click ra ngoài
         document.addEventListener('click', (e) => {
             if (searchForm.classList.contains('active')) {
