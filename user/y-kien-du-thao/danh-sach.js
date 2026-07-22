@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (targetCategory) {
                 drafts = data.draftOpinions.filter(d => d.category === targetCategory);
             } else {
-                drafts = data.draftOpinions.filter(d => !['UBND tỉnh Đắk Lắk', 'Sở KHCN'].includes(d.category));
+                drafts = data.draftOpinions;
             }
             
             if (drafts.length === 0) {
@@ -24,6 +24,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             drafts.forEach((draft, index) => {
                 const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', (e) => {
+                    // Don't trigger if they clicked on the download button or feedback button
+                    if(e.target.closest('a')) return;
+                    window.location.href = `chi-tiet.html?id=${draft.id}`;
+                });
                 
                 let fileHtml = '';
                 if (draft.fileUrl) {
@@ -35,7 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tr.innerHTML = `
                     <td class="text-center">${index + 1}</td>
                     <td>${draft.documentNumber || ''}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                     <td class="text-center">${fileHtml}</td>
                     <td class="text-center">${draft.endDate || ''}</td>
                     <td class="text-center">

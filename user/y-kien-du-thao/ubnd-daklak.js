@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             drafts.forEach((draft, index) => {
                 const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.addEventListener('click', (e) => {
+                    if(e.target.closest('a')) return;
+                    window.location.href = `chi-tiet.html?id=${draft.id}`;
+                });
                 
                 let fileHtml = '';
                 if (draft.fileUrl) {
@@ -27,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 tr.innerHTML = `
                     <td class="text-center">${index + 1}</td>
                     <td>${draft.documentNumber || ''}</td>
-                    <td>${draft.title || ''}</td>
+                    <td><a href="chi-tiet.html?id=${draft.id}" class="detail-btn">${draft.title || ''}</a></td>
                     <td class="text-center">${fileHtml}</td>
                     <td class="text-center">${draft.endDate || ''}</td>
                 `;

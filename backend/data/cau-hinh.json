@@ -188,29 +188,11 @@
   "multimediaSecondaryInfographicIds": [],
   "externalLinks": [
     {
-      "id": "ext1",
-      "name": "B\u1ED9 Khoa h\u1ECDc v\u00E0 C\u00F4ng Ngh\u1EC7",
-      "url": "#",
-      "color": "#c0392b",
-      "logoText": "BKH",
-      "logoUrl": "",
-      "bgUrl": ""
-    },
-    {
       "id": "ext2",
       "name": "C\u1ED5ng th\u00F4ng tin \u0111i\u1EC7n t\u1EED t\u1EC9nh \u0110\u0103k L\u0103k",
       "url": "#",
       "color": "#c0392b",
       "logoText": "CTT\u0110T",
-      "logoUrl": "",
-      "bgUrl": ""
-    },
-    {
-      "id": "ext3",
-      "name": "S\u1EDF Khoa H\u1ECDc v\u00E0 C\u00F4ng Ngh\u1EC7",
-      "url": "#",
-      "color": "#0a59ab",
-      "logoText": "SKHCN",
       "logoUrl": "",
       "bgUrl": ""
     },
