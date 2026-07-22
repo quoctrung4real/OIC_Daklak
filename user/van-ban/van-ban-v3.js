@@ -161,11 +161,7 @@ async function readSelectedDocument() {
         if (buttonText) buttonText.textContent = 'Đang tạo audio...';
         if (status) status.textContent = 'Đang gọi Azure TTS...';
 
-        const response = await fetch(`${API_BASE}/text-to-speech`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json; charset=utf-8' },
-            body: JSON.stringify({ text })
-        });
+        const response = await fetch(`${API_BASE}/text-to-speech/document/${encodeURIComponent(selectedDocument.id)}`);
         const result = await response.json();
 
         if (!response.ok || !result.success || !result.audioUrl) {

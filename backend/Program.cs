@@ -506,6 +506,40 @@ app.MapPost("/api/text-to-speech", async (
         : Results.BadRequest(result);
 });
 
+app.MapGet("/api/text-to-speech/document/{id:int}", async (
+    int id,
+    IPortalDataStore store,
+    ITextToSpeechService textToSpeechService,
+    CancellationToken cancellationToken) =>
+{
+    var document = await store.GetDocumentByIdAsync(id, cancellationToken);
+    if (document is null)
+    {
+        return Results.NotFound(TextToSpeechResponseDto.Fail("Không tìm thấy văn bản."));
+    }
+
+    var parts = new[]
+    {
+        "Thông tin văn bản.",
+        string.IsNullOrWhiteSpace(document.Title) ? null : $"Trích yếu: {document.Title}.",
+        string.IsNullOrWhiteSpace(document.DocumentNumber) ? null : $"Số ký hiệu: {document.DocumentNumber}.",
+        string.IsNullOrWhiteSpace(document.PublishedAt) ? null : $"Ngày ban hành: {document.PublishedAt}.",
+        string.IsNullOrWhiteSpace(document.EffectiveDate) ? null : $"Ngày có hiệu lực: {document.EffectiveDate}.",
+        string.IsNullOrWhiteSpace(document.TypeName) ? null : $"Loại văn bản: {document.TypeName}.",
+        string.IsNullOrWhiteSpace(document.IssuingAuthority) ? null : $"Cơ quan ban hành: {document.IssuingAuthority}.",
+        string.IsNullOrWhiteSpace(document.Signer) ? null : $"Người ký: {document.Signer}."
+    };
+
+    var result = await textToSpeechService.SynthesizeAsync(new TextToSpeechRequestDto
+    {
+        Text = string.Join(' ', parts.Where(part => !string.IsNullOrWhiteSpace(part)))
+    }, cancellationToken);
+
+    return result.Success
+        ? (IResult)Results.Json(result)
+        : Results.BadRequest(result);
+});
+
 app.MapGet("/api/text-to-speech/content-page/{slug}", async (
     string slug,
     IPortalDataStore store,
