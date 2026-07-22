@@ -21,16 +21,20 @@ const commonComponents = {
                             </svg>
                         </div>
                         <div class="logo-text">
-                            <h1 class="logo-title" style="font-size: 20px; font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
-                            <p class="logo-subtitle" style="font-size: 16px; font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
+                            <h1 class="logo-title" style="font-weight: 700; text-transform: uppercase; margin: 0; color: white;">TRUNG TÂM GIÁM SÁT, ĐIỀU HÀNH ĐÔ THỊ THÔNG MINH</h1>
+                            <p class="logo-subtitle" style="font-weight: 600; opacity: 0.9; margin: 5px 0 0 0; color: white;">TỈNH ĐẮK LẮK</p>
                         </div>
                     </a>
                 </div>
             </div>
-        </div>
         <div class="nav-wrapper">
             <div class="container">
                 <nav class="main-nav">
+                    <!-- Mobile menu button moved inside menubar -->
+                    <button class="mobile-menu-btn" id="mobileMenuBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    
                     <a href="#" class="nav-small-logo">
                         <svg viewBox="0 0 60 60" width="50" height="50">
                             <circle cx="30" cy="30" r="28" fill="none" stroke="rgba(255,255,255,0.6)"
@@ -166,7 +170,7 @@ const commonComponents = {
                     <div class="lang-switcher" id="langSwitcher" style="margin-left: 15px; position: relative;">
                         <button id="langBtn" title="Chuyển đổi ngôn ngữ" style="background: transparent; border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; color: white; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; transition: all 0.2s;">
                             <i class="fa-solid fa-globe" style="font-size: 16px;"></i>
-                            <span id="currentLangText">VI</span>
+                            <span id="currentLangText" class="hide-on-mobile">VI</span>
                             <i class="fa-solid fa-caret-down" style="font-size: 10px; opacity: 0.7;"></i>
                         </button>
                         <div id="langDropdown" style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: white; border-radius: 10px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); overflow: hidden; min-width: 170px; z-index: 9999; border: 1px solid #e2e8f0;">
@@ -182,7 +186,7 @@ const commonComponents = {
                     <div id="google_translate_element" style="display: none;"></div>
                     <div class="user-dropdown-container" id="userDropdownContainer" style="margin-left: 20px; margin-right: 0;">
                         <button class="user-btn" id="userBtn" title="Tài khoản" style="display: flex; align-items: center;">
-                            <i class="fa-solid fa-user"></i> <span id="userBtnText" style="font-family: 'Inter', sans-serif; font-size: 14px; margin-left: 8px; font-weight: 500;">Đăng nhập</span>
+                            <i class="fa-solid fa-user"></i> <span id="userBtnText" class="hide-on-mobile" style="font-family: 'Inter', sans-serif; font-size: 14px; margin-left: 8px; font-weight: 500;">Đăng nhập</span>
                         </button>
                         <ul class="user-dropdown-menu" id="userDropdownMenu">
                             <li class="user-info-item">Xin chào, <b id="displayUsername">Guest</b></li>
@@ -195,10 +199,6 @@ const commonComponents = {
                 </nav>
             </div>
         </div>
-        <!-- Mobile menu button -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-            <i class="fa-solid fa-bars"></i>
-        </button>
     </header>`,
 
     renderFooter: (config = {}) => {
@@ -448,7 +448,8 @@ const commonComponents = {
     }
     
     if (closeSearch && searchForm) {
-        closeSearch.addEventListener('click', () => {
+        closeSearch.addEventListener('click', (e) => {
+            e.stopPropagation();
             searchForm.classList.remove('active');
             if (navList) navList.classList.remove('search-active');
         });
