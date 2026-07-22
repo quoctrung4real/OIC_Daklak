@@ -228,6 +228,17 @@ public sealed class JsonPortalDataStore : IPortalDataStore
         return isLike ? comment.Likes : comment.Dislikes;
     }
 
+    public async Task<bool> DeleteCommentAsync(string id, string username, bool isAdmin, CancellationToken cancellationToken)
+    {
+        var comments = await ReadCommentsAsync(cancellationToken);
+        var removed = comments.RemoveAll(comment =>
+            string.Equals(comment.Id, id, StringComparison.OrdinalIgnoreCase) &&
+            (isAdmin || string.Equals(comment.Username, username, StringComparison.OrdinalIgnoreCase)));
+        if (removed == 0) return false;
+        await WriteFileAsync("danh-sach-binh-luan.json", JsonSerializer.Serialize(comments, _jsonOptions), cancellationToken);
+        return true;
+    }
+
     public async Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken)
     {
         var comments = await ReadCommentsAsync(cancellationToken);

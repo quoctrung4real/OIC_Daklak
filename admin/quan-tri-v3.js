@@ -1607,7 +1607,7 @@ const externalLinksApp = {
         formData.append('file', file);
         
         try {
-            const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+            const res = await apiFetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
             const data = await res.json();
             if (data.success && data.fileUrl) {
                 if (type === 'logo') {
@@ -3520,7 +3520,7 @@ async function handleFooterImageUpload(input, targetInputId) {
     formData.append('file', file);
     
     try {
-        const response = await fetch(`${API_BASE}/upload`, {
+        const response = await apiFetch(`${API_BASE}/upload`, {
             method: 'POST',
             body: formData
         });

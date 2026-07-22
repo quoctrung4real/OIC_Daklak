@@ -106,7 +106,8 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         var page = new CategoryPageDto { Title = category.Title };
 
         await using var command = new SqlCommand("""
-            SELECT Id, Title, ImageUrl, Source, Content, CreatedAt, LegacyId
+            SELECT Id, Title, ImageUrl, Source, Content, CreatedAt, LegacyId,
+                   Author, LinkUrl, LinkText, VideoUrl, MultimediaType, AttachmentUrl, AttachmentName, IsFeatured, ViewCount
             FROM Cms.Articles
             WHERE CategoryId = @CategoryId AND IsDeleted = 0
             ORDER BY COALESCE(PublishedAt, CreatedAt) DESC
@@ -123,7 +124,16 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                 ImageUrl = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                 Source = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                 Content = reader.GetString(4),
-                CreatedAt = FormatDateTime(reader.GetDateTime(5))
+                CreatedAt = FormatDateTime(reader.GetDateTime(5)),
+                Author = reader.IsDBNull(7) ? null : reader.GetString(7),
+                LinkUrl = reader.IsDBNull(8) ? null : reader.GetString(8),
+                LinkText = reader.IsDBNull(9) ? null : reader.GetString(9),
+                VideoUrl = reader.IsDBNull(10) ? null : reader.GetString(10),
+                MultimediaType = reader.IsDBNull(11) ? null : reader.GetString(11),
+                AttachmentUrl = reader.IsDBNull(12) ? null : reader.GetString(12),
+                AttachmentName = reader.IsDBNull(13) ? null : reader.GetString(13),
+                IsFeatured = reader.GetBoolean(14),
+                Views = reader.GetInt32(15)
             });
         }
 
@@ -156,7 +166,8 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
     {
         await using var connection = await OpenConnectionAsync(cancellationToken);
         await using var command = new SqlCommand("""
-            SELECT TOP (50) Id, Title, ImageUrl, Source, Content, CreatedAt, LegacyId
+            SELECT TOP (50) Id, Title, ImageUrl, Source, Content, CreatedAt, LegacyId,
+                   Author, LinkUrl, LinkText, VideoUrl, MultimediaType, AttachmentUrl, AttachmentName, IsFeatured, ViewCount
             FROM Cms.Articles
             WHERE IsFeatured = 1 AND IsDeleted = 0 AND IsActive = 1
             ORDER BY COALESCE(PublishedAt, CreatedAt) DESC
@@ -173,7 +184,16 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
                 ImageUrl = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                 Source = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                 Content = reader.GetString(4),
-                CreatedAt = FormatDateTime(reader.GetDateTime(5))
+                CreatedAt = FormatDateTime(reader.GetDateTime(5)),
+                Author = reader.IsDBNull(7) ? null : reader.GetString(7),
+                LinkUrl = reader.IsDBNull(8) ? null : reader.GetString(8),
+                LinkText = reader.IsDBNull(9) ? null : reader.GetString(9),
+                VideoUrl = reader.IsDBNull(10) ? null : reader.GetString(10),
+                MultimediaType = reader.IsDBNull(11) ? null : reader.GetString(11),
+                AttachmentUrl = reader.IsDBNull(12) ? null : reader.GetString(12),
+                AttachmentName = reader.IsDBNull(13) ? null : reader.GetString(13),
+                IsFeatured = reader.GetBoolean(14),
+                Views = reader.GetInt32(15)
             });
         }
 
@@ -429,6 +449,23 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         command.Parameters.AddWithValue("@Id", commentId);
         var value = await command.ExecuteScalarAsync(cancellationToken);
         return value is null ? null : Convert.ToInt32(value, CultureInfo.InvariantCulture);
+    }
+
+    public async Task<bool> DeleteCommentAsync(string id, string username, bool isAdmin, CancellationToken cancellationToken)
+    {
+        if (!int.TryParse(id, NumberStyles.Integer, CultureInfo.InvariantCulture, out var commentId)) return false;
+        await using var connection = await OpenConnectionAsync(cancellationToken);
+        await using var command = new SqlCommand("""
+            UPDATE c
+            SET IsDeleted = 1, DeletedAt = SYSUTCDATETIME()
+            FROM Cms.Comments c
+            INNER JOIN Auth.Users u ON u.Id = c.UserId
+            WHERE c.Id = @Id AND c.IsDeleted = 0 AND (@IsAdmin = 1 OR u.Username = @Username)
+            """, connection);
+        command.Parameters.AddWithValue("@Id", commentId);
+        command.Parameters.AddWithValue("@IsAdmin", isAdmin);
+        command.Parameters.AddWithValue("@Username", username);
+        return await command.ExecuteNonQueryAsync(cancellationToken) > 0;
     }
 
     public async Task<(bool Success, string Message)> DeleteCommentAsync(string id, string username, CancellationToken cancellationToken)
@@ -825,12 +862,12 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         var hasLegacyId = await HasColumnAsync(connection, "Cms", "Articles", "LegacyId", cancellationToken);
         var sql = hasLegacyId
             ? """
-              INSERT INTO Cms.Articles (CategoryId, Title, Summary, Content, ImageUrl, Source, PublishedAt, IsFeatured, CreatedAt, LegacyId)
-              VALUES (@CategoryId, @Title, @Summary, @Content, @ImageUrl, @Source, @PublishedAt, @IsFeatured, @CreatedAt, @LegacyId)
+              INSERT INTO Cms.Articles (CategoryId, Title, Summary, Content, ImageUrl, Source, Author, LinkUrl, LinkText, VideoUrl, MultimediaType, AttachmentUrl, AttachmentName, PublishedAt, IsFeatured, ViewCount, CreatedAt, LegacyId)
+              VALUES (@CategoryId, @Title, @Summary, @Content, @ImageUrl, @Source, @Author, @LinkUrl, @LinkText, @VideoUrl, @MultimediaType, @AttachmentUrl, @AttachmentName, @PublishedAt, @IsFeatured, @ViewCount, @CreatedAt, @LegacyId)
               """
             : """
-              INSERT INTO Cms.Articles (CategoryId, Title, Summary, Content, ImageUrl, Source, PublishedAt, IsFeatured, CreatedAt)
-              VALUES (@CategoryId, @Title, @Summary, @Content, @ImageUrl, @Source, @PublishedAt, @IsFeatured, @CreatedAt)
+              INSERT INTO Cms.Articles (CategoryId, Title, Summary, Content, ImageUrl, Source, Author, LinkUrl, LinkText, VideoUrl, MultimediaType, AttachmentUrl, AttachmentName, PublishedAt, IsFeatured, ViewCount, CreatedAt)
+              VALUES (@CategoryId, @Title, @Summary, @Content, @ImageUrl, @Source, @Author, @LinkUrl, @LinkText, @VideoUrl, @MultimediaType, @AttachmentUrl, @AttachmentName, @PublishedAt, @IsFeatured, @ViewCount, @CreatedAt)
               """;
 
         await using var command = new SqlCommand(sql, connection);
@@ -841,9 +878,17 @@ public sealed class SqlServerPortalDataStore : IPortalDataStore
         command.Parameters.AddWithValue("@Content", EmptyIfNull(post.Content));
         command.Parameters.AddWithValue("@ImageUrl", DbValue(post.ImageUrl));
         command.Parameters.AddWithValue("@Source", DbValue(post.Source));
+        command.Parameters.AddWithValue("@Author", DbValue(post.Author));
+        command.Parameters.AddWithValue("@LinkUrl", DbValue(post.LinkUrl));
+        command.Parameters.AddWithValue("@LinkText", DbValue(post.LinkText));
+        command.Parameters.AddWithValue("@VideoUrl", DbValue(post.VideoUrl));
+        command.Parameters.AddWithValue("@MultimediaType", DbValue(post.MultimediaType));
+        command.Parameters.AddWithValue("@AttachmentUrl", DbValue(post.AttachmentUrl));
+        command.Parameters.AddWithValue("@AttachmentName", DbValue(post.AttachmentName));
         command.Parameters.AddWithValue("@PublishedAt", createdAt);
         command.Parameters.AddWithValue("@CreatedAt", createdAt);
         command.Parameters.AddWithValue("@IsFeatured", isFeatured);
+        command.Parameters.AddWithValue("@ViewCount", Math.Max(0, post.Views));
         if (hasLegacyId)
         {
             command.Parameters.AddWithValue("@LegacyId", DbValue(post.Id));

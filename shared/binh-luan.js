@@ -169,7 +169,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 const id = e.currentTarget.getAttribute('data-id');
                 try {
-                    const res = await fetch(`http://localhost:5100/api/binh-luan/${id}?username=${encodeURIComponent(currentUser)}`, { method: 'DELETE' });
+                    const accessToken = localStorage.getItem('accessToken');
+                    const tokenType = localStorage.getItem('tokenType') || 'Bearer';
+                    const res = await fetch(`http://localhost:5100/api/binh-luan/${id}`, {
+                        method: 'DELETE',
+                        headers: { 'Authorization': `${tokenType} ${accessToken}` }
+                    });
                     const data = await res.json();
                     if (data.success) {
                         fetchComments();
