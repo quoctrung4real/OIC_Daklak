@@ -290,7 +290,10 @@ async function loadConfig() {
             if (typeof updateHeaderPreview === 'function') updateHeaderPreview();
             if (typeof updateMenuBarPreview === 'function') updateMenuBarPreview();
             if (typeof updateHeroPreview === 'function') updateHeroPreview();
-
+            if (typeof updateTickerPreview === 'function') updateTickerPreview();
+            if (typeof updateTechSolutionsPreview === 'function') updateTechSolutionsPreview();
+            if (typeof updateAgencyLinksPreview === 'function') updateAgencyLinksPreview();
+            
             if (config.tickerItems) {
                 tickerItems = config.tickerItems;
                 renderTickerItems();
@@ -305,8 +308,9 @@ async function loadConfig() {
                 agencyLinksGroups = config.agencyLinksGroups;
             }
             if (typeof renderAgencyLinksGroups === 'function') renderAgencyLinksGroups();
+            
+            if (typeof renderThemesAndPresets === 'function') renderThemesAndPresets();
             if (typeof renderTickerItems === 'function') renderTickerItems();
-            if (typeof updateTickerPreview === 'function') updateTickerPreview();
             
             if (config.featuredNewsIds) {
                 featuredNewsSelections = config.featuredNewsIds;
@@ -1959,11 +1963,13 @@ function clearNewsImage() {
 let cropper = null;
 let currentCropTarget = null;
 let currentCropInput = null;
+let currentCropFileType = null;
 
 function openCropper(input, target) {
     if (input.files && input.files[0]) {
         currentCropTarget = target;
         currentCropInput = input;
+        currentCropFileType = input.files[0].type;
         
         const reader = new FileReader();
         reader.onload = function(e) {
@@ -2047,11 +2053,50 @@ function saveCrop() {
         imageSmoothingQuality: 'high'
     });
     
-    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    let imageFormat = 'image/jpeg';
+    let imageQuality = 0.8;
+    
+    // Giữ nguyên nền trong suốt (PNG) nếu ảnh gốc là PNG hoặc là logo/favicon
+    if ((typeof currentCropFileType !== 'undefined' && currentCropFileType === 'image/png') || 
+        currentCropTarget === 'logo' || 
+        currentCropTarget === 'favicon') {
+        imageFormat = 'image/png';
+        imageQuality = undefined; 
+    }
+    
+    const base64Image = canvas.toDataURL(imageFormat, imageQuality);
     
     if (currentCropTarget === 'news') {
         document.getElementById('newsFormImageUrl').value = base64Image;
         updateNewsImagePreview();
+    } else if (currentCropTarget === 'logo') {
+        document.getElementById('logoUrl').value = base64Image;
+        const preview = document.getElementById('logoPreview');
+        if (preview) {
+            preview.src = base64Image;
+            preview.style.display = 'block';
+        }
+        if (typeof updateHeaderPreview === 'function') updateHeaderPreview();
+    } else if (currentCropTarget === 'favicon') {
+        document.getElementById('faviconUrl').value = base64Image;
+        const preview = document.getElementById('faviconPreview');
+        if (preview) {
+            preview.src = base64Image;
+            preview.style.display = 'block';
+        }
+        if (typeof updateHeaderPreview === 'function') updateHeaderPreview();
+    } else if (currentCropTarget === 'banner') {
+        document.getElementById('bannerUrl').value = base64Image;
+        // There is no direct bannerPreview img tag, we update the header background
+        if (typeof updateHeaderPreview === 'function') updateHeaderPreview();
+    } else if (currentCropTarget === 'hero') {
+        document.getElementById('heroImageUrl').value = base64Image;
+        const preview = document.getElementById('heroImagePreview');
+        if (preview) {
+            preview.src = base64Image;
+            preview.style.display = 'block';
+        }
+        if (typeof updateHeroPreview === 'function') updateHeroPreview();
     } else if (currentCropTarget === 'partnerLinkBg') {
         document.getElementById('pl-bgImage').value = base64Image;
         if (typeof partnerLinksApp !== 'undefined') {
@@ -2315,7 +2360,7 @@ async function saveExternalLinkConfig(key, value) {
         const configToSave = {};
         configToSave[key] = value;
         
-        const response = await fetch(`${API_BASE}/cau-hinh`, {
+        const response = await apiFetch(`${API_BASE}/cau-hinh`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -3536,4 +3581,253 @@ async function handleFooterImageUpload(input, targetInputId) {
         showAlert('Lỗi kết nối khi tải ảnh', false);
     }
     input.value = ''; // Reset input
+}
+
+// Tự động thêm nút "Lưu" cho tất cả các mục con trong form cấu hình hệ thống
+document.addEventListener('DOMContentLoaded', () => {
+    const configFormSections = document.querySelectorAll('#config-form .config-section-content');
+    configFormSections.forEach(section => {
+        // Chỉ thêm nút "Lưu Phần Này" nếu section chưa có nút lưu nào (để tránh bị dư nút)
+        if (!section.querySelector('.btn-save-global')) {
+            const btnContainer = document.createElement('div');
+            btnContainer.style.marginTop = '20px';
+            btnContainer.style.textAlign = 'right';
+            btnContainer.style.borderTop = '1px dashed #cbd5e1';
+            btnContainer.style.paddingTop = '15px';
+            
+            const btn = document.createElement('button');
+            btn.type = 'submit';
+            btn.className = 'btn-save-global';
+            btn.innerHTML = '<i class="fa-solid fa-save"></i> Lưu Phần Này';
+            
+            btnContainer.appendChild(btn);
+            section.appendChild(btnContainer);
+        }
+    });
+});
+
+// ================= THEME & PRESETS SYSTEM =================
+const SYSTEM_THEMES = [
+    {
+        id: 'default',
+        name: 'Giao diện Mặc định',
+        desc: 'Thiết kế cơ bản màu xanh đậm chuyên nghiệp cho cổng thông tin.',
+        primary: '#0a59ab',
+        secondary: '#1e40af',
+        icon: 'fa-cube',
+        gradient: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%)'
+    },
+    {
+        id: 'tet',
+        name: 'Tết Nguyên Đán',
+        desc: 'Sắc đỏ vàng rực rỡ mang không khí lễ hội, kèm hiệu ứng hoa mai rơi và pháo hoa động lộng lẫy.',
+        primary: '#dc2626',
+        secondary: '#facc15',
+        icon: 'fa-fan',
+        gradient: 'linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%)'
+    },
+    {
+        id: 'coffee',
+        name: 'Lễ Hội Cà Phê BMT',
+        desc: 'Sắc nâu cà phê ấm áp, kèm hiệu ứng hạt cà phê rơi và hình ảnh chú voi Tây Nguyên đáng yêu.',
+        primary: '#78350f',
+        secondary: '#d97706',
+        icon: 'fa-mug-hot',
+        gradient: 'linear-gradient(135deg, #451a03 0%, #78350f 100%)'
+    },
+    {
+        id: 'national_day',
+        name: 'Quốc Khánh Việt Nam',
+        desc: 'Thiết kế màu cờ Tổ quốc, hiệu ứng ngôi sao vàng lấp lánh và quốc kỳ bay phấp phới.',
+        primary: '#da251d',
+        secondary: '#ffff00',
+        icon: 'fa-star',
+        gradient: 'linear-gradient(135deg, #991b1b 0%, #da251d 100%)'
+    }
+];
+
+async function renderThemesAndPresets() {
+    let config = {}; try { const res = await apiFetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`); if(res.ok) config = await res.json(); } catch(e) {}
+    // Render System Themes
+    const systemContainer = document.getElementById('system-themes-container');
+    if (systemContainer) {
+        systemContainer.innerHTML = SYSTEM_THEMES.map(theme => `
+            <div class="theme-card ${config.themePreset === theme.id ? 'active' : ''}" 
+                 style="border: 2px solid ${config.themePreset === theme.id ? theme.primary : '#e2e8f0'}; border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s; position: relative;"
+                 onclick="applySystemTheme('${theme.id}')"
+                 onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 10px 15px -3px rgba(0,0,0,0.1)';"
+                 onmouseout="this.style.transform='none'; this.style.boxShadow='none';">
+                <div style="height: 100px; background: ${theme.gradient}; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid ${theme.icon}" style="font-size: 40px; color: rgba(255,255,255,0.9);"></i>
+                </div>
+                <div style="padding: 20px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1e293b; font-weight: 700;">${theme.name}</h3>
+                    <p style="margin: 0; font-size: 13px; color: #64748b; line-height: 1.5;">${theme.desc}</p>
+                    <div style="display: flex; gap: 10px; margin-top: 15px;">
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: ${theme.primary}; border: 1px solid #e2e8f0;"></div>
+                        <div style="width: 24px; height: 24px; border-radius: 50%; background: ${theme.secondary}; border: 1px solid #e2e8f0;"></div>
+                    </div>
+                </div>
+                ${config.themePreset === theme.id ? `
+                <div style="position: absolute; top: 10px; right: 10px; background: ${theme.secondary}; color: #000; font-size: 12px; padding: 4px 10px; border-radius: 20px; font-weight: 700;">
+                    <i class="fa-solid fa-check"></i> Đang chọn
+                </div>
+                ` : ''}
+            </div>
+        `).join('');
+    }
+
+    // Render Saved Presets
+    const presetsContainer = document.getElementById('saved-presets-container');
+    if (presetsContainer) {
+        if (!config.savedPresets || config.savedPresets.length === 0) {
+            presetsContainer.innerHTML = '<p style="color: #94a3b8; font-style: italic; grid-column: 1 / -1;">Bạn chưa có cấu hình nào được lưu.</p>';
+        } else {
+            presetsContainer.innerHTML = config.savedPresets.map((preset, index) => `
+                <div class="preset-card" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #f8fafc; transition: all 0.3s; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1e293b; font-weight: 600;">
+                            <i class="fa-solid fa-bookmark" style="color: #64748b;"></i> ${preset.name}
+                        </h3>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">Màu chủ đạo: <span style="display:inline-block; width: 12px; height: 12px; background: ${preset.config.primaryColor || '#ccc'}; border-radius: 50%; vertical-align: middle;"></span></p>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button onclick="loadPreset(${index})" style="flex: 1; padding: 8px; background: #0a59ab; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;"><i class="fa-solid fa-upload"></i> Áp dụng</button>
+                        <button onclick="deletePreset(${index})" style="padding: 8px 12px; background: #fee2e2; color: #dc2626; border: none; border-radius: 6px; cursor: pointer; font-size: 13px;"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
+}
+
+async function applySystemTheme(themeId) {
+    if (!confirm('Bạn có chắc muốn áp dụng chủ đề này? Các cài đặt màu sắc hiện tại sẽ bị thay đổi.')) return;
+    
+    const theme = SYSTEM_THEMES.find(t => t.id === themeId);
+    if (!theme) return;
+    let config = {}; try { const res = await apiFetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`); if(res.ok) config = await res.json(); } catch(e) {}
+
+    // Update config object
+    config.themePreset = themeId;
+    if (themeId !== 'default') {
+        config.primaryColor = theme.primary;
+        config.menuBarBgColor = theme.primary;
+        config.headerTextColor = '#ffffff';
+        config.welcomeBgColor = theme.secondary;
+        config.welcomeTextColor = (themeId === 'national_day' || themeId === 'tet') ? '#dc2626' : '#ffffff';
+    } else {
+        config.primaryColor = '#0a59ab';
+        config.menuBarBgColor = '#0a59ab';
+        config.welcomeBgColor = '#facc15';
+        config.welcomeTextColor = '#dc2626';
+    }
+
+    try {
+        const response = await apiFetch(`${API_BASE}/cau-hinh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const result = await response.json();
+        if (result.success) {
+            showAlert('Đã áp dụng chủ đề thành công! Giao diện sẽ tải lại.');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('Lỗi: ' + result.message, false);
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Lỗi kết nối khi áp dụng chủ đề', false);
+    }
+}
+
+async function saveCurrentPreset() {
+    const presetName = prompt('Nhập tên cho cấu hình hiện tại (ví dụ: Giao diện mùa đông):');
+    if (!presetName) return;
+    let config = {}; try { const res = await apiFetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`); if(res.ok) config = await res.json(); } catch(e) {}
+
+    if (!config.savedPresets) config.savedPresets = [];
+    
+    // Create a deep copy of config without the savedPresets array to avoid infinite nesting
+    const configCopy = JSON.parse(JSON.stringify(config));
+    delete configCopy.savedPresets;
+    
+    config.savedPresets.push({
+        id: 'preset_' + Date.now(),
+        name: presetName,
+        config: configCopy
+    });
+
+    try {
+        const response = await apiFetch(`${API_BASE}/cau-hinh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const result = await response.json();
+        if (result.success) {
+            showAlert('Đã lưu cấu hình mới thành công!');
+            renderThemesAndPresets();
+        } else {
+            showAlert('Lỗi: ' + result.message, false);
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Lỗi kết nối khi lưu cấu hình', false);
+    }
+}
+
+async function loadPreset(index) {
+    if (!confirm('Bạn có chắc muốn áp dụng cấu hình này? Toàn bộ thiết lập hiện tại sẽ bị ghi đè.')) return;
+    let config = {}; try { const res = await apiFetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`); if(res.ok) config = await res.json(); } catch(e) {}
+    const preset = config.savedPresets[index];
+    if (!preset) return;
+
+    // Apply config
+    const savedPresetsBackup = config.savedPresets; // preserve the list
+    Object.assign(config, preset.config);
+    config.savedPresets = savedPresetsBackup;
+
+    try {
+        const response = await apiFetch(`${API_BASE}/cau-hinh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const result = await response.json();
+        if (result.success) {
+            showAlert('Đã áp dụng cấu hình thành công! Đang tải lại...');
+            setTimeout(() => location.reload(), 1500);
+        } else {
+            showAlert('Lỗi: ' + result.message, false);
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Lỗi kết nối khi áp dụng cấu hình', false);
+    }
+}
+
+async function deletePreset(index) {
+    if (!confirm('Bạn có chắc muốn xóa cấu hình này?')) return;
+    let config = {}; try { const res = await apiFetch(`${API_BASE}/cau-hinh?t=${new Date().getTime()}`); if(res.ok) config = await res.json(); } catch(e) {}
+    if (config.savedPresets) config.savedPresets.splice(index, 1);
+    
+    try {
+        const response = await apiFetch(`${API_BASE}/cau-hinh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(config)
+        });
+        const result = await response.json();
+        if (result.success) {
+            showAlert('Đã xóa cấu hình!');
+            renderThemesAndPresets();
+        } else {
+            showAlert('Lỗi: ' + result.message, false);
+        }
+    } catch (e) {
+        console.error(e);
+        showAlert('Lỗi kết nối khi xóa cấu hình', false);
+    }
 }

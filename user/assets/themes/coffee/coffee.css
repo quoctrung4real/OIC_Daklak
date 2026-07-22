@@ -1,0 +1,228 @@
+/* =========================================
+   THEME: LỄ HỘI CÀ PHÊ BUÔN MA THUỘT
+   ========================================= */
+
+:root {
+    --coffee-dark: #451a03;
+    --coffee-primary: #78350f;
+    --coffee-accent: #b45309;
+    --coffee-light: #fef3c7;
+    --coffee-bg: #fffbeb;
+}
+
+body {
+    background-color: var(--coffee-bg) !important;
+}
+
+/* Elegant header */
+.header-banner-bg {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-primary) 100%) !important;
+    border-bottom: 2px solid var(--coffee-accent) !important;
+}
+
+/* Welcome banner */
+.welcome-banner {
+    background: linear-gradient(to right, var(--coffee-accent) 0%, #d97706 50%, var(--coffee-accent) 100%) !important;
+    color: var(--coffee-light) !important;
+    box-shadow: 0 4px 15px rgba(120, 53, 15, 0.2) !important;
+    border-bottom: 2px solid var(--coffee-dark);
+}
+
+/* Nav Menu */
+.nav-wrapper {
+    background: var(--coffee-primary) !important;
+    border-bottom: 3px solid var(--coffee-accent) !important;
+    box-shadow: 0 10px 20px -5px rgba(69, 26, 3, 0.2) !important;
+}
+
+.nav-list > li > a {
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.nav-list > li > a::after {
+    background: var(--coffee-light) !important;
+}
+.nav-list > li > a:hover {
+    color: var(--coffee-light) !important;
+}
+
+/* Hero Banner with Coffee abstract background */
+.hero-section {
+    position: relative;
+    background: radial-gradient(ellipse at top right, #fff 0%, var(--coffee-bg) 100%) !important;
+    border: 1px solid rgba(180, 83, 9, 0.15);
+    border-radius: 16px !important;
+}
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -10px; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(120, 53, 15, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.btn-readmore {
+    background: linear-gradient(135deg, var(--coffee-primary) 0%, var(--coffee-accent) 100%) !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 25px !important;
+    box-shadow: 0 4px 15px rgba(120, 53, 15, 0.3) !important;
+}
+.btn-readmore:hover {
+    background: linear-gradient(135deg, var(--coffee-accent) 0%, var(--coffee-dark) 100%) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Animations */
+.coffee-bean {
+    position: fixed;
+    top: -50px;
+    z-index: 9999;
+    pointer-events: none;
+    animation: fall linear forwards;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+@keyframes fall {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.coffee-elephant {
+    position: fixed;
+    bottom: 20px;
+    right: -300px; /* Fully hidden off screen */
+    z-index: 100;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+.coffee-elephant.walk-in {
+    animation: elephantWalk 15s linear forwards;
+}
+@keyframes elephantWalk {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100vw - 350px)); }
+}
+
+/* =========================================
+   SYNCHRONIZED THEME COLORS FOR ENTIRE PAGE
+   ========================================= */
+/* Multimedia Section Override */
+.multimedia-section {
+    background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-primary) 100%) !important;
+}
+.section-label:not(.light) { color: var(--coffee-accent) !important; }
+.section-label.light { color: var(--coffee-light) !important; opacity: 0.9; }
+.section-title:not(.light), .section-title-large:not(.light) { color: var(--coffee-dark) !important; }
+.section-title.light { color: var(--coffee-light) !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+/* News and Solution Cards */
+.solution-card:hover, .news-card:hover {
+    border-color: var(--coffee-accent) !important;
+    box-shadow: 0 10px 25px rgba(120, 53, 15, 0.15) !important;
+}
+.solution-card:hover, .news-card:hover {
+    border-color: var(--coffee-accent);
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.15);
+}
+.footer-section {
+    background: linear-gradient(180deg, var(--coffee-dark) 0%, #291206 100%) !important;
+    border-top: 3px solid var(--coffee-accent);
+}
+
+/* Elephant Detailed Animations */
+.coffee-elephant svg .leg.front-leg-2,
+.coffee-elephant svg .leg.back-leg-1 {
+    animation: elephantWalkLegs 0.6s infinite alternate ease-in-out;
+}
+.coffee-elephant svg .leg.front-leg-1,
+.coffee-elephant svg .leg.back-leg-2 {
+    animation: elephantWalkLegs 0.6s infinite alternate-reverse ease-in-out;
+}
+@keyframes elephantWalkLegs {
+    0% { transform: rotate(-20deg); }
+    100% { transform: rotate(20deg); }
+}
+
+.coffee-elephant svg .elephant-body {
+    animation: elephantBounce 0.3s infinite alternate ease-in-out;
+}
+@keyframes elephantBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-2px); }
+}
+
+.coffee-elephant svg .coffee-cart {
+    animation: cartBounce 0.3s infinite alternate ease-in-out;
+    animation-delay: 0.15s;
+}
+@keyframes cartBounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-1.5px) rotate(1deg); }
+}
+
+.coffee-elephant svg .trunk {
+    animation: trunkSwing 1.2s infinite alternate ease-in-out;
+}
+@keyframes trunkSwing {
+    0% { transform: rotate(-5deg); }
+    100% { transform: rotate(10deg); }
+}
+
+.coffee-elephant svg .smoke {
+    animation: smokeRise 2s infinite linear;
+}
+.coffee-elephant svg .smoke-2 {
+    animation-delay: 1s;
+}
+@keyframes smokeRise {
+    0% { transform: translateY(0) scale(1); opacity: 0.8; }
+    50% { opacity: 0.5; }
+    100% { transform: translateY(-15px) scale(1.2); opacity: 0; }
+}
+
+.solution-content h3:hover, .news-title:hover {
+    color: var(--coffee-primary) !important;
+}
+
+/* Footer overrides */
+.footer {
+    background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-primary) 100%) !important;
+    border-top: 3px solid var(--coffee-accent) !important;
+}
+.footer-bottom {
+    background-color: rgba(0,0,0,0.2) !important;
+    border-top: 1px solid rgba(180, 83, 9, 0.3) !important;
+}
+
+/* Ticker Label and Accordion Override */
+.ticker-label {
+    background: linear-gradient(135deg, var(--coffee-dark) 0%, var(--coffee-primary) 100%) !important;
+}
+.ticker-label::after {
+    border-left-color: var(--coffee-primary) !important;
+}
+.sidebar-accordion {
+    background: var(--coffee-primary) !important;
+}
+.sidebar-accordion .accordion-header {
+    background: var(--coffee-primary) !important;
+}
+.sidebar-accordion .accordion-header:hover {
+    background: var(--coffee-dark) !important;
+}
+.sidebar-accordion .accordion-content {
+    background: var(--coffee-light) !important;
+    color: var(--coffee-dark) !important;
+}
+.sidebar-accordion .accordion-content a {
+    color: var(--coffee-dark) !important;
+}

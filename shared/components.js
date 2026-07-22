@@ -390,7 +390,7 @@ const commonComponents = {
         a.async = true;
         a.type = "text/javascript";
         a.id = "platform-script";
-        a.setAttribute("data-bid", "6a34f1dd0df915cfef0c3567");
+        a.setAttribute("data-bid", "6a41d332eeb029acee001e60");
         a.setAttribute("data-appName", "website");
         a.src = "https://chatbot.daklak.gov.vn/js/apps/chatbox/chatbox.botplatform.js";
         var b = document.getElementsByTagName("script")[0];
@@ -451,6 +451,8 @@ const commonComponents = {
             e.stopPropagation();
             searchForm.classList.add('active');
             if (navList) navList.classList.add('search-active');
+            const navSmallLogo = document.querySelector('.nav-small-logo');
+            if (navSmallLogo) navSmallLogo.classList.add('search-active');
             const input = searchForm.querySelector('input');
             if (input) setTimeout(() => input.focus(), 50);
         });
@@ -555,6 +557,8 @@ const commonComponents = {
                 if (!searchForm.contains(e.target) && !searchBtn.contains(e.target)) {
                     searchForm.classList.remove('active');
                     if (navList) navList.classList.remove('search-active');
+                    const navSmallLogo = document.querySelector('.nav-small-logo');
+                    if (navSmallLogo) navSmallLogo.classList.remove('search-active');
                     if (liveResultsBox) liveResultsBox.classList.remove('active');
                 }
             }
@@ -566,6 +570,8 @@ const commonComponents = {
             e.stopPropagation();
             searchForm.classList.remove('active');
             if (navList) navList.classList.remove('search-active');
+            const navSmallLogo = document.querySelector('.nav-small-logo');
+            if (navSmallLogo) navSmallLogo.classList.remove('search-active');
         });
     }
 
@@ -690,11 +696,48 @@ const commonComponents = {
             if (res.ok) {
                 const config = await res.json();
                 
+                // THEME LOADER
+                if (config && config.themePreset && config.themePreset !== 'default') {
+                    const theme = config.themePreset;
+                    // Load CSS
+                    const linkCss = document.createElement('link');
+                    linkCss.rel = 'stylesheet';
+                    linkCss.href = `http://localhost:5100/user/assets/themes/${theme}/${theme}.css?v=${new Date().getTime()}`;
+                    document.head.appendChild(linkCss);
+                    // Load JS
+                    const scriptJs = document.createElement('script');
+                    scriptJs.src = `http://localhost:5100/user/assets/themes/${theme}/${theme}.js?v=${new Date().getTime()}`;
+                    document.body.appendChild(scriptJs);
+                }
+                
                 // FOOTER UPDATE
                 if (config && config.footerConfig) {
                     const existingFooter = document.querySelector('.footer');
                     if (existingFooter) {
                         existingFooter.outerHTML = commonComponents.renderFooter(config.footerConfig);
+                    }
+                }
+                
+                // FAVICON UPDATE
+                if (config && config.faviconUrl) {
+                    let link = document.querySelector("link[rel~='icon']");
+                    if (!link) {
+                        link = document.createElement('link');
+                        link.rel = 'icon';
+                        document.head.appendChild(link);
+                    }
+                    link.href = config.faviconUrl;
+                }
+
+                // LOGO UPDATE
+                if (config && config.logoUrl) {
+                    const logoIcon = document.querySelector('.logo-icon');
+                    if (logoIcon) {
+                        logoIcon.innerHTML = `<img src="${config.logoUrl}" alt="Logo" style="width: 60px; height: 60px; object-fit: contain;">`;
+                    }
+                    const navSmallLogo = document.querySelector('.nav-small-logo');
+                    if (navSmallLogo) {
+                        navSmallLogo.innerHTML = `<img src="${config.logoUrl}" alt="Logo" style="width: 50px; height: 50px; object-fit: contain;">`;
                     }
                 }
 
@@ -848,8 +891,14 @@ window.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('iframe, div').forEach(el => {
                 if (el === scrollTopBtn || el.closest('.scroll-top')) return;
                 
+                // Ignore theme animated elements that shouldn't push the button up
+                if (typeof el.className === 'string' && el.className.match(/(apricot|firework|falling|coffee|waving)/)) return;
+                
                 const style = getComputedStyle(el);
                 if (style.position !== 'fixed') return;
+                
+                // Ignore elements that don't capture pointer events (like falling leaves/snow)
+                if (style.pointerEvents === 'none') return;
                 
                 const rect = el.getBoundingClientRect();
                 if (rect.width === 0 || rect.height === 0) return;

@@ -1,0 +1,210 @@
+/* =========================================
+   THEME: QUỐC KHÁNH VIỆT NAM 2/9
+   ========================================= */
+
+:root {
+    --national-red: #da251d;
+    --national-dark: #b91c1c;
+    --national-yellow: #ffff00;
+    --national-light: #fef08a;
+    --national-bg: #fffcfcf3;
+}
+
+body {
+    background-color: var(--national-bg) !important;
+}
+
+/* Red elegant header */
+.header-banner-bg {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    background: linear-gradient(135deg, var(--national-dark) 0%, var(--national-red) 100%) !important;
+    border-bottom: 2px solid var(--national-yellow) !important;
+}
+
+/* Yellow bright welcome banner */
+.welcome-banner {
+    background: linear-gradient(to right, #facc15 0%, var(--national-yellow) 50%, #facc15 100%) !important;
+    color: var(--national-red) !important;
+    box-shadow: 0 4px 15px rgba(218, 37, 29, 0.2) !important;
+    border-bottom: 2px solid var(--national-dark);
+}
+.welcome-text strong {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Nav Menu */
+.nav-wrapper {
+    background: var(--national-red) !important;
+    border-bottom: 3px solid var(--national-yellow) !important;
+    box-shadow: 0 10px 20px -5px rgba(218, 37, 29, 0.3) !important;
+}
+
+.nav-list > li > a {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.nav-list > li > a::after {
+    background: var(--national-yellow) !important;
+}
+.nav-list > li > a:hover {
+    color: var(--national-yellow) !important;
+    text-shadow: 0 0 8px rgba(255, 255, 0, 0.4);
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    background: radial-gradient(ellipse at center, #ffffff 0%, #fef2f2 100%) !important;
+    border: 1px solid rgba(218, 37, 29, 0.15);
+}
+
+.btn-readmore {
+    background: linear-gradient(135deg, var(--national-red) 0%, var(--national-dark) 100%) !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 4px 15px rgba(218, 37, 29, 0.4) !important;
+    text-transform: uppercase;
+}
+.btn-readmore:hover {
+    background: linear-gradient(135deg, var(--national-dark) 0%, #991b1b 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(218, 37, 29, 0.6) !important;
+}
+
+/* Animations */
+.falling-star {
+    position: fixed;
+    top: -50px;
+    z-index: 9999;
+    pointer-events: none;
+    animation: starfall linear forwards;
+    filter: drop-shadow(0 2px 5px rgba(218, 37, 29, 0.3));
+}
+
+@keyframes starfall {
+    0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Waving flag in background */
+.waving-flag-container {
+    position: fixed;
+    bottom: -50px;
+    left: -50px;
+    width: 300px;
+    height: 200px;
+    z-index: 0;
+    opacity: 0.15;
+    pointer-events: none;
+    transform: rotate(15deg);
+}
+
+.waving-flag {
+    width: 100%;
+    height: 100%;
+    background: #da251d;
+    position: relative;
+    transform-origin: left center;
+    /* Soft 3D motion + realistic edge rippling */
+    animation: 
+        realisticWave 3s ease-in-out infinite alternate,
+        waveEdge 1.5s ease-in-out infinite;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+}
+
+.waving-flag::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 25%, rgba(0,0,0,0.2) 50%, rgba(255,255,255,0.25) 75%, rgba(255,255,255,0) 100%);
+    background-size: 200% 100%;
+    animation: flagShadow 1.5s linear infinite;
+    z-index: 1;
+}
+.waving-flag::after {
+    content: '★';
+    color: #ffff00;
+    font-size: 80px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+@keyframes waveEdge {
+    0% { clip-path: polygon(0 0, 25% 4%, 50% 0, 75% 4%, 100% 0, 100% 96%, 75% 100%, 50% 96%, 25% 100%, 0 96%); }
+    50% { clip-path: polygon(0 4%, 25% 0, 50% 4%, 75% 0, 100% 4%, 100% 100%, 75% 96%, 50% 100%, 25% 96%, 0 100%); }
+    100% { clip-path: polygon(0 0, 25% 4%, 50% 0, 75% 4%, 100% 0, 100% 96%, 75% 100%, 50% 96%, 25% 100%, 0 96%); }
+}
+
+@keyframes realisticWave {
+    0% { transform: perspective(600px) rotateY(-5deg) rotateX(2deg) skewY(-1deg); }
+    100% { transform: perspective(600px) rotateY(15deg) rotateX(-2deg) skewY(1deg); }
+}
+
+@keyframes flagShadow {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+/* =========================================
+   SYNCHRONIZED THEME COLORS FOR ENTIRE PAGE
+   ========================================= */
+/* Multimedia Section Override */
+.multimedia-section {
+    background: linear-gradient(135deg, var(--national-dark) 0%, var(--national-red) 100%) !important;
+}
+
+.section-label:not(.light) { color: var(--national-red) !important; }
+.section-label.light { color: var(--national-light) !important; opacity: 0.9; }
+.section-title:not(.light), .section-title-large:not(.light) { color: var(--national-dark) !important; }
+.section-title.light { color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+/* News and Solution Cards */
+.solution-card:hover, .news-card:hover {
+    border-color: var(--national-red) !important;
+    box-shadow: 0 10px 25px rgba(218, 37, 29, 0.15) !important;
+}
+.solution-content h3:hover, .news-title:hover {
+    color: var(--national-red) !important;
+}
+
+/* Footer overrides */
+.footer {
+    background: linear-gradient(135deg, var(--national-dark) 0%, var(--national-red) 100%) !important;
+    border-top: 3px solid var(--national-yellow) !important;
+}
+.footer-bottom {
+    background-color: rgba(0,0,0,0.2) !important;
+    border-top: 1px solid rgba(255, 255, 0, 0.3) !important;
+}
+
+/* Ticker Label and Accordion Override */
+.ticker-label {
+    background: linear-gradient(135deg, var(--national-dark) 0%, var(--national-red) 100%) !important;
+}
+.ticker-label::after {
+    border-left-color: var(--national-red) !important;
+}
+.sidebar-accordion {
+    background: var(--national-red) !important;
+}
+.sidebar-accordion .accordion-header {
+    background: var(--national-red) !important;
+}
+.sidebar-accordion .accordion-header:hover {
+    background: var(--national-dark) !important;
+}
+.sidebar-accordion .accordion-content {
+    background: var(--national-light) !important;
+    color: var(--national-dark) !important;
+}
+.sidebar-accordion .accordion-content a {
+    color: var(--national-dark) !important;
+}

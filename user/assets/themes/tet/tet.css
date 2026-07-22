@@ -1,0 +1,200 @@
+/* =========================================
+   THEME: TẾT NGUYÊN ĐÁN VIỆT NAM
+   ========================================= */
+
+/* Overrides for a festive, premium look */
+:root {
+    --tet-red: #c51d1d;
+    --tet-gold: #f59e0b;
+    --tet-gold-light: #fcd34d;
+    --tet-bg: #fffbf5;
+}
+
+body {
+    background-color: var(--tet-bg) !important;
+}
+
+/* Elegant touches for the header */
+.header-banner-bg {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 0 !important;
+    background: linear-gradient(135deg, #7f1d1d 0%, var(--tet-red) 100%) !important;
+    border-bottom: 2px solid var(--tet-gold) !important;
+}
+
+/* Subtle glow effect on the welcome banner */
+.welcome-banner {
+    background: linear-gradient(to right, var(--tet-gold) 0%, #fcd34d 50%, var(--tet-gold) 100%) !important;
+    color: var(--tet-red) !important;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3) !important;
+    border-bottom: 2px solid #b45309;
+}
+.welcome-text strong {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Nav Menu */
+.nav-wrapper {
+    background: var(--tet-red) !important;
+    border-bottom: 3px solid var(--tet-gold) !important;
+    box-shadow: 0 10px 20px -5px rgba(197, 29, 29, 0.3) !important;
+}
+
+.nav-list > li > a {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    position: relative;
+}
+
+/* Golden hover effect */
+.nav-list > li > a::after {
+    background: var(--tet-gold) !important;
+}
+.nav-list > li > a:hover {
+    color: var(--tet-gold-light) !important;
+    text-shadow: 0 0 8px rgba(252, 211, 77, 0.5);
+}
+
+/* Add decorative lantern pattern to Hero Banner */
+.hero-section {
+    position: relative;
+    background: radial-gradient(ellipse at center, #fff 0%, var(--tet-bg) 100%) !important;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.hero-section::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5l5 10 10 5-10 5-5 10-5-10-10-5 10-5 5-10z' fill='%23f59e0b' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Multimedia Section Override */
+.multimedia-section {
+    background: linear-gradient(135deg, #7f1d1d 0%, var(--tet-red) 100%) !important;
+}
+
+/* Hero Button */
+.btn-readmore {
+    background: linear-gradient(135deg, var(--tet-gold) 0%, #d97706 100%) !important;
+    color: #fff !important;
+    border: none;
+    box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.btn-readmore:hover {
+    background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6) !important;
+}
+
+/* Animations for JS effects */
+.apricot-flower {
+    position: fixed;
+    top: -50px;
+    z-index: 9999;
+    pointer-events: none;
+    animation: fall linear forwards;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Fireworks Container */
+#fireworks-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 9998;
+    overflow: hidden;
+}
+
+/* Customize news cards for Tet */
+.news-card {
+    border-color: rgba(245, 158, 11, 0.1) !important;
+}
+.news-card:hover {
+    box-shadow: 0 10px 25px rgba(197, 29, 29, 0.1) !important;
+    border-color: rgba(245, 158, 11, 0.4) !important;
+}
+.news-title {
+    color: var(--tet-red) !important;
+}
+
+/* =========================================
+   SYNCHRONIZED THEME COLORS FOR ENTIRE PAGE
+   ========================================= */
+.section-label:not(.light) { color: var(--tet-gold) !important; }
+.section-label.light { color: #fcd34d !important; }
+.section-title:not(.light), .section-title-large:not(.light) { color: var(--tet-red) !important; }
+.section-title.light { color: #fff !important; text-shadow: 0 2px 4px rgba(0,0,0,0.3); }
+
+/* News and Solution Cards */
+.solution-card:hover, .news-card:hover {
+    border-color: var(--tet-gold) !important;
+    box-shadow: 0 10px 25px rgba(197, 29, 29, 0.15) !important;
+}
+.solution-content h3:hover, .news-title:hover {
+    color: var(--tet-red) !important;
+}
+
+/* Icons & Buttons */
+.contact-icon svg, .solution-image svg {
+    filter: drop-shadow(0 2px 4px rgba(197, 29, 29, 0.2));
+}
+
+/* Footer overrides */
+.footer {
+    background: linear-gradient(135deg, #7f1d1d 0%, var(--tet-red) 100%) !important;
+    border-top: 3px solid var(--tet-gold) !important;
+}
+.footer-bottom {
+    background-color: rgba(0,0,0,0.2) !important;
+    border-top: 1px solid rgba(245, 158, 11, 0.3) !important;
+}
+
+/* Ticker Label and Accordion Override */
+.ticker-label {
+    background: linear-gradient(135deg, #7f1d1d 0%, var(--tet-red) 100%) !important;
+}
+.ticker-label::after {
+    border-left-color: var(--tet-red) !important;
+}
+.sidebar-accordion {
+    background: var(--tet-red) !important;
+}
+.sidebar-accordion .accordion-header {
+    background: var(--tet-red) !important;
+}
+.sidebar-accordion .accordion-header:hover {
+    background: #7f1d1d !important;
+}
+.sidebar-accordion .accordion-content {
+    background: var(--tet-bg) !important;
+    color: var(--tet-red) !important;
+}
+.sidebar-accordion .accordion-content a {
+    color: var(--tet-red) !important;
+}
