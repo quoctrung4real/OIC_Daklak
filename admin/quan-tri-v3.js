@@ -2566,9 +2566,12 @@ function renderAgencyLinksGroups() {
         groupDiv.style.border = '1px solid #e2e8f0';
         
         groupDiv.innerHTML = `
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px;">
-                <input type="text" value="${group.title}" oninput="updateAgencyGroupTitle(${groupIndex}, this.value)" style="font-weight: 600; color: #475569; font-size: 15px; border: none; outline: none; background: transparent; width: 80%;" placeholder="Tên nhóm cơ quan">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
+                <input type="text" value="${group.title}" oninput="updateAgencyGroupTitle(${groupIndex}, this.value)" style="font-weight: 600; color: #475569; font-size: 15px; border: none; outline: none; background: transparent; width: 80%;" placeholder="Tên nhóm cơ quan (VD: Sở / Ban ngành)">
                 <button type="button" onclick="removeAgencyGroup(${groupIndex})" style="background: transparent; color: #ef4444; border: none; cursor: pointer;"><i class="fa-solid fa-trash"></i> Xóa Nhóm</button>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <input type="text" value="${group.url || ''}" oninput="updateAgencyGroupUrl(${groupIndex}, this.value)" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 13px;" placeholder="Đường link của cả ô (Tùy chọn: Nhấn vào ô sẽ mở link này thay vì mở danh sách con)">
             </div>
             <div style="margin-bottom: 10px;">
                 <label style="font-weight: 500; color: #64748b; font-size: 0.9rem;">Danh sách liên kết</label>
@@ -2583,6 +2586,11 @@ function renderAgencyLinksGroups() {
 
 function updateAgencyGroupTitle(groupIndex, title) {
     agencyLinksGroups[groupIndex].title = title;
+    updateAgencyLinksPreview();
+}
+
+function updateAgencyGroupUrl(groupIndex, url) {
+    agencyLinksGroups[groupIndex].url = url;
     updateAgencyLinksPreview();
 }
 
@@ -2620,22 +2628,24 @@ function updateAgencyLinksPreview() {
     const bgColor = document.getElementById('agencyLinksColor')?.value || '#0a59ab';
     
     container.innerHTML = '';
+    // Use the actual Bento Grid styles for the preview
+    // Adjusting a bit so it looks nice within the admin panel limits
     agencyLinksGroups.forEach(group => {
         let linksHtml = '';
         group.links.forEach(link => {
-            linksHtml += `<li><a href="${link.url}" target="_blank" style="text-decoration: none; color: #333; display: block; padding: 8px 15px; border-bottom: 1px solid #f1f5f9;"><i class="fa-solid fa-angle-right" style="font-size: 0.8em; margin-right: 6px; color: #94a3b8;"></i> ${link.text}</a></li>`;
+            linksHtml += `<div style="padding: 8px 12px; color: #334155; font-size: 13px; font-weight: 500; border-bottom: 1px solid #f1f5f9;"><i class="fa-solid fa-angle-right" style="margin-right: 6px;"></i> ${link.text}</div>`;
         });
         
         container.innerHTML += `
-            <div class="accordion-item" style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden;">
-                <button class="accordion-header" style="background-color: ${bgColor}; color: white; padding: 12px 15px; border: none; width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 14px; cursor: pointer;">
-                    <span>${group.title}</span>
-                    <i class="fa-solid fa-chevron-down"></i>
-                </button>
-                <div class="accordion-content" style="background: white;">
-                    <ul style="list-style: none; padding: 0; margin: 0;">
-                        ${linksHtml}
-                    </ul>
+            <div style="background: #fff; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; border: 1px solid rgba(0,0,0,0.08); box-shadow: 0 2px 4px rgba(0,0,0,0.04); text-align: center; min-height: 110px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: ${bgColor}15; color: ${bgColor}; display: flex; align-items: center; justify-content: center; margin-bottom: 8px; font-size: 18px;">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <span style="font-weight: 600; font-size: 13px; color: #1e293b; line-height: 1.3;">${group.title}</span>
+                <i class="fa-solid fa-chevron-down" style="position: absolute; bottom: 8px; color: #94a3b8; font-size: 10px;"></i>
+                
+                <div style="margin-top: 15px; width: 100%; border-top: 1px solid #f1f5f9; padding-top: 10px; text-align: left; display: none;">
+                    ${linksHtml}
                 </div>
             </div>
         `;

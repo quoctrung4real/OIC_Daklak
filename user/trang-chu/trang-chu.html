@@ -327,25 +327,25 @@
     <section class="external-links-section" style="padding: 40px 0 60px; background: var(--bg-light);">
         <div class="container">
             <style>
-                .external-agency-wrapper {
+                .bento-agency-wrapper {
                     display: grid;
-                    grid-template-columns: 3fr 1fr;
-                    gap: 24px;
-                    align-items: flex-start;
+                    grid-template-columns: repeat(4, 1fr);
+                    grid-auto-rows: 110px;
+                    gap: 16px;
                 }
                 @media (max-width: 1024px) {
-                    .external-agency-wrapper {
+                    .bento-agency-wrapper {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
+                @media (max-width: 600px) {
+                    .bento-agency-wrapper {
                         grid-template-columns: 1fr;
                     }
                 }
             </style>
-            <div class="external-agency-wrapper">
-                <div class="external-links-grid" id="external-links-grid">
-                    <!-- Rendered dynamically by JS -->
-                </div>
-                <div class="sidebar-accordion header-accordion" id="agency-links-container">
-                    <!-- Agency links will be populated by JS -->
-                </div>
+            <div class="bento-agency-wrapper" id="bento-links-grid">
+                <!-- Bento Links will be populated by JS -->
             </div>
         </div>
     </section>

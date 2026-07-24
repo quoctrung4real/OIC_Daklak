@@ -138,10 +138,8 @@ async function loadConfig() {
         }
         
         
-        // Render External Links
-        if (config.externalLinks && Array.isArray(config.externalLinks)) {
-            renderExternalLinks(config.externalLinks);
-        }
+        // Render Bento Grid Links
+        renderBentoLinks(config.externalLinks, config.agencyLinksGroups, config.agencyLinksColor);
 
         // Inject dynamic links from config
         const menu_ubnd = document.getElementById('menu-ubnd');
@@ -482,43 +480,7 @@ async function loadConfig() {
             }
         }
         
-        // Agency Links (Liên kết cơ quan) logic
-        if (config.agencyLinksGroups && Array.isArray(config.agencyLinksGroups)) {
-            const container = document.getElementById('agency-links-container');
-            if (container) {
-                container.innerHTML = '';
-                const bgColor = config.agencyLinksColor || '#0a59ab';
-                config.agencyLinksGroups.forEach(group => {
-                    let linksHtml = '';
-                    group.links.forEach(link => {
-                        linksHtml += `<li><a href="${link.url}" target="_blank"><i class="fa-solid fa-angle-right" style="font-size: 0.8em; margin-right: 6px;"></i> ${link.text}</a></li>`;
-                    });
-                    
-                    container.innerHTML += `
-                        <div class="accordion-item">
-                            <button class="accordion-header" style="background-color: ${bgColor};">
-                                <span>${group.title}</span>
-                                <i class="fa-solid fa-chevron-down"></i>
-                            </button>
-                            <div class="accordion-content">
-                                <ul>
-                                    ${linksHtml}
-                                </ul>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                // Attach event listeners for the newly added accordion headers
-                const newHeaders = container.querySelectorAll('.accordion-header');
-                newHeaders.forEach(header => {
-                    header.addEventListener('click', () => {
-                        const item = header.parentElement;
-                        item.classList.toggle('active');
-                    });
-                });
-            }
-        }
+        // Agency Links logic has been moved to renderBentoLinks
         renderInfoUtility(config);
         renderMultimedia(config);
     } catch (e) {
@@ -1625,28 +1587,78 @@ function renderMultimediaContent() {
     container.innerHTML = html;
 }
 
-function renderExternalLinks(links) {
-    const grid = document.getElementById('external-links-grid');
+function renderBentoLinks(externalLinks, agencyGroups, bgColor) {
+    const grid = document.getElementById('bento-links-grid');
     if (!grid) return;
     
-    if (!links || links.length === 0) {
-        grid.innerHTML = '';
-        return;
+    let html = '';
+
+    // Render External Links as Large Bento Cards
+    if (externalLinks && externalLinks.length > 0) {
+        html += externalLinks.map(item => `
+            <a href="${item.url || '#'}" target="_blank" class="bento-card bento-card-large" style="${item.bgUrl ? `background-image: url('${item.bgUrl}');` : ''}">
+                ${item.bgUrl ? `<div class="bento-bg-overlay"></div>` : ''}
+                <div class="bento-icon" style="background: ${(item.color || '#0a59ab')}15; color: ${item.color || '#0a59ab'};">
+                    ${item.logoUrl 
+                        ? `<img src="${item.logoUrl}" alt="${item.name}">` 
+                        : `<svg viewBox="0 0 48 48" width="48" height="48" fill="none">
+                            <circle cx="24" cy="24" r="18" fill="currentColor" opacity="0.15" />
+                            <text x="24" y="28" text-anchor="middle" fill="currentColor" font-size="${item.logoText && item.logoText.length > 3 ? '8' : '10'}" font-weight="700" font-family="Inter">${item.logoText ? item.logoText : (item.name ? item.name.substring(0,3).toUpperCase() : 'LNK')}</text>
+                           </svg>`
+                    }
+                </div>
+                <span class="bento-title">${item.name || ''}</span>
+            </a>
+        `).join('');
     }
 
-    grid.innerHTML = links.map(item => `
-        <a href="${item.url || '#'}" target="_blank" class="external-link-card" style="text-decoration: none; ${item.bgUrl ? `background-image: url('${item.bgUrl}'); background-size: cover; background-position: center; position: relative; z-index: 1; overflow: hidden;` : ''}">
-            ${item.bgUrl ? `<div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,255,255,0.85); z-index: -1;"></div>` : ''}
-            <div class="ext-icon" style="width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; background: ${(item.color || '#0a59ab')}15; border-radius: 50%;">
-                ${item.logoUrl 
-                    ? `<img src="${item.logoUrl}" style="max-width: 32px; max-height: 32px; object-fit: contain;">` 
-                    : `<svg viewBox="0 0 48 48" width="48" height="48" fill="none">
-                        <circle cx="24" cy="24" r="18" fill="${item.color || '#0a59ab'}" opacity="0.15" />
-                        <text x="24" y="28" text-anchor="middle" fill="${item.color || '#0a59ab'}" font-size="${item.logoText && item.logoText.length > 3 ? '8' : '10'}" font-weight="700" font-family="Inter">${item.logoText ? item.logoText : (item.name ? item.name.substring(0,3).toUpperCase() : 'LNK')}</text>
-                       </svg>`
-                }
-            </div>
-            <span style="display: block; margin-top: 10px; font-weight: 500; color: #1e293b; text-align: center;">${item.name || ''}</span>
-        </a>
-    `).join('');
+    // Render Agency Groups as Bento Cards with Popover menu or Direct Link
+    if (agencyGroups && agencyGroups.length > 0) {
+        const agColor = bgColor || '#0a59ab';
+        agencyGroups.forEach((group, index) => {
+            let linksHtml = '';
+            if (group.links && group.links.length > 0) {
+                linksHtml = group.links.map(link => `
+                    <a href="${link.url}" target="_blank" class="bento-sublink">
+                        <i class="fa-solid fa-angle-right"></i> ${link.text}
+                    </a>
+                `).join('');
+            }
+            
+            const startNewRowStyle = index === 0 ? ' grid-column-start: 1;' : '';
+
+            if (group.url && group.url.trim() !== '') {
+                // Render as direct link
+                html += `
+                    <a href="${group.url}" target="_blank" class="bento-card bento-card-small" style="text-decoration: none;${startNewRowStyle}">
+                        <div class="bento-icon" style="background: ${agColor}15; color: ${agColor};">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <span class="bento-title">${group.title}</span>
+                    </a>
+                `;
+            } else {
+                // Render as popover
+                html += `
+                    <div class="bento-card bento-card-dropdown" tabindex="0" style="${startNewRowStyle}">
+                        <div class="bento-icon" style="background: ${agColor}15; color: ${agColor};">
+                            <i class="fa-solid fa-building-columns"></i>
+                        </div>
+                        <span class="bento-title">${group.title}</span>
+                        ${linksHtml ? `<i class="fa-solid fa-chevron-down bento-chevron"></i>` : ''}
+                        
+                        ${linksHtml ? `
+                        <div class="bento-popover">
+                            <div class="bento-popover-content">
+                                ${linksHtml}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+        });
+    }
+
+    grid.innerHTML = html;
 }

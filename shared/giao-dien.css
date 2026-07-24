@@ -2687,4 +2687,189 @@ body.is-sticky .nav-wrapper {
     text-decoration: underline;
 }
 
+/* ==========================================================================
+   BENTO BOX GRID - MODERN LINKS
+   ========================================================================== */
+.bento-agency-wrapper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: 110px;
+    gap: 16px;
+}
+
+.bento-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+    overflow: visible; /* To allow popover to show outside */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+}
+
+.bento-card:hover, .bento-card:focus, .bento-card.active {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    border-color: rgba(0,0,0,0.08);
+    z-index: 2;
+}
+
+.bento-card-large {
+    grid-column: span 2;
+    grid-row: span 1;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 16px;
+}
+
+.bento-card-large .bento-icon {
+    width: 60px;
+    height: 60px;
+}
+
+.bento-card-large .bento-title {
+    font-size: 16px;
+    text-align: left;
+}
+
+.bento-bg-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    z-index: -1;
+    border-radius: 16px;
+}
+
+.bento-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.bento-icon img {
+    max-width: 32px;
+    max-height: 32px;
+    object-fit: contain;
+}
+
+.bento-title {
+    font-weight: 600;
+    color: #1e293b;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* POPOVER STYLE FOR AGENCY GROUPS */
+.bento-card-dropdown {
+    position: relative;
+    outline: none;
+}
+
+.bento-chevron {
+    position: absolute;
+    bottom: 10px;
+    color: #94a3b8;
+    font-size: 10px;
+    transition: transform 0.3s;
+}
+
+.bento-popover {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    width: 260px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 100;
+    text-align: left;
+}
+
+.bento-popover::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-left: 1px solid rgba(0,0,0,0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.bento-popover-content {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+/* Custom Scrollbar for popover */
+.bento-popover-content::-webkit-scrollbar { width: 4px; }
+.bento-popover-content::-webkit-scrollbar-track { background: transparent; }
+.bento-popover-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+.bento-sublink {
+    display: block;
+    padding: 10px 12px;
+    color: #334155;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    text-align: left;
+}
+
+.bento-sublink:hover {
+    background: #f1f5f9;
+    color: var(--primary);
+}
+
+.bento-card-dropdown:focus .bento-popover,
+.bento-card-dropdown.active .bento-popover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.bento-card-dropdown:focus .bento-chevron,
+.bento-card-dropdown.active .bento-chevron {
+    transform: rotate(180deg);
+}
+
+@media (max-width: 1024px) {
+    .bento-agency-wrapper { grid-template-columns: repeat(2, 1fr); }
+    .bento-card-large { grid-column: span 2; }
+}
+@media (max-width: 600px) {
+    .bento-agency-wrapper { grid-template-columns: 1fr; }
+    .bento-card-large { grid-column: span 1; }
+}
+
 

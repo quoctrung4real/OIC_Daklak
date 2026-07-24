@@ -82,7 +82,7 @@
         },
         {
           "text": "B\u1ED9 Gi\u00E1o d\u1EE5c v\u00E0 \u0110\u00E0o t\u1EA1o",
-          "url": "#"
+          "url": ""
         },
         {
           "text": "B\u1ED9 T\u00E0i ch\u00EDnh",
@@ -210,6 +210,22 @@
       "url": "#",
       "color": "#0a59ab",
       "logoText": "STIC",
+      "logoUrl": "",
+      "bgUrl": ""
+    },
+    {
+      "id": "1784864933671",
+      "name": "test",
+      "url": "ok",
+      "color": "#0a59ab",
+      "logoUrl": "",
+      "bgUrl": ""
+    },
+    {
+      "id": "1784864940828",
+      "name": "test 1",
+      "url": "ok",
+      "color": "#0a59ab",
       "logoUrl": "",
       "bgUrl": ""
     }
